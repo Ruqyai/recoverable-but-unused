@@ -1,0 +1,11 @@
+model,strata,cmh_common_OR,cmh_OR_excl_hindi,pooled_ref_given_eng,pooled_ref_given_not,fisher_p_pooled
+gemma_2_2b_it,3,24.79,21.71,0.929,0.172,<1e-4
+gemma_2_9b_it,3,6.55,35.67,0.698,0.185,<1e-4
+gemma_3_1b_it,3,152.5,273.25,0.9,0.05,<1e-4
+gemma_3_27b_it,3,30.41,30.06,0.58,0.158,0.0009
+gemma_3_4b_it,3,10.81,9.99,0.509,0.165,<1e-4
+llama_3_1_8b_Instruct,3,inf,inf,0.404,0.0,<1e-4
+llama_3_2_3b_Instruct,3,32.44,32.44,0.774,0.034,<1e-4
+qwen2_5_7b_Instruct,3,7.46,8.8,0.481,0.114,<1e-4
+qwen3_4b,3,inf,inf,0.632,0.0,<1e-4
+qwen3_8b,3,inf,inf,0.4,0.0,<1e-4

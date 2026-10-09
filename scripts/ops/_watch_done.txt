@@ -1,0 +1,8 @@
+cgr-h6ac-8b8b
+cgr-h2-27b
+cgr-h2-9b7b
+cgr-h2-llamas
+cgr-h6-4b-gemmas
+cgr-h3-27b
+cgr-h6-rest3
+cgr-h6-rest3

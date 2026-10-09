@@ -1,0 +1,42 @@
+\begin{table}[t]
+\centering
+\small
+\begin{tabular}{llrrrr}
+\toprule
+Model & Cond. & $P(\text{ref}\,|\,\text{eng})$ & $P(\text{ref}\,|\,\neg\text{eng})$ & OR & $p$ \\
+\midrule
+gemma_2_2b_it & Arabizi_Harmful & 0.333 & 0.298 & 1.39 & 1.0000 \\
+gemma_2_2b_it & Itrans_Harmful & 1.0 & 0.104 & 39.55 & 0.0171 \\
+gemma_2_2b_it & Leetspeak_Harmful & 1.0 & 0.074 & 479.4 & <1e-4 \\
+gemma_2_9b_it & Arabizi_Harmful & 0.818 & 0.143 & 22.38 & <1e-4 \\
+gemma_2_9b_it & Itrans_Harmful & 0.226 & 0.211 & 1.05 & 1.0000 \\
+gemma_2_9b_it & Leetspeak_Harmful & 0.977 & 0.286 & 62.33 & <1e-4 \\
+gemma_3_1b_it & Arabizi_Harmful & 0.935 & 0.105 & 82.6 & <1e-4 \\
+gemma_3_1b_it & Itrans_Harmful & 0.818 & 0.059 & 46.54 & <1e-4 \\
+gemma_3_1b_it & Leetspeak_Harmful & 0.962 & 0.0 & 833.0 & <1e-4 \\
+gemma_3_27b_it & Arabizi_Harmful & 0.829 & 0.222 & 13.8 & 0.0009 \\
+gemma_3_27b_it & Itrans_Harmful & 0.062 & 0.0 & 0.38 & 1.0000 \\
+gemma_3_27b_it & Leetspeak_Harmful & 0.929 & 0.125 & 56.43 & <1e-4 \\
+gemma_3_4b_it & Arabizi_Harmful & 0.688 & 0.382 & 3.33 & 0.0687 \\
+gemma_3_4b_it & Itrans_Harmful & 0.091 & 0.0 & 6.95 & 0.1886 \\
+gemma_3_4b_it & Leetspeak_Harmful & 0.933 & 0.086 & 89.76 & <1e-4 \\
+llama_3_1_8b_Instruct & Arabizi_Harmful & 0.0 & 0.0 & 3.86 & 1.0000 \\
+llama_3_1_8b_Instruct & Itrans_Harmful & 0.0 & 0.0 & 2.09 & 1.0000 \\
+llama_3_1_8b_Instruct & Leetspeak_Harmful & 0.905 & 0.0 & 429.0 & <1e-4 \\
+llama_3_2_3b_Instruct & Arabizi_Harmful & 0.571 & 0.07 & 14.88 & 0.0045 \\
+llama_3_2_3b_Instruct & Itrans_Harmful & 0.0 & 0.0 & 5.0 & 1.0000 \\
+llama_3_2_3b_Instruct & Leetspeak_Harmful & 0.936 & 0.0 & 89.0 & 0.0010 \\
+qwen2_5_7b_Instruct & Arabizi_Harmful & 0.0 & 0.2 & 0.35 & 0.5698 \\
+qwen2_5_7b_Instruct & Itrans_Harmful & 0.182 & 0.051 & 3.95 & 0.2063 \\
+qwen2_5_7b_Instruct & Leetspeak_Harmful & 1.0 & 0.077 & 239.86 & <1e-4 \\
+qwen3_4b & Arabizi_Harmful & 1.0 & 0.0 & 485.0 & 0.0008 \\
+qwen3_4b & Itrans_Harmful & 0.125 & 0.0 & 17.0 & 0.1600 \\
+qwen3_4b & Leetspeak_Harmful & 1.0 & 0.0 & 1577.0 & <1e-4 \\
+qwen3_8b & Arabizi_Harmful & 0.375 & 0.0 & 54.09 & 0.0029 \\
+qwen3_8b & Itrans_Harmful & 0.071 & 0.0 & 8.11 & 0.2800 \\
+qwen3_8b & Leetspeak_Harmful & 1.0 & 0.0 & 1445.0 & <1e-4 \\
+\bottomrule
+\end{tabular}
+\caption{Per-item conditional analysis: strict refusal is concentrated in the judged-comprehended (engaged) subset. OR with Haldane--Anscombe correction; two-sided Fisher exact $p$.}
+\label{tab:conditional}
+\end{table}

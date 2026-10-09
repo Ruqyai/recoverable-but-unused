@@ -1,0 +1,98 @@
+{
+  "phase": "phase2_stage2_compute_directions",
+  "model_key": "gemma_3_27b_it",
+  "model_id": "google/gemma-3-27b-it",
+  "n_layers": 62,
+  "hidden_dim": 5376,
+  "run_stamp": "20260629_091730",
+  "run_dir": "/workspace/results/phase2/gemma_3_27b_it/run_20260629_091730",
+  "completed_at": "2026-06-29T09:22:34.865444",
+  "directions": {
+    "arabic": [
+      62,
+      5376
+    ],
+    "arabizi": [
+      62,
+      5376
+    ],
+    "devanagari": [
+      62,
+      5376
+    ],
+    "itrans": [
+      62,
+      5376
+    ],
+    "english": [
+      62,
+      5376
+    ],
+    "leetspeak": [
+      62,
+      5376
+    ]
+  },
+  "per_script_stats": {
+    "arabic": {
+      "n_pairs": 200,
+      "n_harmful_loaded": 200,
+      "n_benign_loaded": 200,
+      "n_dropped_harmful": 0,
+      "n_dropped_benign": 0,
+      "harmful_mean_norm_per_layer": 43899.63671875,
+      "benign_mean_norm_per_layer": 41733.81640625,
+      "diff_mean_norm_per_layer": 4685.095703125
+    },
+    "arabizi": {
+      "n_pairs": 200,
+      "n_harmful_loaded": 200,
+      "n_benign_loaded": 200,
+      "n_dropped_harmful": 0,
+      "n_dropped_benign": 0,
+      "harmful_mean_norm_per_layer": 39381.43359375,
+      "benign_mean_norm_per_layer": 39179.44140625,
+      "diff_mean_norm_per_layer": 1482.3272705078125
+    },
+    "devanagari": {
+      "n_pairs": 200,
+      "n_harmful_loaded": 200,
+      "n_benign_loaded": 200,
+      "n_dropped_harmful": 0,
+      "n_dropped_benign": 0,
+      "harmful_mean_norm_per_layer": 45134.35546875,
+      "benign_mean_norm_per_layer": 44374.890625,
+      "diff_mean_norm_per_layer": 3531.771240234375
+    },
+    "itrans": {
+      "n_pairs": 200,
+      "n_harmful_loaded": 200,
+      "n_benign_loaded": 200,
+      "n_dropped_harmful": 0,
+      "n_dropped_benign": 0,
+      "harmful_mean_norm_per_layer": 51007.046875,
+      "benign_mean_norm_per_layer": 39884.875,
+      "diff_mean_norm_per_layer": 13218.919921875
+    },
+    "english": {
+      "n_pairs": 200,
+      "n_harmful_loaded": 200,
+      "n_benign_loaded": 200,
+      "n_dropped_harmful": 0,
+      "n_dropped_benign": 0,
+      "harmful_mean_norm_per_layer": 44141.21484375,
+      "benign_mean_norm_per_layer": 40860.140625,
+      "diff_mean_norm_per_layer": 5922.21826171875
+    },
+    "leetspeak": {
+      "n_pairs": 200,
+      "n_harmful_loaded": 200,
+      "n_benign_loaded": 200,
+      "n_dropped_harmful": 0,
+      "n_dropped_benign": 0,
+      "harmful_mean_norm_per_layer": 34143.95703125,
+      "benign_mean_norm_per_layer": 34497.828125,
+      "diff_mean_norm_per_layer": 1390.9259033203125
+    }
+  }
+}

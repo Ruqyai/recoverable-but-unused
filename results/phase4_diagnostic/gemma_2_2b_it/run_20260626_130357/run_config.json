@@ -1,0 +1,29 @@
+{
+  "model_id": "google/gemma-2-2b-it",
+  "model_key": "gemma_2_2b_it",
+  "run_stamp": "20260626_130357",
+  "test_date": "2026-06-26T13:03:57.741098",
+  "tiers": [
+    "tier_a",
+    "tier_c",
+    "tier_e"
+  ],
+  "n_prompts": 50,
+  "use_system_prompt": false,
+  "system_prompt_variant": null,
+  "enable_thinking": "auto",
+  "enable_thinking_effective": "OFF",
+  "max_new_tokens": null,
+  "prompt_range": null,
+  "input_files": {
+    "arabizi": null,
+    "devanagari": null,
+    "itrans": null,
+    "english": null,
+    "leetspeak": null
+  },
+  "think_status_summary": {
+    "no_think": 15
+  },
+  "flat_run_dir": "/Users/ruqiya/Codeing-repos/Research/BlackboxNLP/comprehension-gated/results/phase4_diagnostic/run_20260626_130357"
+}

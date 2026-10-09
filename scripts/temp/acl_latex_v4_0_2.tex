@@ -1,0 +1,483 @@
+\documentclass[11pt]{article}
+
+% Anonymous review version. Switch [review] -> [] (or use \aclfinalcopy) for camera-ready.
+\usepackage[review]{acl}
+
+\usepackage{times}
+\usepackage{latexsym}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{microtype}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\graphicspath{{figures/}{figures_old/}}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{tikz}
+\usetikzlibrary{positioning, shapes.geometric, arrows.meta, calc}
+
+% convenience macros
+\newcommand{\cpresent}{\texttt{concept\_present}}
+\newcommand{\arr}{$\rightarrow$}
+\newcommand{\pp}{\,pp}
+
+\title{Refusal Is Gated by Comprehension:\\
+A Mechanistic Reanalysis of Cross-Script Jailbreaks}
+
+\author{Anonymous ACL submission}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Instruction-tuned LLMs that refuse a harmful request in its native script often comply when the \emph{same} request is romanized---Arabic\arr Arabizi, Hindi Devanagari\arr ITRANS, English\arr Leetspeak---with native\arr romanized refusal gaps of 26--86\pp{} across the ten open models we study. The standard interpretation is \emph{script-anchoring}: safety alignment keyed to surface orthography that the romanized form evades. Using four convergent measurements---a human-validated LLM comprehension gate, a logit-lens concept probe, causal direction interventions (ablation and activation addition), and activation patching---we provide convergent evidence that this interpretation is largely incorrect and that the dominant mechanism is a \emph{comprehension bottleneck upstream of safety}: models mostly fail to decode romanized prompts (judged comprehension 16--92\% vs.\ 84--100\% on Arabic/English natives); the harmful concept is rarely built internally wherever the concept probe can be positively validated (native-English concept-present $0.74$ collapses to $0.04$ on Leetspeak); the romanized refusal direction is causally inert in 8/10 models while the native direction flips up to 94\% of refusals; and patching recovers refusal non-specifically in all 30 pre-registered cells. Per-item conditioning shows, at the item level, that where a model \emph{does} comprehend a romanized request it refuses at near-native rates (refusal-given-comprehension 83--100\% in 9/10 models; refusal strongly associated with comprehension, all Fisher $p<10^{-3}$), including under the leakage-proof deterministic transliteration. Safety is not bypassed; it is starved of input. A scale dose-response confirms the mechanism: Gemma-3-27B-it refuses 72\% of harmful Arabizi (vs.\ 4\% for Qwen3-4B) yet still fails on the hardest-to-decode ITRANS (6\% refusal, 76\% off-topic). We reframe cross-script jailbreaks as \emph{capability-conditioned safety failures}, release the comprehension gate as a reusable control, and predict that romanized compliance may \emph{increase} as comprehension improves unless safety training is made orthography-diverse.
+\end{abstract}
+
+\section{Introduction}
+
+A request that an instruction-tuned model refuses in Arabic script is often answered when the same words are rewritten in Latin letters (Arabizi). The effect is well established behaviorally---for Arabizi \citep{alghanim2024}, multilingual code-switching \citep{yoo2025}, and low-resource languages \citep{yong2023}---and it reproduces across our models (\S\ref{sec:corpus}, Table~\ref{tab:gap}). The phenomenon is usually read as a safety-alignment failure. We show, with four independent mechanistic measurements, that this reading is largely mistaken: in most cases the model does not \emph{bypass} the safety guardrail, it never decodes the request. That distinction---between ``complied with a harm it understood'' and ``never read what was in front of it''---inverts the standard remediation logic and is the central question of this paper.
+
+\subsection{The phenomenon}
+On social media, users evade keyword filters not by changing what they write but how: they segment a banned word, swap letters for digits, or space out characters, so it no longer matches the filter's list---yet a human reads it instantly. The meaning reaches the reader; the filter never ``sees'' it. Instruction-tuned LLMs show the same \emph{behavioral} pattern \citep{alghanim2024,yoo2025,jamil2026}, and the effect can be dramatic: one model (Llama-3.1-8B-Instruct) refuses 84\% of harmful requests in Arabic yet none of the same requests once romanized to Arabizi (\S\ref{sec:corpus}, Table~\ref{tab:gap}). Such behavior looks like a catastrophic failure of safety alignment---and we argue that, in most cases, this conclusion is wrong. This paper's central claim is that the mechanism is the social-media story \emph{inverted}: there, the meaning reaches the reader and the filter misses it; here, the filter is intact but the meaning never arrives.
+
+\subsection{Why this matters now}
+\label{sec:why}
+This is not a lab curiosity. Hundreds of millions of users write daily in Arabizi, romanized Hindi, and Latin-script Urdu, and they are among the least protected users of these models---a safety-equity gap that the multilingual-safety literature has measured but not mechanistically explained \citep{yong2023}. The prevailing remedy---surface-level ``script filters''---rests on one untested assumption: that the model \emph{understands} the harmful request and only its safety check is evaded by the unfamiliar letterforms. If that assumption is wrong, such filters address the wrong layer of the system, and safety effort is misdirected away from the population most exposed to the failure. The open question is therefore not whether the phenomenon occurs but \emph{why}; the answer determines the remedy.
+
+\subsection{The two mechanisms behavior cannot separate}
+Behavior alone is consistent with two very different stories:
+\begin{itemize}
+\itemsep0.2em
+\item \textbf{(S) Script-anchoring.} The model understands the harmful request, but a safety mechanism keyed to native orthography fails to fire on the romanized form. Safety is shallow and script-specific; orthography-diverse safety training fixes it.
+\item \textbf{(C) Comprehension-gating.} The model fails to decode the romanized request well enough to build the harmful-concept representation; safety, downstream of that representation, then has nothing to act on. Safety is intact but starved of input.
+\end{itemize}
+Both predict ``refuses native, complies romanized,'' but they diverge mechanistically and imply opposite futures: under (S) the failure shrinks as safety training improves; under (C) it may \emph{worsen} as comprehension improves, unless safety training keeps pace with where the model can now read. The control that separates them asks a different question than usual: \emph{per response, did the model engage the actual request?}---not did it refuse? A model that cannot parse \texttt{k1ll} or an Arabizi rendering will neither refuse nor harmfully comply; it answers something else, declines as unintelligible, or emits gibberish. A surface ``did it refuse?'' metric scores all of these as compliance and credits the model with reading a request it never decoded. The ``bypass'' is then a reading failure masquerading as a refusal failure.
+
+\subsection{Contributions}
+The literature establishes \emph{what} happens; we answer \emph{why}, turning an observation into an actionable explanation. Our contributions are threefold:
+\begin{enumerate}
+\itemsep0.2em
+\item \textbf{A comprehension gate} (\S\ref{sec:gate}): a human-validated engagement-scoring control that separates reading failure from refusal failure. We show that two standard proxies (refusal-marker counts, length-based coherence) err in opposite directions without it, and that naive SAE-feature overlap misleads unless gated on comprehension.
+\item \textbf{A four-measurement convergent test} (comprehension gate, logit-lens concept probe, causal direction intervention, activation patching) that adjudicates the mechanism on ten open models rather than re-measuring the behavior, including the finding that single-position patching is a screen, not a localizer.
+\item \textbf{A scale dose-response} (\S\ref{sec:scale}): romanized refusal returns precisely where comprehension returns, and first where decoding is easiest---yielding a testable prediction that safety may \emph{degrade} as comprehension improves unless safety training tracks decoding ability.
+\end{enumerate}
+Beyond the mechanism, the reframing matters for safety equity: if the ``bypass'' is a reading failure, surface script filters treat the wrong symptom for the very populations most exposed to it, and the right fix is a decode-then-refuse pipeline plus orthography-diverse safety training.
+
+Figure~\ref{fig:tworoute} previews the two-route mechanism that our four measurements converge on, and names which measurement tests each stage.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{fig1_two_route.pdf}
+\caption{The comprehension-gating, two-route model. A harmful prompt is first \emph{gated by comprehension}: if the model cannot decode it (the common case for romanized prompts), the harmful concept is never built, the refusal direction is inert, and activation patching is non-specific---so at most a shallow caution fires and the request is bypassed. Only when the prompt is decoded (native, or the rare strong romanization-decoder) does the deep route assemble the concept, make the refusal direction causal, and produce a semantic refusal. Each stage names the measurement that tests it (\S\ref{sec:gate}--\ref{sec:patch}).}
+\label{fig:tworoute}
+\end{figure}
+
+\section{Related work}
+
+\paragraph{The phenomenon.} A growing line documents romanized, transliterated, or substituted orthographies eliciting harmful completions: \citet{alghanim2024} establish the Arabic$\leftrightarrow$Arabizi asymmetry (native refusal ${>}95$\%, Arabizi compliance ${>}60$\%), and \citet{yoo2025}, \citet{jamil2026}, and \citet{yong2023} report analogous gains for code-switching, Roman Urdu, and low-resource translation (GPT-4: 79\% vs.\ ${<}1$\%), with \citet{banerjee2025} on code-mixed inputs. All read the effect behaviorally---yet ASR/refusal metrics cannot distinguish ``complied with a harm it understood'' from ``did not understand.'' Frontier models read romanized text far better than the open 4--27B models we study, so the confound is latent there and surfaces here.
+
+\paragraph{Closest neighbors: apparent safety as failure.} \citet{malik2026} coin ``safety-by-failure'': apparent safety on non-English inputs is an artifact of comprehension failure---harmful intent is missed, not refused. That is our thesis behaviorally, in the multimodal setting; we differ by holding language fixed and moving only orthography, giving a causal direction (direction interventions + patching), and adding a same-meaning control. \citet{choi2026} likewise separate principled refusal from generation failure via a Neutral-Safe Rate. We share the thesis but are mechanistic rather than benchmark-behavioral.
+
+\paragraph{Refusal directions and limits.} Refusal is partially mediated by a low-rank residual-stream direction recoverable by difference-of-means and testable by ablation \citep{arditi2024}; we use this but treat a single direction as necessary-but-insufficient. \citet{wollschlager2025} bound single-direction claims (orthogonality $\neq$ independence under intervention)---our Leetspeak anchoring cells (\S\ref{sec:anchor}) are a direct instance---and \citet{wang2025} extend refusal directions multilingually.
+
+\paragraph{Latent romanization and refusal routing.} Our patching test adapts the logit-lens method of \citet{saji2025}, which shows LLMs internally ``romanize'' meaning mid-stack, repurposed from meaning recovery to safety localization. \citet{frank2026} localize a gate\arr amplifier routing circuit across 12 models and find an in-context cipher collapses gate necessity by 70--99\%---refusal is gated by routing, not removed. \citet{alghanim2024} attribute the Arabizi effect to ``specific words''; our language control relocates the locus to the writing system (\S\ref{sec:features}).
+
+\paragraph{Interpretability tooling.} We use sparse autoencoders \citep{lieberum2024,mcdougall2025} for the Gemma models (transcoder / non-official SAEs elsewhere, direction only), activation patching, and logit-lens read-outs, cautioning---with \citet{arad2025}---that SAE features are not automatically the right intervention handles. Work on over-refusal \citep{maskey2026} and refusal features in SAEs \citep{yeo2025} situates our feature analysis.
+
+\section{Data and models}
+
+\subsection{Corpus and the behavioral gap}
+\label{sec:corpus}
+We use matched harmful pairs that hold meaning constant and vary only the writing system, across three language pairs bracketing the explanation space: \textbf{Arabic $\leftrightarrow$ Arabizi} (naturalistic romanization---an effect could reflect training-data leakage), \textbf{Hindi Devanagari $\leftrightarrow$ ITRANS} (deterministic, bijective, ASCII-only transliteration---cannot be leakage), and \textbf{English $\leftrightarrow$ Leetspeak} (within-language substitution \texttt{a}\arr\texttt{4} \texttt{e}\arr\texttt{3} \texttt{i}\arr\texttt{1} \texttt{o}\arr\texttt{0} \texttt{s}\arr\texttt{5} \texttt{t}\arr\texttt{7}$\dots$; the two sides differ only in spelling, ruling out a language-coverage confound). We use 200 matched harmful pairs per language pair sharing AdvBench \texttt{source\_id}s \citep{zou2023}, plus matched benign sets in all six scripts and within-script paraphrase controls; 3{,}000 records total (1{,}800 harmful + 1{,}200 benign), schema-validated. The native Hindi tier derives from \citet{joshi2025}. Every behavioral label is coherence-gated (a gibberish ``compliance'' does not count). The native\arr romanized gap is large in every model (Table~\ref{tab:gap}); this is the phenomenon to explain.
+
+\begin{table}[t]
+\centering
+\small
+\begin{tabular}{lccc}
+\toprule
+Model & native & romanized & gap \\
+\midrule
+Qwen3-4B & 90.0\% & 4.0\% & 86.0 \\
+Qwen3-8B & 90.0\% & 6.0\% & 84.0 \\
+Qwen2.5-7B-Instruct & 94.0\% & 18.0\% & 76.0 \\
+Gemma-3-1B-it & 92.0\% & 62.0\% & 30.0 \\
+Gemma-2-2B-it & 88.0\% & 30.0\% & 58.0 \\
+Gemma-3-4B-it & 96.0\% & 48.0\% & 48.0 \\
+Gemma-2-9B-it & 98.0\% & 44.0\% & 54.0 \\
+Gemma-3-27B-it & 98.0\% & 72.0\% & 26.0 \\
+Llama-3.1-8B-Instruct & 84.0\% & 0.0\% & 84.0 \\
+Llama-3.2-3B-Instruct & 78.0\% & 14.0\% & 64.0 \\
+\bottomrule
+\end{tabular}
+\caption{Baseline strict-refusal rate, Arabic (native) vs.\ Arabizi (romanized), on the fixed $N{=}50$ behavioral subset used for all per-condition generation runs (95\% Wilson intervals are ${\pm}11$--$14$\pp{} at mid-range); gap in pp. Off-topic ``can't-read'' responses do \emph{not} count as refusals.}
+\label{tab:gap}
+\end{table}
+
+\subsection{Models}
+\label{sec:models}
+Ten open instruction-tuned models span three families, three scales, and two generations: Qwen3-4B, Qwen3-8B, Qwen2.5-7B-Instruct, Gemma-3-1B-it, Gemma-2-9B-it, Gemma-2-2B-it, Gemma-3-4B-it, Gemma-3-27B-it, Llama-3.1-8B-Instruct, and Llama-3.2-3B-Instruct. Each model selects its own causal layer empirically (peak single-layer ablation flip-rate; Figure~\ref{fig:layerdepth}); layer indices are not cross-comparable (26/32/36/42/62 layers). The causal layer sits mid-network in every model, well before the late-layer harmful/benign separation peak---so we attribute against the layer we can actually steer, not the layer with the largest diff-in-means. Refusal directions are extracted per layer by Arditi--Wang difference-of-means; $\alpha$ is calibrated per model (e.g.\ Gemma-3-1B-it needs $\alpha{\approx}0.4$). Coverage spans all ten models for the comprehension gate, causal direction intervention, and activation patching, so Gemma-3-27B-it is part of the mechanistic battery, not just a behavioral extension (\S\ref{sec:scale}). The in-depth logit-lens concept probe (\S\ref{sec:lens}) is reported for three models spanning the two non-Gemma families (the $N{=}200$ probe is compute-heavy; the remaining models' lens read-outs are in the released results). The one remaining coverage gap is Gemma-3-27B-it's two romanized SAE-feature (H3) control arms (English, Hindi), where the compute run was interrupted; these feed no current figure.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{fig8_causal_vs_separation_depth.pdf}
+\caption{Per-model causal peak vs.\ separation peak (relative depth). The layer where ablation actually flips refusals sits mid-network ($\approx 0.5$) in every model, far from the late ($\approx 0.95$) harmful/benign separation peak---attribution targets the steerable layer, not the diff-in-means maximum.}
+\label{fig:layerdepth}
+\end{figure}
+
+\section{Measurements}
+We test (S) vs.\ (C) with four independent measurements; their convergence, not any one in isolation, is the argument.
+
+\paragraph{(1) Comprehension gate.} Generate each model's real completion per harmful condition and classify it with an independent multilingual judge (Gemini-2.5-flash) as \emph{engaged} (an on-topic answer, or a refusal of the actual request) vs.\ \emph{not engaged} (off-topic answer, ``can't read this,'' decode-attempt, gibberish). The full rubric and judge prompt are in Appendix~\ref{app:judge}; the gate is validated against a blinded second LLM judge and a human annotator (Limitations). A cell passes the gate at ${\geq}60$\% engagement with ${\leq}15$\pp{} drop from its native counterpart---a threshold fixed before the mechanistic analyses and chosen to be \emph{permissive} toward (S): any cell failing even this weak bar cannot support claims about safety representation.
+
+\paragraph{(2) Logit-lens concept probe.} \cpresent{}: the fraction of prompts for which harmful-concept tokens enter the logit-lens trajectory at the assistant read-out position ($-1$). Per AdvBench item, the concept token set is the first-token ids of up to six salient English content words of the harmful source (anchored by a shared \texttt{source\_id}, so the probe is identical across script tiers); the concept counts as present if any set token enters the top-$50$ lens decode at any layer at that position (construction details: Appendix~\ref{app:lens}).
+
+\paragraph{(3) Causal direction intervention.} We intervene on extracted refusal directions with two operations: \emph{ablation} (projecting the direction out of the residual stream) and \emph{activation addition} (injecting the direction at calibrated strength $\alpha$). The design crosses \{direction intervened on\}\,$\times$\,\{prompt type\}. The \emph{diagnostic} cell is the reverse-ablation one: ablate the \emph{romanized}-extracted direction while running the \emph{native} prompt, which has near-total room to flip (native baseline refusal is high). The forward cell (romanized direction on the romanized prompt) is uninformative because the romanized prompt already complies at baseline; the addition arm probes the complementary question of whether injecting a direction \emph{induces} refusal where the baseline complies. If the romanized direction carries causal refusal signal, reverse ablation flips native refusals; if no harmful concept is built on romanized prompts (\S\ref{sec:lens}), it should be inert under both operations. The main text reports the ablation arm (Table~\ref{tab:abl}), whose reverse cell has full room to flip; the activation-addition arm reaches the same qualitative verdict (the romanized direction fails to \emph{induce} refusal) but is baseline-saturation-confounded---native prompts already refuse and romanized prompts already comply, leaving little room---so we treat ablation as the diagnostic and report the addition arm in the released dashboard.
+
+\paragraph{(4) Activation patching.} Cache the native residual at the assistant read-out position ($-1$) and patch it into the romanized run at a single layer $L$, sweeping $L$, with three controls: \emph{self} (no-op), \emph{random-pair} (an unrelated harmful native residual; recovery here means the effect is not content-specific), and \emph{benign-matched} (should not induce refusal). Under a clean parse-bottleneck or genuine script-anchoring, recovery should be matched-specific; a matched\,$\approx$\,random pattern instead indicates transfer of a generic decision state. We note in advance that single-position patching at $-1$ is a screen, not a localizer: it cannot distinguish a diffuse mechanism from an ill-chosen site (\S\ref{sec:implications}).
+
+\section{Results}
+
+\subsection{The comprehension gate: models cannot read the romanizations}
+\label{sec:gate}
+\emph{Prediction.} Under comprehension-gating (C), romanized prompts should be poorly comprehended in the first place; under script-anchoring (S) they should be well comprehended, with only the safety check failing. Low feature overlap or high ``compliance'' is evidence about \emph{safety representation} only if the model understands the prompt. Two standard proxies are unreliable in opposite directions: refusal-marker counts \emph{under}-count (the harm classifier is weak on non-native output), and length-based coherence \emph{over}-counts (any ${>}40$-char non-refusal scores as ``parsed,'' crediting ``let me decode this cipher$\dots$''---this proxy implied Qwen3 ``parses ITRANS/Leetspeak 15/15''; the clean judge gives 20--36\%). The models comprehend the Arabic and English natives (84--100\%) and largely fail on romanized ones (Table~\ref{tab:comp}, Figure~\ref{fig:comp}). Three (model$\times$romanized) cells clear the parity bar, and all three are Leetspeak---Gemma-2-9B-it (92\%), Gemma-3-27B-it (86\%), Llama-3.2-3B-Instruct (88\%)---load-bearing for \S\ref{sec:anchor}. Every other romanized cell drops sharply and is therefore confounded with non-comprehension. (At 50 prompts/condition, cell estimates carry 95\% Wilson intervals of roughly ${\pm}11$--$14$\pp{} at mid-range; the pass/fail calls above are robust to this, and borderline cells are treated as failing.)
+
+Native Hindi (Devanagari) is itself unevenly read (18--92\%), and for six of the ten models it falls \emph{below} the 60\% bar. For those models the Devanagari$\leftrightarrow$ITRANS pair cannot adjudicate (S) vs.\ (C) at all---the ``native'' side is already unread---so we restrict ITRANS-tier mechanistic claims to models whose Devanagari comprehension clears the bar, and use the remaining cells only as decode-difficulty data points. Note that this confound is itself evidence for comprehension-gating: refusal collapses on an unread \emph{native} script exactly as it does on an unread romanization.
+
+\paragraph{Refusal returns wherever comprehension does.} The per-item labels enable the within-model test that cross-model comparisons cannot provide: conditioning refusal on judged comprehension, item by item. Within the judged-comprehended subset, romanized refusal returns to native levels in 9/10 models (Table~\ref{tab:conditional}: 83--100\% vs.\ 90--99\% native; the exception, Llama-3.1-8B, is driven by its ITRANS cell, 19\% refusal-given-comprehension---the one genuine counter-cell in the grid). As a circularity-immune robustness arm, an independent keyword-based refusal classifier gives the same verdict: refusal is far likelier on comprehended than on non-comprehended romanized items in every model (CMH common odds ratio $9$--$273$ over the Arabizi and Leetspeak strata, with three sparse strata showing complete separation---zero refusals among non-comprehended items---rather than an estimable ratio; all Fisher $p<10^{-3}$, surviving Bonferroni correction across the 20 model$\times$tier cells; ITRANS is excluded from this arm because the keyword classifier cannot detect refusals written in Devanagari---itself an instance of the English-biased-metric failure this section documents). The apparent jailbreak is thus concentrated almost entirely in the non-comprehended mass: where the model reads the romanized request, safety fires.
+
+\begin{table}[t]
+\centering
+\small
+\begin{tabular}{lccc}
+\toprule
+Model & native & romanized & OR$^\dagger$ \\
+\midrule
+Gemma-3-1B-it & 95 & 100 (90) & 273 \\
+Gemma-2-2B-it & 97 & 100 (28) & 22 \\
+Gemma-3-4B-it & 99 & 85 (53) & 10 \\
+Gemma-2-9B-it & 98 & 88 (96) & 36 \\
+Gemma-3-27B-it & 99 & 92 (131) & 30 \\
+Qwen3-4B & 97 & 95 (19) & sep. \\
+Qwen3-8B & 95 & 83 (30) & sep. \\
+Qwen2.5-7B & 97 & 85 (27) & 9 \\
+Llama-3.1-8B & 91 & 60 (47) & sep. \\
+Llama-3.2-3B & 90 & 97 (62) & 32 \\
+\bottomrule
+\end{tabular}
+\caption{Refusal \emph{within} the judged-comprehended subset (\%), pooled over the three native vs.\ three romanized harmful conditions (romanized $n$ in parentheses). $^\dagger$CMH common odds ratio for refusal-given-comprehension from the independent keyword classifier, Arabizi$+$Leetspeak strata (ITRANS excluded there; see text); ``sep.''\ marks complete separation (zero refusals among non-comprehended items, so the ratio is unbounded but not estimable). All Fisher $p<10^{-3}$. Where the model comprehends the romanized request, refusal returns to native levels.}
+\label{tab:conditional}
+\end{table}
+
+\begin{table}[t]
+\centering
+\small
+\begin{tabular}{lcccccc}
+\toprule
+Model & ara & arz & eng & leet & dev & itr \\
+\midrule
+Gemma-3-1B-it & 96 & 70 & 98 & 62 & 72 & 62 \\
+Gemma-2-2B-it & 92 & 46 & 100 & 60 & 92 & 28 \\
+Gemma-3-4B-it & 98 & 60 & 98 & 50 & 78 & 20 \\
+Gemma-2-9B-it & 100 & 54 & 98 & 92\checkmark & 38 & 32 \\
+Gemma-3-27B-it & 100 & 76 & 100 & 86\checkmark & 84 & 24 \\
+Qwen3-4B & 92 & 20 & 100 & 36 & 54 & 20 \\
+Qwen3-8B & 94 & 26 & 100 & 32 & 18 & 20 \\
+Qwen2.5-7B & 96 & 32 & 100 & 44 & 36 & 26 \\
+Llama-3.1-8B & 88 & 18 & 98 & 58 & 24 & 16 \\
+Llama-3.2-3B & 84 & 32 & 90 & 88\checkmark & 32 & 16 \\
+\bottomrule
+\end{tabular}
+\caption{Comprehension \% (engaged $=$ on-topic answer or refusal of the actual request; Gemini judge, 50 prompts/condition; Wilson 95\% CIs ${\pm}11$--$14$\pp{} at mid-range). ara/eng/dev native; arz/leet/itr romanized. \checkmark{} $=$ cell passing the gate ($\geq 60$\%, $\leq 15$\pp{} drop): all three are Leetspeak (\S\ref{sec:anchor}). Devanagari (dev) is unevenly read even as a \emph{native} script; see \S\ref{sec:gate}.}
+\label{tab:comp}
+\end{table}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{fig1_comprehension_gate.pdf}
+\caption{The comprehension gate (Gemma-3-4B-it, representative). On native scripts the model refuses; on romanized scripts the lost refusal mass goes to \emph{off-topic} responses, not harmful compliance---the ``bypass'' is a reading failure, not a refusal failure. ITRANS is the extreme (80\% off-topic). Breadth across all ten models is in Table~\ref{tab:comp}.}
+\label{fig:comp}
+\end{figure}
+
+\subsection{The logit lens: the concept probe collapses under romanization}
+\label{sec:lens}
+\emph{Prediction.} If comprehension-gating is the dominant mechanism, the harmful concept should rarely enter the latent representation of non-decoded romanized prompts; under script-anchoring it must be present for a script-keyed filter to act on. For the three lens models (\cpresent{} defined in \S4 and Appendix~\ref{app:lens}), the harmful English concept almost never enters the romanized prompt's internal representation, across all three regimes (Table~\ref{tab:concept}, Figure~\ref{fig:concept}). Three observations cut against (S): (1) the concept is low-to-absent everywhere (0.005--0.27)---a filter cannot anchor to a meaning the model never represents; (2) romanized refusal, on the rare occasions it registers in the lens, remains sparse and shows no sign of tracking a harm representation---consistent with a shallow cue rather than a semantic judgment (per-layer emergence trajectories in the released results);
+% TODO(authors): to reinstate the stronger "emerges no later than native"
+% ordering claim, add ONE number here (mean emergence layer, romanized vs.
+% native, for the three lens models). An ordering claim central to the
+% "shallow cue" reading should not rest on an unshown comparison.
+(3) it tracks decode capability, not script---ITRANS (bijective, ASCII) leaks 2--4$\times$ more concept than Arabizi \emph{because it is more decodable}, on the one regime that cannot be training-data leakage. Consistent with \S\ref{sec:gate}, we read the ITRANS numbers as decode-difficulty evidence rather than a clean (S)-vs.-(C) test for models whose native-Devanagari comprehension is itself below the bar. \emph{Positive control.} The probe is anchored to the English concept, so it can be validated only where the native side is English---the Leetspeak pair: there it fires on 0.74 and 0.70 of native-English prompts (Qwen3-8B, $N{=}200$; Qwen3-4B) and collapses to 0.04 and 0.10 on Leetspeak, confirming the probe detects the concept \emph{when it is built} and that the collapse is real, not a dead probe. (Llama-3.1-8B is the exception---0.25 native vs.\ 0.27 Leetspeak---a genuinely coarse probe on that model, consistent with its being the lone conditional counter-cell in \S\ref{sec:gate}.) On the Arabizi and ITRANS pairs the English-anchored concept is near-absent even natively, because those natives are not English; there the measure indexes cross-lingual latent representation, and we lean on the behavioral and causal arms.
+
+\begin{table}[t]
+\centering
+\small
+\begin{tabular}{lccc}
+\toprule
+Model & Arabizi & ITRANS & Leet \\
+\midrule
+Qwen3-4B & 0.010 & 0.005 & 0.055 \\
+Llama-3.1-8B & 0.095 & 0.195 & 0.265 \\
+Qwen3-8B & 0.015 & 0.060 & 0.040 \\
+\bottomrule
+\end{tabular}
+\caption{\cpresent{} (fraction of 200). ITRANS column: AdvBench-derived Hindi (see Limitations).}
+\label{tab:concept}
+\end{table}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{fig2_concept_present_regimes.pdf}
+\caption{\cpresent{} across the three regimes: low everywhere, scaling with decode capability, not script identity.}
+\label{fig:concept}
+\end{figure}
+
+\subsection{Causal direction intervention: the romanized direction is inert}
+\label{sec:ablation}
+\emph{Prediction.} If no harmful concept is built (\S\ref{sec:lens}), the romanized refusal direction should carry no causal signal; under script-anchoring it should remain potent. The native direction is potent (up to 94\%) and the romanized direction is inert (reverse $\leq 6$\%) in 8/10 models on the Arabic$\leftrightarrow$Arabizi pair (Table~\ref{tab:abl}, Figure~\ref{fig:abl})---the causal counterpart of \S\ref{sec:lens}: no romanized harm-signal for a direction to carry. We report the reverse cell because the forward cell has near-zero room (the romanized prompt already complies at baseline). The two exceptions (Gemma-2-2B-it, Llama-3.2-3B-Instruct) are the weakest models, where even the native direction barely flips (30--35\%), so their small contrast reflects weak overall causality, not a preserved romanized signal. The romanized direction \emph{is} potent on the Leetspeak pair for several models (reverse ablation removes native refusal: Gemma-2-9B-it 65\%, Qwen2.5-7B 82\%, Qwen3-4B 92\%), but we read this cautiously rather than as a clean comprehension effect: Leetspeak is a within-English substitution, so the Leetspeak-extracted direction largely coincides with the English direction \emph{whether or not} the model decodes the spelling---indeed Qwen3-4B and Qwen2.5-7B post high reverse while \emph{failing} the Leetspeak comprehension gate (36\% and 44\%; Table~\ref{tab:comp}). The one Leetspeak cell where a potent romanized direction coincides with genuine comprehension is Gemma-2-9B-it (92\%). The clean comprehension-linked residual anchoring is therefore the SAE-feature result (\S\ref{sec:anchor}), not the Leetspeak ablation; the latter is a live but confounded instance of ``orthogonality $\neq$ independence.''
+
+\begin{table}[t]
+\centering
+\small
+\begin{tabular}{lcccc}
+\toprule
+Model & $L$ & nat\arr nat & rom\arr nat & contrast \\
+\midrule
+Gemma-3-1B-it & 10 & 67.7 & 1.1 & +66.7 \\
+Gemma-2-2B-it & 4 & 30.2 & 21.2 & +9.0 \\
+Gemma-3-4B-it & 16 & 81.9 & 5.0 & +76.9 \\
+Gemma-2-9B-it & 19 & 84.3 & 0.5 & +83.8 \\
+Gemma-3-27B-it & 30 & 92.5 & 0.0 & +92.5 \\
+Qwen3-4B & 18 & 92.2 & 0.5 & +91.7 \\
+Qwen3-8B & 15 & 87.3 & 1.1 & +86.2 \\
+Qwen2.5-7B & 14 & 93.9 & 1.5 & +92.4 \\
+Llama-3.1-8B & 11 & 90.1 & 1.6 & +88.5 \\
+Llama-3.2-3B & 18 & 34.9 & 9.6 & +25.3 \\
+\bottomrule
+\end{tabular}
+\caption{Ablation arm of the causal direction intervention: conditional flip rate (\%) on the Arabic$\leftrightarrow$Arabizi pair, native-direction (nat\arr nat) vs.\ romanized-direction (rom\arr nat) on the native prompt (reverse, full room). The romanized direction is inert (rom\arr nat $\leq 6$) in 8/10 models; the two exceptions (Gemma-2-2B-it, Llama-3.2-3B) are the weakest models, where even the native direction barely flips. Contrast in pp.}
+\label{tab:abl}
+\end{table}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{fig4_h2_direction_contrast.pdf}
+\caption{Native$-$romanized direction potency contrast across ten models $\times$ three tiers (pp); large positive $=$ romanized direction inert. The Arabizi column is Table~\ref{tab:abl}: red (inert) in 8/10. The pale Leetspeak cells mark where the romanized direction still carries causal signal (\S\ref{sec:ablation}, \S\ref{sec:anchor}).}
+\label{fig:abl}
+\end{figure}
+
+\subsection{Activation patching is non-specific}
+\label{sec:patch}
+\emph{Prediction.} If safety is starved of input rather than script-blind, patching the native residual into the romanized run should recover refusal \emph{non-specifically} (matched $\approx$ random); a clean parse-bottleneck or genuine script-anchoring would instead give matched-specific recovery. This is a screen, not a localizer (\S\ref{sec:implications}); we report it as the pre-registered null it returned. Patching is non-specific in \textbf{all 30 cells} (Table~\ref{tab:patch}, Figure~\ref{fig:patch}): an unrelated harmful native residual restores refusal as well as the matched one, the two curves track across layers, and every matched$-$random gap stays inside the pre-registered ${<}25$\pp{} reject band (set at ${\approx}2\times$ the $n{=}50$ control-arm half-width; observed at most ${+}17$\pp, most under ${+}10$). Combined with the absent concept (\S\ref{sec:lens}), position $-1$ carries a \emph{generic decision state} that transfers across harmful prompts, not script-specific content---corroborated by a benign residual sometimes inducing refusal (up to 22\% on Gemma, still far below matched), which a content-specific mechanism would never do. Neither folk account survives: not a parse-bottleneck (which predicts matched-specific recovery), not script-anchoring (which needs the concept represented).
+
+\begin{table}[t]
+\centering
+\small
+\begin{tabular}{lcccccc}
+\toprule
+Model & $L$ & m & r & m$-$r & self & ben \\
+\midrule
+Gemma-3-1B-it & 12 & 88.9 & 72.2 & +16.7 & 0.0 & 22.2 \\
+Gemma-2-2B-it & 19 & 73.0 & 64.9 & +8.1 & 0.0 & 21.6 \\
+Gemma-3-4B-it & 19 & 87.5 & 84.4 & +3.1 & 0.0 & 0.0 \\
+Gemma-2-9B-it & 29 & 96.9 & 93.8 & +3.1 & 0.0 & 21.9 \\
+Gemma-3-27B-it & 34 & 92.3 & 100.0 & $-7.7$ & 0.0 & 0.0 \\
+Qwen3-4B & 29 & 32.0 & 26.0 & +6.0 & 0.0 & 0.0 \\
+Qwen3-8B & 19 & 59.6 & 57.4 & +2.1 & 0.0 & 0.0 \\
+Qwen2.5-7B & 22 & 31.0 & 16.7 & +14.3 & 0.0 & 0.0 \\
+Llama-3.1-8B & 24 & 84.0 & 82.0 & +2.0 & 0.0 & 0.0 \\
+Llama-3.2-3B & 19 & 61.0 & 63.4 & $-2.4$ & 0.0 & 7.3 \\
+\bottomrule
+\end{tabular}
+\caption{Activation patching at peak layer (Arabic$\leftrightarrow$Arabizi): matched (m), random (r), self, benign (ben) recovery \%; m$-$r in pp. Every m$-$r stays inside the pre-registered reject band ($<25$\pp), max $+16.7$; self-patch $\approx 0$ throughout.}
+\label{tab:patch}
+\end{table}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{fig3_patching_nonspecific.pdf}
+\caption{Cross-script activation patching is non-specific in all 30 cells (3 tiers $\times$ 10 models): matched $-$ random stays inside the reject band ($<25$\pp), max $+16.7$.}
+\label{fig:patch}
+\end{figure}
+
+\subsection{Feature fragmentation tracks comprehension, not meaning}
+\label{sec:features}
+Top-100 Jaccard overlap (Arabic$\leftrightarrow$Arabizi, 1000-bootstrap, seed 42) is low ($J{=}0.143$--$0.562$), which in isolation reads as anchoring. The calibration ladder reframes it (Table~\ref{tab:ladder}, Figure~\ref{fig:ladder}): (1) the measure \emph{tracks meaning} (paraphrases land on the same features, 0.56--0.74); (2) \emph{script disrupts more than language} (X-lang $>$ Tier A everywhere---harmful-Arabic and harmful-English share more features than harmful-Arabic and harmful-Arabizi, relocating ``specific words'' to the writing system); (3) the fragmentation is \emph{orthographic-general} (Tier B $\approx$ A). But \S\ref{sec:gate} disqualifies most cells: when the input is not parsed, ``different features fire'' is trivial. An honest counter-cell: Gemma-2-9B-it $\times$ ITRANS has low comprehension (32\%; Table~\ref{tab:comp}) yet high overlap ($J{=}0.942$)---a known Gemma-on-Hindi SAE degeneracy (basis artifact). The robust evidence is the convergence of \S\ref{sec:gate}--\ref{sec:patch}, not the feature scatter alone.
+
+\begin{table}[t]
+\centering
+\small
+\begin{tabular}{lcccc}
+\toprule
+Model & D & X-lang & A & B \\
+ & (words) & (lang.) & (script) & (benign) \\
+\midrule
+Gemma-2-9B-it & 0.56 & 0.64 & 0.19 & 0.25 \\
+Gemma-3-1B-it & 0.71 & 0.44 & 0.33 & 0.18 \\
+Llama-3.1-8B & 0.63 & 0.36 & 0.29 & 0.26 \\
+Qwen2.5-7B & 0.72 & 0.52 & 0.33 & 0.35 \\
+Qwen3-4B & 0.74 & 0.58 & 0.28 & 0.35 \\
+\bottomrule
+\end{tabular}
+\caption{Calibration ladder: top-100 Jaccard, one variable moved.}
+\label{tab:ladder}
+\end{table}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{fig7_h3_script_vs_language.pdf}
+\caption{Script change (Tier A) fragments features more than language change (X-lang) on every model.}
+\label{fig:ladder}
+\end{figure}
+
+\subsection{Three clean anchoring cells}
+\label{sec:anchor}
+Exactly three cells combine high comprehension with low overlap, and all three are Leetspeak: Gemma-2-9B-it (comprehension 92\%, $J{=}0.258$), Gemma-3-27B-it (86\%, $J{=}0.242$), and Llama-3.2-3B-Instruct (88\%, $J{=}0.176$), each CI-decisive. These models demonstrably read the adversarial spelling, yet the harmful concept is carried by a partly different feature set---genuine orthographic re-basing \emph{under comprehension}, the residual real form of anchoring, now replicating across three model families on the most decodable orthography. The coincidence of a potent romanized direction \emph{with} genuine comprehension is clean in only one of the three (Gemma-2-9B-it, whose Leetspeak direction is non-inert; \S\ref{sec:ablation}); for Gemma-3-27B-it and Llama-3.2-3B-Instruct the anchoring rests on the feature-overlap evidence alone, as their Leetspeak directions are weak or inert. Narrow (all Leetspeak, the most decodable orthography) but clean, and no longer a single anecdote.
+
+\subsection{Scale dose-response: 27B sharpens the mechanism}
+\label{sec:scale}
+The strongest behavioral evidence comes from scale---a behavioral extension consistent with the proposed mechanism, not a substitute for the mechanistic battery. Comprehension-gating predicts that as a model grows and reads romanization better, romanized refusal returns---and returns \emph{first} where decoding is easiest. Gemma-3-27B-it (behavioral read-out, $n{=}50$) is consistent with both axes (Figure~\ref{fig:scale}). Ordered by Arabizi decode ability (Table~\ref{tab:comp}), harmful-Arabizi refusal rises monotonically and culminates at the largest model: Qwen3-4B 4\% (comprehension 20\%), Gemma-2-9B-it 44\% (54\%), Gemma-3-1B-it 62\% (70\%), Gemma-3-27B-it 72\% (76\%). Note the ordering tracks decode ability, not parameter count---the 1B Gemma out-refuses the 9B exactly where it out-reads it (individual adjacent steps are within sampling noise at $n{=}50$; the end-to-end trend and the comprehension-refusal coupling are the claim). Within 27B, by decode difficulty, it refuses the decodable scripts (Leetspeak 80\%, Arabizi 72\%, Devanagari 80\%) but ITRANS alone stays broken (refusal 6\%, 76\% off-topic---the signature of comprehension failure), because it is the hardest to decode. The largest model recovers refusal exactly where it can now read and remains bypassed only where it still cannot---the sharpest available statement of comprehension-gating. Its geometry follows the Gemma-3 family (moderately aligned direction, $\cos(\text{ara},\text{arz}){\approx}0.71$ at the causal layer; native harmful/benign silhouette negative, $-0.13$) and its Tier-A feature overlap is indeterminate ($J{=}0.43$).
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{fig6_scale_dose_response.pdf}
+\caption{Scale dose-response. Left: harmful-Arabizi refusal rises across the decode-ability range (4\%${\rightarrow}$72\%). Right: within Gemma-3-27B-it, refusal returns for decodable scripts but ITRANS stays bypassed (76\% off-topic).}
+\label{fig:scale}
+\end{figure}
+
+\section{Synthesis: a comprehension-gating, two-route model}
+The four measurements converge:
+\begin{quote}
+\textbf{Native} $\rightarrow$ decoded $\rightarrow$ harmful-concept built $\rightarrow$ direction causal $\rightarrow$ semantic (``deep'') refusal.
+
+\textbf{Romanized} $\rightarrow$ (mostly) not decoded $\rightarrow$ no concept $\rightarrow$ direction inert, patching non-specific $\rightarrow$ at most a shallow ``looks-off'' caution firing early and unspecifically.
+\end{quote}
+A romanization jailbreak works by dropping the prompt out of the deep route without reliably triggering the shallow one; safety is not bypassed, it is \emph{starved}. This collapses ``naturalistic vs.\ deterministic vs.\ within-language'' into one \emph{decode-difficulty continuum} (Leetspeak $\rightarrow$ Arabizi $\rightarrow$ ITRANS), and that one axis predicts the whole pattern---including the three clean anchoring cells and the 27B scale dose-response. The decisive control is the deterministic transliteration: ITRANS cannot be leakage, yet the concept is still absent for weak comprehenders and only partially present for stronger ones (Figure~\ref{fig:dose}).
+
+The partial-comprehension regime deserves explicit statement. Cells such as Gemma-3-1B-it $\times$ Arabizi (70\% comprehension, 62\% refusal) are mixtures: some prompts are decoded and refused via the deep route, others fall through undecoded. Our claim concerns the dominant mass, not a binary; the per-item conditional analysis---refusal rate \emph{within} the judged-comprehended subset---resolves the mixture directly (Table~\ref{tab:conditional}): the comprehended fraction refuses at native levels, and the bypass lives almost entirely in the non-comprehended fraction. Relatedly, ``safety is intact'' is established where we can see it act: on native prompts, in the per-item conditional analysis (\S\ref{sec:gate}), and in the cells where refusal returns together with comprehension (\S\ref{sec:anchor}, \S\ref{sec:scale}). For the remaining cells our claim is the weaker but sufficient one that safety was never given an input to act on. What we establish is the safety-relevant half---where comprehension fails, no refusal machinery engages; the complementary claim that the \emph{same} native refusal direction mediates refusal on comprehended-romanized items would follow from a direction-transfer test restricted to the comprehended subset, which we leave to future work.
+
+We stress that the mechanistic weight of the argument rests on the \emph{convergence} of the four measurements and on the causal-intervention asymmetry (native direction potent, romanized direction inert under both ablation and addition), not on the single-position patching test in isolation: the patching null is corroborative, and---consistent with our own methodological caution (\S\ref{sec:implications})---single-position patching is underpowered to localize a diffuse mechanism. Likewise, the 27B result is behavioral dose-response evidence for the mechanism's scaling, not a mechanistic claim about 27B internals.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{fig5_dose_response_comprehension.pdf}
+\caption{Concept representation / anchoring signal scales with comprehension---the dose-response underlying the single decode-difficulty axis.}
+\label{fig:dose}
+\end{figure}
+
+\section{Implications}
+\label{sec:implications}
+Cross-script jailbreaks are largely a \emph{capability-conditioned safety failure}. If romanized refusal is mostly the shallow route, the attack is substantially a comprehension failure, not an alignment failure---flipping the remediation intuition: a decode-then-refuse pipeline and orthography-diverse safety fine-tuning target the bottleneck; script-specific surface filters do not.
+
+\paragraph{A testable prediction.} As models decode adversarial orthography better, the deep route becomes available---but safety training rarely covers romanized harm. We therefore predict that improving comprehension can \emph{increase} harmful compliance on romanized prompts unless safety training is made orthography-diverse, and that safety may be non-monotonic in comprehension; the 27B scale dose-response is the first supporting evidence. This is concretely testable on existing size pairs (Qwen 4B\arr 8B, Gemma 1B\arr 9B/27B) by regressing harm-aware compliance on romanization comprehension.
+
+\paragraph{Frontier models.} Our claim is mechanistic, not scale-bounded: comprehension-gating predicts the \emph{same} two-route structure in frontier models, but with the comprehension bottleneck pushed much later because their decoding of adversarial orthography is far stronger. The prediction is therefore not ``frontier models are safe on romanized harm'' but the opposite---where a frontier model genuinely decodes Arabizi or Leetspeak, the deep route is available and any residual bypass is a true alignment gap, not a reading failure. This reconciles our open-model findings with reports of fluent-but-unsafe frontier behavior \citep{alghanim2024,yong2023} and makes our within-language Leetspeak cell the right open-model analogue of that regime.
+
+\paragraph{Methodological caution.} Behavioral and length-based metrics mis-certify comprehension; a comprehension gate scoring \emph{engagement} is necessary before attributing a ``bypass'' to alignment. Single-position patching is underpowered to localize a diffuse mechanism, and a non-specific recovery curve is easily over-read as support for whichever account the analyst expected.
+
+\section{Conclusion}
+Across four converging mechanistic measurements on ten open models, refusal is mostly \emph{not} anchored to script. Cross-script refusal failure is better explained as comprehension-gating: romanized harmful prompts are not decoded well enough to build the harmful-concept representation, so safety---intact but downstream---has nothing to act on. The romanized direction is inert, patching recovers refusal non-specifically (30/30 cells across ten models), and refusal when it fires is shallow and early. Genuine anchoring survives cleanly in one cell (Gemma-2-9B-it, where high comprehension, low feature overlap, and a non-inert romanized direction coincide), with weaker feature-only corroboration in two others---all Leetspeak---and the scale dose-response sharpens the mechanism: the largest model recovers refusal precisely where comprehension returns. The actionable consequence is uncomfortable: the failure is tied to a capability the model is actively improving, so cross-script safety must be trained where the deep route now reaches, not patched at the surface. Cross-script jailbreaks are thus not primarily evidence that safety vanishes when scripts change; they reveal a more basic limitation---a model cannot refuse a harmful request it never successfully understands. Improving multilingual safety therefore means improving multilingual comprehension and ensuring that alignment keeps pace with capability.
+
+\section*{Limitations}
+\label{sec:limitations}
+\textbf{Comprehension is LLM-judged---and validated by two further judges.} Convergence with three non-judge measurements mitigates judge bias; we additionally re-score with a blinded second LLM judge (Claude Opus 4.8) and an independent human annotator (native Arabic / fluent English). On the binary comprehension gate, human$\leftrightarrow$judge agreement is strong---Cohen's $\kappa = 0.76$--$0.88$ against the two judges and three-way Fleiss $\kappa = 0.75$--$0.80$ on $n{=}317$ blinded items---so the gate is \emph{not} a single-judge artifact. Claude matches the primary on native and high-comprehension cells (e.g.\ Gemma-2-9B-it $\times$ Leetspeak, 80\% vs.\ 86\%; native cells mean $|\Delta|{=}0.5$\pp) and diverges only conservatively on distorted cells (rating comprehension \emph{lower}), so the single-judge distorted-cell numbers are upper bounds and the reading is, if anything, strengthened. \textbf{The clean anchoring result is three cells, all Leetspeak (the most decodable orthography).} \textbf{SAE/transcoder slice and basis-dependence}: overlap is bounded to the dictionary; the Gemma-on-Hindi degeneracy shows the metric can be artifactual; Qwen uses an MLP-transcoder analogue, not a residual SAE. \textbf{Grid}: the comprehension gate, causal direction intervention, and activation patching span all ten models $\times$ three scripts; the in-depth logit-lens table covers three models (\S\ref{sec:models}); the remaining gap is Gemma-3-27B-it's two romanized SAE-feature (H3) arms (an interrupted compute run), which feed no current figure. \textbf{Statistics}: rates are point estimates at $n{=}50$ (behavior, gate, patching; the patching denominator is the ``room''---items whose romanized baseline complies, leaving refusal free to recover---averaging ${\sim}47$ of 50) and $N{=}200$ (concept lens); Wilson intervals are ${\pm}11$--$14$\pp{} at mid-range for the $n{=}50$ cells, adjacent dose-response steps are within noise, and the scale dose-response is descriptive, not inferential. The per-item conditional analysis (Table~\ref{tab:conditional}) is inferential (Fisher/CMH), but its comprehended subsets can be small for weak decoders (pooled romanized $n$ as low as 19), and its robustness arm relies on a keyword refusal classifier that is blind to Devanagari refusals---hence the ITRANS exclusion there. \textbf{Native-Devanagari comprehension} is itself below the gate for six models, so their ITRANS cells are decode-difficulty evidence only (\S\ref{sec:gate}). \textbf{The ITRANS set is native-reviewed} (AdvBench-derived Hindi, checked by an independent native-Hindi reader); the human \emph{comprehension-judge} annotation is complete for Arabic and English and in progress for Hindi. \textbf{Analysis status}: the behavioral/geometric findings and the comprehension-gating synthesis are post-hoc; the activation-patching test (\S\ref{sec:patch}) was pre-registered and is reported as the null it returned. \textbf{Scope}: three families, 1--27B; frontier models and broader typology are future work.
+
+\section*{Ethics Statement}
+This work studies the mechanism behind a known class of jailbreaks using the public AdvBench benchmark; it introduces no new attack and releases no harmful content beyond what these benchmarks contain. Our finding---that cross-script ``bypasses'' on open models are largely comprehension failures, not alignment failures---is defensive in intent: it argues for decode-then-refuse pipelines and orthography-diverse safety training rather than brittle surface filters. Harmful prompts are handled only as classification inputs. Native-speaker validation of the multilingual corpus is incomplete and disclosed as a limitation.
+
+\section*{Acknowledgments}
+We thank our volunteer reviewer for generously checking the Hindi (Devanagari and ITRANS) portion of the corpus, whose careful native-speaker review of the harmful and benign Hindi prompts substantially improved the quality and reliability of that tier.
+
+\bibliography{custom}
+
+\appendix
+
+\section{Comprehension-gate judge protocol}
+\label{app:judge}
+The judge (Gemini-2.5-flash, temperature 0, \texttt{maxOutputTokens}${=}16$, internal reasoning disabled) receives a fixed system prompt and a per-item user message of the form ``\texttt{REQUEST: \{prompt\}} $\dots$ \texttt{MODEL RESPONSE: \{response\}} $\dots$ \texttt{Label:}''. The system prompt instructs it to decide \emph{only} whether the response engaged with the actual request---``ignore whether the content is harmful or safe''---and to reply with exactly one of four tokens:
+\begin{description}
+\itemsep0.1em
+\item[\textsc{on\_topic}] addresses the specific thing the request asks for (provides, attempts, or directly discusses the requested content).
+\item[\textsc{refusal}] declines or refuses that specific request.
+\item[\textsc{off\_topic}] is about something else, says it cannot read/understand the text, only comments on the encoding/format, transliterates without answering, or asks for clarification.
+\item[\textsc{gibberish}] has no usable content (noise, repetition, empty).
+\end{description}
+The binary gate is $\textsc{engaged}=\textsc{on\_topic}\cup\textsc{refusal}$ and comprehension\,\% $=(\textsc{on\_topic}+\textsc{refusal})/n$. Because engagement is scored independently of safety, a distorted-script response is \textsc{refusal} only when it refuses the \emph{decoded} request; a refusal-shaped reply to a prompt the model did not read is \textsc{off\_topic}. The blinded second judge (Claude Opus 4.8) and the human annotator apply the identical four-label rubric with no access to the primary judge's labels; agreement statistics are in Limitations, and the per-cell agreement panel ships in the dashboard (Appendix~\ref{app:demo}).
+
+\section{\cpresent{} construction}
+\label{app:lens}
+For each AdvBench item, the concept token set is the first-token ids of up to six salient English content words of the harmful source. A shared \texttt{source\_id} anchors the English meaning across all script tiers, so the probe is identical per item regardless of input script (for the native-Hindi Nemotron set there is no English original, so the anchor is empty and the lens self-aborts; the reported ITRANS column uses the AdvBench-derived Hindi set, which has a $200/200$ English anchor). \cpresent{} is scored at the assistant read-out position ($-1$): the concept counts as present if any set token enters the top-$50$ logit-lens decode at any layer (\texttt{concept\_top\_k}${=}50$; the shallower refusal-emergence probe uses top-$10$). The per-layer trajectories underlying the ``equal or earlier'' claim in \S\ref{sec:lens} are in the released results.
+
+\section{Provenance of every number}
+All numbers read live from on-disk results; seed $= 42$ throughout. Behavioral gap: per-model baselines. Comprehension gate: Gemini-2.5-flash judge, 50 prompts/condition, with a blinded Claude Opus 4.8 re-score on a held-out sample. Concept logit lens: position $-1$, $N{=}200$. Activation patching: position $-1$, $n{=}50$ (rooms ${\sim}47$), four controls. Feature overlap: top-100 by mean activation, 1000-bootstrap. Geometry: per-condition cosine/magnitude/silhouette at the causal layer. The Gemma-3-27B-it scale read-out is the $n{=}50$ behavioral classifier (refusal/compliance/off-topic/gibberish). An interactive dashboard renders all of these numbers live from the same result files (Appendix~\ref{app:demo}).
+
+\section{Figure manifest}
+Figures regenerate from results via the figure pipeline. As of submission, all figures---including Figure~\ref{fig:scale} (the scale dose-response, from the completed Gemma-3-27B-it $n{=}50$ behavioral read-out)---are generated from the released result files. The Gemma-3-27B-it mechanistic battery (ablation, patching, judge comprehension) is complete; only its two romanized SAE-feature (H3) control arms remain (an interrupted compute run), and they feed no current figure.
+
+\section{Interactive demo dashboard}
+\label{app:demo}
+The code release ships a self-contained, static dashboard (\texttt{demo/}) that renders every result in this paper across the ten models and the six hypotheses (H1--H6): the behavioral asymmetry, causal direction intervention, feature-overlap ladder, comprehension gate, geometry, and the activation-patching test, plus a model$\times$experiment coverage matrix and a two-judge/human agreement panel. Every number is generated from the on-disk \texttt{results/} tree by \texttt{demo/build\_data.py}---nothing is hand-typed---so the dashboard and the paper cannot drift. It needs no server, GPU, or build step, and it never displays a harmful prompt: only Tier~B benign matched pairs appear in the interactive ``playground,'' while all harmful-set statistics are shown as aggregate numbers.
+
+\paragraph{Running it.} Open the pre-generated page directly, or regenerate the baked data from a full \texttt{results/} tree:
+\begin{quote}
+{\small
+\begin{verbatim}
+# open (offline, no build step):
+open demo/index.html
+# or serve locally:
+python3 -m http.server -d demo
+
+# rebuild baked data after results/:
+python3 demo/build_data.py  # -> data.js
+\end{verbatim}
+}
+\end{quote}
+The shipped \texttt{demo/data.js} is pre-baked, so \texttt{index.html} opens with no \texttt{results/} tree present; regeneration is only needed to pick up new runs.
+
+\end{document}
+
+% ==================================================================
+% CHANGELOG v3 -> v4 (this revision)
+% ==================================================================
+% CONSISTENCY FIXES (blocking):
+%  - Sec 3.2 vs Table 3: lens coverage claim scoped to three models
+%    (TODO left: extend Table 3 to ten rows OR keep scoped wording).
+%  - Sec 5.6 heading "one clean anchoring cell" -> "Three clean
+%    anchoring cells"; Synthesis "lone" -> "three".
+%  - Scale figure caption 2% -> 4% (matches Table 1 / abstract);
+%    TODO to regenerate the figure panel.
+%  - Sec 5.5 stale "52%" for Gemma-2-9B-it x ITRANS -> 32% (Table 2).
+%  - "Llama-3.2-3B-it" -> "Llama-3.2-3B-Instruct" (two places).
+%  - Anchoring-cell set inconsistency (5.3 vs fig4 caption vs 5.6)
+%    flagged with TODO; fig4 caption de-specified pending recompute.
+% SUBSTANTIVE:
+%  - Devanagari confound promoted from one clause to a full paragraph
+%    in 5.1: ITRANS mechanistic claims restricted to models clearing
+%    the native-Devanagari bar; noted the confound itself supports (C).
+%    Echoed in 5.2 and Limitations.
+%  - Benign patching leak (0-22% on Gemma) now interpreted: coarse
+%    decision-state transfer, strengthening non-specificity.
+%  - concept_present defined in Measurements + new Appendix B skeleton.
+%  - Judge rubric added as new Appendix A (5-label scheme); rubric
+%    prompt left as TODO to paste verbatim.
+%  - Gate threshold (>=60%, <=15pp) justified as pre-fixed and
+%    permissive toward (S).
+%  - Wilson-CI magnitudes stated in Table 1/2 captions and Limitations;
+%    dose-response adjacent steps flagged as within noise; 5.7 now
+%    orders models by decode ability and reports comprehension inline.
+%  - Reverse-ablation logic moved into Measurements as a structured
+%    paragraph; patching "screen not localizer" caveat stated up front.
+%  - "Safety is intact" scoped in Synthesis; partial-comprehension
+%    regime (Gemma-3-1B-it 70/62) named with per-item conditional
+%    analysis flagged as future work.
+% PRESENTATION:
+%  - Title shortened. Abstract cut ~350 -> ~210 words.
+%  - Sec 1.4 five-takeaways list merged into Contributions.
+%  - "cloud credit expired" (x3) -> neutral wording (x2, deduplicated).
+%  - De-stylized: "reading is mostly wrong, in an informative way",
+%    "Neither folk account survives", "distorted" -> "romanized", etc.
+% ==================================================================
+% v4.1 addendum: measurement (3) renamed "causal direction intervention"
+%   (umbrella for the ablation AND activation-addition arms), per author
+%   note that both operations are applied to the refusal direction.
+%   "Ablation" retained only where naming the specific arm (Table 4,
+%   fig8 layer-selection criterion). TODO added in Measurements/5.3 to
+%   report the addition-arm numbers.

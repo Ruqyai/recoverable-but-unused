@@ -1,0 +1,38 @@
+{
+  "phase": "phase2_stage1_extract_activations",
+  "model_key": "gemma_3_1b_it",
+  "model_id": "google/gemma-3-1b-it",
+  "n_layers": 26,
+  "hidden_dim": 1152,
+  "model_default_batch_size": 16,
+  "effective_batch_size": 24,
+  "measurement_position": -1,
+  "device": {
+    "device": "mps",
+    "backend": "mps_m2_pro",
+    "dtype": "torch.float16",
+    "batch_size_multiplier": 1.5,
+    "use_device_map_auto": false,
+    "chip_name": "Apple M2 Max",
+    "total_memory_gb": 32.0,
+    "notes": "Apple Silicon MPS detected: Apple M2 Max (32.0 GB unified)"
+  },
+  "run_stamp": "20260626_111703",
+  "run_dir": "/Users/ruqiya/Codeing-repos/Research/BlackboxNLP/comprehension-gated/results/phase2/gemma_3_1b_it/run_20260626_111703",
+  "started_at": "2026-06-26T11:17:03.804054",
+  "args": {
+    "scripts": [
+      "arabic",
+      "arabizi",
+      "devanagari",
+      "itrans",
+      "english",
+      "leetspeak"
+    ],
+    "batch_size": 24,
+    "resume": false,
+    "new_run": true,
+    "prefer_device": null
+  },
+  "notes": "Cross-family small replication per OSF v4 AND primary H3 SAE source. 1B parameters, 26 layers, 1152 hidden dim, Gemma Terms of Use. Gemma Scope V3 SAEs at google/gemma-scope-2-1b-it cover all layers with four widths (16k/64k/256k/1m) and three hook points (resid_post/mlp_out/attn_out). CLT at mwhanna/gemma-scope-2-1b-it is compatible with circuit-tracer."
+}

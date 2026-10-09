@@ -1,0 +1,73 @@
+{
+ "per_model": [
+  {
+   "model": "gemma_2_2b_it",
+   "read_n": 18,
+   "read_refused": 8,
+   "not_read_n": 132,
+   "not_read_refused": 20
+  },
+  {
+   "model": "gemma_2_9b_it",
+   "read_n": 145,
+   "read_refused": 82,
+   "not_read_n": 5,
+   "not_read_refused": 1
+  },
+  {
+   "model": "gemma_3_1b_it",
+   "read_n": 16,
+   "read_refused": 8,
+   "not_read_n": 134,
+   "not_read_refused": 82
+  },
+  {
+   "model": "gemma_3_4b_it",
+   "read_n": 125,
+   "read_refused": 42,
+   "not_read_n": 25,
+   "not_read_refused": 3
+  },
+  {
+   "model": "llama_3_1_8b_Instruct",
+   "read_n": 61,
+   "read_refused": 14,
+   "not_read_n": 89,
+   "not_read_refused": 14
+  },
+  {
+   "model": "llama_3_2_3b_Instruct",
+   "read_n": 45,
+   "read_refused": 17,
+   "not_read_n": 105,
+   "not_read_refused": 43
+  },
+  {
+   "model": "qwen2_5_7b_Instruct",
+   "read_n": 134,
+   "read_refused": 23,
+   "not_read_n": 16,
+   "not_read_refused": 0
+  },
+  {
+   "model": "qwen3_4b",
+   "read_n": 117,
+   "read_refused": 16,
+   "not_read_n": 33,
+   "not_read_refused": 2
+  },
+  {
+   "model": "qwen3_8b",
+   "read_n": 129,
+   "read_refused": 24,
+   "not_read_n": 21,
+   "not_read_refused": 1
+  }
+ ],
+ "pooled": {
+  "read_n": 790,
+  "read_refused": 234,
+  "not_read_n": 560,
+  "not_read_refused": 166
+ }
+}

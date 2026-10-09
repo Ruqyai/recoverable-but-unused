@@ -1,0 +1,38 @@
+{
+  "phase": "phase2_stage1_extract_activations",
+  "model_key": "gemma_2_2b_it",
+  "model_id": "google/gemma-2-2b-it",
+  "n_layers": 26,
+  "hidden_dim": 2304,
+  "model_default_batch_size": 8,
+  "effective_batch_size": 12,
+  "measurement_position": -1,
+  "device": {
+    "device": "mps",
+    "backend": "mps_m2_pro",
+    "dtype": "torch.float16",
+    "batch_size_multiplier": 1.5,
+    "use_device_map_auto": false,
+    "chip_name": "Apple M2 Max",
+    "total_memory_gb": 32.0,
+    "notes": "Apple Silicon MPS detected: Apple M2 Max (32.0 GB unified)"
+  },
+  "run_stamp": "20260626_120532",
+  "run_dir": "/Users/ruqiya/Codeing-repos/Research/BlackboxNLP/comprehension-gated/results/phase2/gemma_2_2b_it/run_20260626_120532",
+  "started_at": "2026-06-26T12:05:32.200296",
+  "args": {
+    "scripts": [
+      "arabic",
+      "arabizi",
+      "devanagari",
+      "itrans",
+      "english",
+      "leetspeak"
+    ],
+    "batch_size": 12,
+    "resume": false,
+    "new_run": true,
+    "prefer_device": null
+  },
+  "notes": "OPTIONAL exploratory model (OSF v8 optional set, post-deposit; NO confirmatory weight, enters no confirmation rule). 2B params, 26 layers, 2304 hidden dim, Gemma Terms of Use. Generation-controlled scale pair with gemma-2-9b-it (same Gemma-2 generation, 2B vs 9B) to isolate size from generation. H3 via google/gemma-scope-2b-pt-res \u2014 but those SAEs are PT-trained (base gemma-2-2b), so any IT H3 result carries a base-vs-IT caveat (parallel to the Qwen3-8B-Base SAE caveat in the Phase 5 README). Promotion to a confirmatory rule requires an OSF amendment."
+}

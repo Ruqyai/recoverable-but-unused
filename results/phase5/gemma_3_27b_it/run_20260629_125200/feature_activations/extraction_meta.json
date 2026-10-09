@@ -1,0 +1,29 @@
+{
+  "phase": "phase5_stage2_extract_features",
+  "model_key": "gemma_3_27b_it",
+  "layer": 31,
+  "sae_release": "gemma-scope-2-27b-it-res",
+  "sae_id": "layer_31_width_16k_l0_big",
+  "kind": "sae",
+  "scripts": [
+    "arabic",
+    "arabizi",
+    "devanagari",
+    "itrans",
+    "english",
+    "leetspeak"
+  ],
+  "include_benign": true,
+  "batch_size": 4,
+  "device": {
+    "device": "cuda",
+    "backend": "cuda",
+    "dtype": "torch.bfloat16",
+    "batch_size_multiplier": 2.0,
+    "use_device_map_auto": true,
+    "chip_name": "NVIDIA A100-SXM4-80GB",
+    "total_memory_gb": 79.2,
+    "notes": "CUDA GPU detected: NVIDIA A100-SXM4-80GB (79.2 GB)"
+  },
+  "completed_at": "2026-06-29T12:54:17.719245"
+}

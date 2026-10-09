@@ -1,0 +1,29 @@
+{
+  "model_id": "meta-llama/Llama-3.1-8B-Instruct",
+  "model_key": "llama_3_1_8b_Instruct",
+  "run_stamp": "20260628_155722",
+  "test_date": "2026-06-28T15:57:22.221845",
+  "tiers": [
+    "tier_a",
+    "tier_c",
+    "tier_e"
+  ],
+  "n_prompts": 50,
+  "use_system_prompt": false,
+  "system_prompt_variant": null,
+  "enable_thinking": "auto",
+  "enable_thinking_effective": "OFF",
+  "max_new_tokens": null,
+  "prompt_range": null,
+  "input_files": {
+    "arabizi": null,
+    "devanagari": null,
+    "itrans": null,
+    "english": null,
+    "leetspeak": null
+  },
+  "think_status_summary": {
+    "no_think": 15
+  },
+  "flat_run_dir": "/Users/ruqiya/Codeing-repos/Research/BlackboxNLP/comprehension-gated/results/phase4_diagnostic/run_20260628_155722"
+}

@@ -1,0 +1,23 @@
+{
+  "test_run_timestamp": "2026-06-26T14:29:17.371983",
+  "test_date": "2026-06-26",
+  "models_tested": [
+    "meta-llama/Llama-3.2-3B-Instruct"
+  ],
+  "model_results": {
+    "meta-llama/Llama-3.2-3B-Instruct": {
+      "coherent": 15,
+      "incoherent": 0,
+      "refusals": 3,
+      "compliance": 6,
+      "average_score": 0.9464,
+      "min_score": 0.896,
+      "max_score": 0.95,
+      "score_distribution": {
+        "compliance": 6,
+        "refusal": 3,
+        "english_response": 6
+      }
+    }
+  }
+}

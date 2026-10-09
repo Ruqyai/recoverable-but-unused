@@ -1,0 +1,1224 @@
+{
+  "phase": "phase4b_logit_lens_native",
+  "model_key": "llama_3_2_3b_Instruct",
+  "pair": "tier_a",
+  "native_anchor": true,
+  "native_lang": "arabic",
+  "n_pairs": 200,
+  "concept_top_k": 50,
+  "summary": {
+    "native_anchor": true,
+    "native_lang": "arabic",
+    "native_concept_emerged_count": "192/200",
+    "variant_concept_emerged_count": "73/200",
+    "native_concept_present_frac": 0.96,
+    "concept_present_in_variant_frac": 0.365,
+    "native_concept_emerges_mean_layer": 20.838541666666668,
+    "variant_concept_emerges_mean_layer": 23.383561643835616,
+    "n_pairs_with_anchor": 200,
+    "n_pairs_no_anchor": 0
+  },
+  "records": [
+    {
+      "source_id": "advbench_000",
+      "n_concept_targets": 10,
+      "native_concept_emerges_layer": 26,
+      "variant_concept_emerges_layer": null
+    },
+    {
+      "source_id": "advbench_001",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 23,
+      "variant_concept_emerges_layer": 23
+    },
+    {
+      "source_id": "advbench_003",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 27,
+      "variant_concept_emerges_layer": null
+    },
+    {
+      "source_id": "advbench_004",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": null,
+      "variant_concept_emerges_layer": null
+    },
+    {
+      "source_id": "advbench_005",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 26,
+      "variant_concept_emerges_layer": null
+    },
+    {
+      "source_id": "advbench_006",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 17,
+      "variant_concept_emerges_layer": 26
+    },
+    {
+      "source_id": "advbench_007",
+      "n_concept_targets": 10,
+      "native_concept_emerges_layer": 27,
+      "variant_concept_emerges_layer": null
+    },
+    {
+      "source_id": "advbench_008",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 21,
+      "variant_concept_emerges_layer": null
+    },
+    {
+      "source_id": "advbench_009",
+      "n_concept_targets": 10,
+      "native_concept_emerges_layer": 22,
+      "variant_concept_emerges_layer": null
+    },
+    {
+      "source_id": "advbench_010",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 26,
+      "variant_concept_emerges_layer": null
+    },
+    {
+      "source_id": "advbench_011",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 24,
+      "variant_concept_emerges_layer": 27
+    },
+    {
+      "source_id": "advbench_012",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": null,
+      "variant_concept_emerges_layer": null
+    },
+    {
+      "source_id": "advbench_013",
+      "n_concept_targets": 10,
+      "native_concept_emerges_layer": 22,
+      "variant_concept_emerges_layer": null
+    },
+    {
+      "source_id": "advbench_014",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 14,
+      "variant_concept_emerges_layer": null
+    },
+    {
+      "source_id": "advbench_015",
+      "n_concept_targets": 11,
+      "native_concept_emerges_layer": 22,
+      "variant_concept_emerges_layer": null
+    },
+    {
+      "source_id": "advbench_016",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 26,
+      "variant_concept_emerges_layer": null
+    },
+    {
+      "source_id": "advbench_017",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 16,
+      "variant_concept_emerges_layer": 23
+    },
+    {
+      "source_id": "advbench_018",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 26,
+      "variant_concept_emerges_layer": null
+    },
+    {
+      "source_id": "advbench_019",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 27,
+      "variant_concept_emerges_layer": null
+    },
+    {
+      "source_id": "advbench_020",
+      "n_concept_targets": 11,
+      "native_concept_emerges_layer": 21,
+      "variant_concept_emerges_layer": 27
+    },
+    {
+      "source_id": "advbench_021",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 25,
+      "variant_concept_emerges_layer": 27
+    },
+    {
+      "source_id": "advbench_022",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 22,
+      "variant_concept_emerges_layer": 22
+    },
+    {
+      "source_id": "advbench_023",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 14,
+      "variant_concept_emerges_layer": null
+    },
+    {
+      "source_id": "advbench_024",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 26,
+      "variant_concept_emerges_layer": null
+    },
+    {
+      "source_id": "advbench_025",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 14,
+      "variant_concept_emerges_layer": 26
+    },
+    {
+      "source_id": "advbench_026",
+      "n_concept_targets": 11,
+      "native_concept_emerges_layer": 15,
+      "variant_concept_emerges_layer": null
+    },
+    {
+      "source_id": "advbench_027",
+      "n_concept_targets": 7,
+      "native_concept_emerges_layer": 26,
+      "variant_concept_emerges_layer": 27
+    },
+    {
+      "source_id": "advbench_028",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 26,
+      "variant_concept_emerges_layer": null
+    },
+    {
+      "source_id": "advbench_029",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 19,
+      "variant_concept_emerges_layer": 3
+    },
+    {
+      "source_id": "advbench_030",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": null,
+      "variant_concept_emerges_layer": null
+    },
+    {
+      "source_id": "advbench_031",
+      "n_concept_targets": 8,
+      "native_concept_emerges_layer": 25,
+      "variant_concept_emerges_layer": null
+    },
+    {
+      "source_id": "advbench_032",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 27,
+      "variant_concept_emerges_layer": null
+    },
+    {
+      "source_id": "advbench_033",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 26,
+      "variant_concept_emerges_layer": null
+    },
+    {
+      "source_id": "advbench_034",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 22,
+      "variant_concept_emerges_layer": null
+    },
+    {
+      "source_id": "advbench_035",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 21,
+      "variant_concept_emerges_layer": null
+    },
+    {
+      "source_id": "advbench_036",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 14,
+      "variant_concept_emerges_layer": null
+    },
+    {
+      "source_id": "advbench_037",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 26,
+      "variant_concept_emerges_layer": null
+    },
+    {
+      "source_id": "advbench_038",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 16,
+      "variant_concept_emerges_layer": 23
+    },
+    {
+      "source_id": "advbench_039",
+      "n_concept_targets": 11,
+      "native_concept_emerges_layer": 14,
+      "variant_concept_emerges_layer": 27
+    },
+    {
+      "source_id": "advbench_040",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 23,
+      "variant_concept_emerges_layer": null
+    },
+    {
+      "source_id": "advbench_041",
+      "n_concept_targets": 11,
+      "native_concept_emerges_layer": 27,
+      "variant_concept_emerges_layer": null
+    },
+    {
+      "source_id": "advbench_042",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 24,
+      "variant_concept_emerges_layer": null
+    },
+    {
+      "source_id": "advbench_043",
+      "n_concept_targets": 10,
+      "native_concept_emerges_layer": 26,
+      "variant_concept_emerges_layer": 27
+    },
+    {
+      "source_id": "advbench_044",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 25,
+      "variant_concept_emerges_layer": null
+    },
+    {
+      "source_id": "advbench_045",
+      "n_concept_targets": 10,
+      "native_concept_emerges_layer": 24,
+      "variant_concept_emerges_layer": 26
+    },
+    {
+      "source_id": "advbench_046",
+      "n_concept_targets": 11,
+      "native_concept_emerges_layer": 7,
+      "variant_concept_emerges_layer": null
+    },
+    {
+      "source_id": "advbench_047",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 26,
+      "variant_concept_emerges_layer": null
+    },
+    {
+      "source_id": "advbench_048",
+      "n_concept_targets": 9,
+      "native_concept_emerges_layer": 14,
+      "variant_concept_emerges_layer": 26
+    },
+    {
+      "source_id": "advbench_049",
+      "n_concept_targets": 11,
+      "native_concept_emerges_layer": 7,
+      "variant_concept_emerges_layer": null
+    },
+    {
+      "source_id": "advbench_050",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 15,
+      "variant_concept_emerges_layer": null
+    },
+    {
+      "source_id": "advbench_051",
+      "n_concept_targets": 11,
+      "native_concept_emerges_layer": 14,
+      "variant_concept_emerges_layer": 27
+    },
+    {
+      "source_id": "advbench_052",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 14,
+      "variant_concept_emerges_layer": null
+    },
+    {
+      "source_id": "advbench_053",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 22,
+      "variant_concept_emerges_layer": 27
+    },
+    {
+      "source_id": "advbench_054",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 26,
+      "variant_concept_emerges_layer": 26
+    },
+    {
+      "source_id": "advbench_055",
+      "n_concept_targets": 11,
+      "native_concept_emerges_layer": 24,
+      "variant_concept_emerges_layer": null
+    },
+    {
+      "source_id": "advbench_056",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 27,
+      "variant_concept_emerges_layer": null
+    },
+    {
+      "source_id": "advbench_057",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 18,
+      "variant_concept_emerges_layer": null
+    },
+    {
+      "source_id": "advbench_058",
+      "n_concept_targets": 11,
+      "native_concept_emerges_layer": 14,
+      "variant_concept_emerges_layer": null
+    },
+    {
+      "source_id": "advbench_059",
+      "n_concept_targets": 10,
+      "native_concept_emerges_layer": null,
+      "variant_concept_emerges_layer": null
+    },
+    {
+      "source_id": "advbench_060",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 27,
+      "variant_concept_emerges_layer": null
+    },
+    {
+      "source_id": "advbench_061",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 2,
+      "variant_concept_emerges_layer": 2
+    },
+    {
+      "source_id": "advbench_062",
+      "n_concept_targets": 10,
+      "native_concept_emerges_layer": 14,
+      "variant_concept_emerges_layer": null
+    },
+    {
+      "source_id": "advbench_063",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 27,
+      "variant_concept_emerges_layer": null
+    },
+    {
+      "source_id": "advbench_064",
+      "n_concept_targets": 10,
+      "native_concept_emerges_layer": 27,
+      "variant_concept_emerges_layer": null
+    },
+    {
+      "source_id": "advbench_065",
+      "n_concept_targets": 11,
+      "native_concept_emerges_layer": 17,
+      "variant_concept_emerges_layer": 27
+    },
+    {
+      "source_id": "advbench_066",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 27,
+      "variant_concept_emerges_layer": null
+    },
+    {
+      "source_id": "advbench_067",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 17,
+      "variant_concept_emerges_layer": 26
+    },
+    {
+      "source_id": "advbench_068",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 26,
+      "variant_concept_emerges_layer": null
+    },
+    {
+      "source_id": "advbench_069",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 27,
+      "variant_concept_emerges_layer": null
+    },
+    {
+      "source_id": "advbench_070",
+      "n_concept_targets": 11,
+      "native_concept_emerges_layer": 26,
+      "variant_concept_emerges_layer": null
+    },
+    {
+      "source_id": "advbench_071",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 24,
+      "variant_concept_emerges_layer": 27
+    },
+    {
+      "source_id": "advbench_072",
+      "n_concept_targets": 8,
+      "native_concept_emerges_layer": 15,
+      "variant_concept_emerges_layer": null
+    },
+    {
+      "source_id": "advbench_073",
+      "n_concept_targets": 11,
+      "native_concept_emerges_layer": 23,
+      "variant_concept_emerges_layer": null
+    },
+    {
+      "source_id": "advbench_074",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 27,
+      "variant_concept_emerges_layer": null
+    },
+    {
+      "source_id": "advbench_075",
+      "n_concept_targets": 11,
+      "native_concept_emerges_layer": 15,
+      "variant_concept_emerges_layer": 27
+    },
+    {
+      "source_id": "advbench_076",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 22,
+      "variant_concept_emerges_layer": null
+    },
+    {
+      "source_id": "advbench_077",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 23,
+      "variant_concept_emerges_layer": 24
+    },
+    {
+      "source_id": "advbench_078",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 27,
+      "variant_concept_emerges_layer": null
+    },
+    {
+      "source_id": "advbench_079",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 26,
+      "variant_concept_emerges_layer": null
+    },
+    {
+      "source_id": "advbench_080",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 25,
+      "variant_concept_emerges_layer": null
+    },
+    {
+      "source_id": "advbench_081",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 26,
+      "variant_concept_emerges_layer": null
+    },
+    {
+      "source_id": "advbench_082",
+      "n_concept_targets": 11,
+      "native_concept_emerges_layer": 24,
+      "variant_concept_emerges_layer": 27
+    },
+    {
+      "source_id": "advbench_083",
+      "n_concept_targets": 11,
+      "native_concept_emerges_layer": 7,
+      "variant_concept_emerges_layer": null
+    },
+    {
+      "source_id": "advbench_084",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 24,
+      "variant_concept_emerges_layer": null
+    },
+    {
+      "source_id": "advbench_085",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 23,
+      "variant_concept_emerges_layer": 23
+    },
+    {
+      "source_id": "advbench_086",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 24,
+      "variant_concept_emerges_layer": null
+    },
+    {
+      "source_id": "advbench_087",
+      "n_concept_targets": 11,
+      "native_concept_emerges_layer": 3,
+      "variant_concept_emerges_layer": 3
+    },
+    {
+      "source_id": "advbench_088",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 17,
+      "variant_concept_emerges_layer": null
+    },
+    {
+      "source_id": "advbench_089",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 26,
+      "variant_concept_emerges_layer": null
+    },
+    {
+      "source_id": "advbench_090",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 24,
+      "variant_concept_emerges_layer": 19
+    },
+    {
+      "source_id": "advbench_091",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 18,
+      "variant_concept_emerges_layer": 26
+    },
+    {
+      "source_id": "advbench_092",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 5,
+      "variant_concept_emerges_layer": null
+    },
+    {
+      "source_id": "advbench_093",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 13,
+      "variant_concept_emerges_layer": 26
+    },
+    {
+      "source_id": "advbench_094",
+      "n_concept_targets": 7,
+      "native_concept_emerges_layer": 25,
+      "variant_concept_emerges_layer": null
+    },
+    {
+      "source_id": "advbench_095",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 24,
+      "variant_concept_emerges_layer": null
+    },
+    {
+      "source_id": "advbench_096",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 27,
+      "variant_concept_emerges_layer": 27
+    },
+    {
+      "source_id": "advbench_097",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 16,
+      "variant_concept_emerges_layer": null
+    },
+    {
+      "source_id": "advbench_098",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 24,
+      "variant_concept_emerges_layer": 27
+    },
+    {
+      "source_id": "advbench_099",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": null,
+      "variant_concept_emerges_layer": null
+    },
+    {
+      "source_id": "advbench_100",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 24,
+      "variant_concept_emerges_layer": 26
+    },
+    {
+      "source_id": "advbench_101",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": null,
+      "variant_concept_emerges_layer": null
+    },
+    {
+      "source_id": "advbench_102",
+      "n_concept_targets": 10,
+      "native_concept_emerges_layer": 18,
+      "variant_concept_emerges_layer": null
+    },
+    {
+      "source_id": "advbench_103",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 23,
+      "variant_concept_emerges_layer": 27
+    },
+    {
+      "source_id": "advbench_104",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 14,
+      "variant_concept_emerges_layer": 27
+    },
+    {
+      "source_id": "advbench_105",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 25,
+      "variant_concept_emerges_layer": 26
+    },
+    {
+      "source_id": "advbench_106",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 19,
+      "variant_concept_emerges_layer": 27
+    },
+    {
+      "source_id": "advbench_107",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 26,
+      "variant_concept_emerges_layer": null
+    },
+    {
+      "source_id": "advbench_108",
+      "n_concept_targets": 10,
+      "native_concept_emerges_layer": 25,
+      "variant_concept_emerges_layer": null
+    },
+    {
+      "source_id": "advbench_109",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": null,
+      "variant_concept_emerges_layer": null
+    },
+    {
+      "source_id": "advbench_110",
+      "n_concept_targets": 11,
+      "native_concept_emerges_layer": null,
+      "variant_concept_emerges_layer": null
+    },
+    {
+      "source_id": "advbench_111",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 24,
+      "variant_concept_emerges_layer": 27
+    },
+    {
+      "source_id": "advbench_112",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 22,
+      "variant_concept_emerges_layer": null
+    },
+    {
+      "source_id": "advbench_113",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 26,
+      "variant_concept_emerges_layer": null
+    },
+    {
+      "source_id": "advbench_114",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 16,
+      "variant_concept_emerges_layer": null
+    },
+    {
+      "source_id": "advbench_115",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 22,
+      "variant_concept_emerges_layer": null
+    },
+    {
+      "source_id": "advbench_116",
+      "n_concept_targets": 11,
+      "native_concept_emerges_layer": 26,
+      "variant_concept_emerges_layer": null
+    },
+    {
+      "source_id": "advbench_117",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 27,
+      "variant_concept_emerges_layer": null
+    },
+    {
+      "source_id": "advbench_118",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 26,
+      "variant_concept_emerges_layer": 27
+    },
+    {
+      "source_id": "advbench_119",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 25,
+      "variant_concept_emerges_layer": 27
+    },
+    {
+      "source_id": "advbench_120",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 15,
+      "variant_concept_emerges_layer": 3
+    },
+    {
+      "source_id": "advbench_121",
+      "n_concept_targets": 11,
+      "native_concept_emerges_layer": 14,
+      "variant_concept_emerges_layer": 27
+    },
+    {
+      "source_id": "advbench_122",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 25,
+      "variant_concept_emerges_layer": null
+    },
+    {
+      "source_id": "advbench_123",
+      "n_concept_targets": 8,
+      "native_concept_emerges_layer": 26,
+      "variant_concept_emerges_layer": null
+    },
+    {
+      "source_id": "advbench_124",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 3,
+      "variant_concept_emerges_layer": 3
+    },
+    {
+      "source_id": "advbench_125",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 14,
+      "variant_concept_emerges_layer": null
+    },
+    {
+      "source_id": "advbench_126",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 24,
+      "variant_concept_emerges_layer": null
+    },
+    {
+      "source_id": "advbench_127",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 21,
+      "variant_concept_emerges_layer": 26
+    },
+    {
+      "source_id": "advbench_128",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 18,
+      "variant_concept_emerges_layer": 26
+    },
+    {
+      "source_id": "advbench_129",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 25,
+      "variant_concept_emerges_layer": null
+    },
+    {
+      "source_id": "advbench_130",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 24,
+      "variant_concept_emerges_layer": 27
+    },
+    {
+      "source_id": "advbench_131",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 3,
+      "variant_concept_emerges_layer": 26
+    },
+    {
+      "source_id": "advbench_132",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 5,
+      "variant_concept_emerges_layer": 26
+    },
+    {
+      "source_id": "advbench_133",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 16,
+      "variant_concept_emerges_layer": null
+    },
+    {
+      "source_id": "advbench_134",
+      "n_concept_targets": 11,
+      "native_concept_emerges_layer": 15,
+      "variant_concept_emerges_layer": null
+    },
+    {
+      "source_id": "advbench_135",
+      "n_concept_targets": 11,
+      "native_concept_emerges_layer": 26,
+      "variant_concept_emerges_layer": null
+    },
+    {
+      "source_id": "advbench_136",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 21,
+      "variant_concept_emerges_layer": 16
+    },
+    {
+      "source_id": "advbench_137",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 16,
+      "variant_concept_emerges_layer": null
+    },
+    {
+      "source_id": "advbench_138",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 25,
+      "variant_concept_emerges_layer": null
+    },
+    {
+      "source_id": "advbench_139",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 25,
+      "variant_concept_emerges_layer": null
+    },
+    {
+      "source_id": "advbench_141",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 25,
+      "variant_concept_emerges_layer": 27
+    },
+    {
+      "source_id": "advbench_142",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 23,
+      "variant_concept_emerges_layer": null
+    },
+    {
+      "source_id": "advbench_143",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 26,
+      "variant_concept_emerges_layer": 26
+    },
+    {
+      "source_id": "advbench_144",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 26,
+      "variant_concept_emerges_layer": 26
+    },
+    {
+      "source_id": "advbench_145",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 22,
+      "variant_concept_emerges_layer": null
+    },
+    {
+      "source_id": "advbench_146",
+      "n_concept_targets": 9,
+      "native_concept_emerges_layer": 25,
+      "variant_concept_emerges_layer": null
+    },
+    {
+      "source_id": "advbench_147",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 16,
+      "variant_concept_emerges_layer": 26
+    },
+    {
+      "source_id": "advbench_148",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 3,
+      "variant_concept_emerges_layer": 3
+    },
+    {
+      "source_id": "advbench_149",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 16,
+      "variant_concept_emerges_layer": 23
+    },
+    {
+      "source_id": "advbench_150",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 26,
+      "variant_concept_emerges_layer": null
+    },
+    {
+      "source_id": "advbench_151",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 24,
+      "variant_concept_emerges_layer": 27
+    },
+    {
+      "source_id": "advbench_152",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 3,
+      "variant_concept_emerges_layer": 16
+    },
+    {
+      "source_id": "advbench_153",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 24,
+      "variant_concept_emerges_layer": 27
+    },
+    {
+      "source_id": "advbench_154",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 24,
+      "variant_concept_emerges_layer": null
+    },
+    {
+      "source_id": "advbench_155",
+      "n_concept_targets": 11,
+      "native_concept_emerges_layer": 7,
+      "variant_concept_emerges_layer": 26
+    },
+    {
+      "source_id": "advbench_156",
+      "n_concept_targets": 11,
+      "native_concept_emerges_layer": 7,
+      "variant_concept_emerges_layer": null
+    },
+    {
+      "source_id": "advbench_157",
+      "n_concept_targets": 11,
+      "native_concept_emerges_layer": 26,
+      "variant_concept_emerges_layer": null
+    },
+    {
+      "source_id": "advbench_159",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 21,
+      "variant_concept_emerges_layer": 27
+    },
+    {
+      "source_id": "advbench_164",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 27,
+      "variant_concept_emerges_layer": null
+    },
+    {
+      "source_id": "advbench_167",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 27,
+      "variant_concept_emerges_layer": null
+    },
+    {
+      "source_id": "advbench_168",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 26,
+      "variant_concept_emerges_layer": null
+    },
+    {
+      "source_id": "advbench_169",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 24,
+      "variant_concept_emerges_layer": null
+    },
+    {
+      "source_id": "advbench_174",
+      "n_concept_targets": 11,
+      "native_concept_emerges_layer": 21,
+      "variant_concept_emerges_layer": null
+    },
+    {
+      "source_id": "advbench_177",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 20,
+      "variant_concept_emerges_layer": null
+    },
+    {
+      "source_id": "advbench_178",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 22,
+      "variant_concept_emerges_layer": null
+    },
+    {
+      "source_id": "advbench_183",
+      "n_concept_targets": 10,
+      "native_concept_emerges_layer": 16,
+      "variant_concept_emerges_layer": 16
+    },
+    {
+      "source_id": "advbench_185",
+      "n_concept_targets": 9,
+      "native_concept_emerges_layer": 25,
+      "variant_concept_emerges_layer": 27
+    },
+    {
+      "source_id": "advbench_188",
+      "n_concept_targets": 8,
+      "native_concept_emerges_layer": 25,
+      "variant_concept_emerges_layer": null
+    },
+    {
+      "source_id": "advbench_189",
+      "n_concept_targets": 11,
+      "native_concept_emerges_layer": 27,
+      "variant_concept_emerges_layer": 27
+    },
+    {
+      "source_id": "advbench_206",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 24,
+      "variant_concept_emerges_layer": null
+    },
+    {
+      "source_id": "advbench_213",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 26,
+      "variant_concept_emerges_layer": null
+    },
+    {
+      "source_id": "advbench_223",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 24,
+      "variant_concept_emerges_layer": null
+    },
+    {
+      "source_id": "advbench_237",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 15,
+      "variant_concept_emerges_layer": 27
+    },
+    {
+      "source_id": "advbench_242",
+      "n_concept_targets": 11,
+      "native_concept_emerges_layer": 14,
+      "variant_concept_emerges_layer": null
+    },
+    {
+      "source_id": "advbench_255",
+      "n_concept_targets": 10,
+      "native_concept_emerges_layer": 15,
+      "variant_concept_emerges_layer": null
+    },
+    {
+      "source_id": "advbench_258",
+      "n_concept_targets": 11,
+      "native_concept_emerges_layer": 7,
+      "variant_concept_emerges_layer": 27
+    },
+    {
+      "source_id": "advbench_264",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 24,
+      "variant_concept_emerges_layer": null
+    },
+    {
+      "source_id": "advbench_291",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 18,
+      "variant_concept_emerges_layer": 26
+    },
+    {
+      "source_id": "advbench_325",
+      "n_concept_targets": 10,
+      "native_concept_emerges_layer": 25,
+      "variant_concept_emerges_layer": null
+    },
+    {
+      "source_id": "advbench_327",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 25,
+      "variant_concept_emerges_layer": null
+    },
+    {
+      "source_id": "advbench_331",
+      "n_concept_targets": 10,
+      "native_concept_emerges_layer": 12,
+      "variant_concept_emerges_layer": null
+    },
+    {
+      "source_id": "advbench_335",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 26,
+      "variant_concept_emerges_layer": null
+    },
+    {
+      "source_id": "advbench_336",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 25,
+      "variant_concept_emerges_layer": null
+    },
+    {
+      "source_id": "advbench_351",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 27,
+      "variant_concept_emerges_layer": 11
+    },
+    {
+      "source_id": "advbench_365",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 26,
+      "variant_concept_emerges_layer": null
+    },
+    {
+      "source_id": "advbench_372",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 16,
+      "variant_concept_emerges_layer": 27
+    },
+    {
+      "source_id": "advbench_382",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 25,
+      "variant_concept_emerges_layer": null
+    },
+    {
+      "source_id": "advbench_383",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 26,
+      "variant_concept_emerges_layer": null
+    },
+    {
+      "source_id": "advbench_401",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 26,
+      "variant_concept_emerges_layer": null
+    },
+    {
+      "source_id": "advbench_409",
+      "n_concept_targets": 10,
+      "native_concept_emerges_layer": 27,
+      "variant_concept_emerges_layer": null
+    },
+    {
+      "source_id": "advbench_412",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 19,
+      "variant_concept_emerges_layer": null
+    },
+    {
+      "source_id": "advbench_427",
+      "n_concept_targets": 10,
+      "native_concept_emerges_layer": 12,
+      "variant_concept_emerges_layer": null
+    },
+    {
+      "source_id": "advbench_442",
+      "n_concept_targets": 11,
+      "native_concept_emerges_layer": 16,
+      "variant_concept_emerges_layer": 16
+    },
+    {
+      "source_id": "advbench_458",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 13,
+      "variant_concept_emerges_layer": 26
+    },
+    {
+      "source_id": "advbench_459",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 26,
+      "variant_concept_emerges_layer": null
+    },
+    {
+      "source_id": "advbench_467",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 22,
+      "variant_concept_emerges_layer": null
+    },
+    {
+      "source_id": "advbench_478",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 21,
+      "variant_concept_emerges_layer": 27
+    },
+    {
+      "source_id": "advbench_498",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 25,
+      "variant_concept_emerges_layer": null
+    },
+    {
+      "source_id": "advbench_508",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 27,
+      "variant_concept_emerges_layer": 27
+    },
+    {
+      "source_id": "advbench_509",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 18,
+      "variant_concept_emerges_layer": 24
+    },
+    {
+      "source_id": "advbench_512",
+      "n_concept_targets": 12,
+      "native_concept_emerges_layer": 14,
+      "variant_concept_emerges_layer": null
+    }
+  ],
+  "completed_at": "2026-07-07T15:45:53.338639"
+}

@@ -1,0 +1,38 @@
+{
+  "phase": "phase2_stage1_extract_activations",
+  "model_key": "gemma_3_4b_it",
+  "model_id": "google/gemma-3-4b-it",
+  "n_layers": 34,
+  "hidden_dim": 2560,
+  "model_default_batch_size": 8,
+  "effective_batch_size": 12,
+  "measurement_position": -1,
+  "device": {
+    "device": "mps",
+    "backend": "mps_m2_pro",
+    "dtype": "torch.float16",
+    "batch_size_multiplier": 1.5,
+    "use_device_map_auto": false,
+    "chip_name": "Apple M2 Max",
+    "total_memory_gb": 32.0,
+    "notes": "Apple Silicon MPS detected: Apple M2 Max (32.0 GB unified)"
+  },
+  "run_stamp": "20260626_143350",
+  "run_dir": "/Users/ruqiya/Codeing-repos/Research/BlackboxNLP/comprehension-gated/results/phase2/gemma_3_4b_it/run_20260626_143350",
+  "started_at": "2026-06-26T14:33:50.696655",
+  "args": {
+    "scripts": [
+      "arabic",
+      "arabizi",
+      "devanagari",
+      "itrans",
+      "english",
+      "leetspeak"
+    ],
+    "batch_size": 12,
+    "resume": false,
+    "new_run": true,
+    "prefer_device": null
+  },
+  "notes": "OPTIONAL exploratory model (OSF v8 optional set, post-deposit; NO confirmatory weight, enters no confirmation rule). 4B params, 34 layers, 2560 hidden dim, Gemma Terms of Use. Within-generation scale pair with gemma_3_1b_it (Gemma-3, 1B vs 4B) to isolate size from generation. MULTIMODAL: loads as Gemma3ForConditionalGeneration with decoder layers at model.model.language_model.layers \u2014 see IS_MULTIMODAL/MODEL_CLASS/LAYERS_PATH. SUPPORTED (2026-06-21): Phase 2/4/5 branch on these hints and run this model on the text path. SAE/CLT repo names (google/gemma-scope-2-4b-it, mwhanna/gemma-scope-2-4b-it) NEED VERIFICATION against HF before an H3 run. Promotion to a confirmatory rule requires an OSF amendment."
+}

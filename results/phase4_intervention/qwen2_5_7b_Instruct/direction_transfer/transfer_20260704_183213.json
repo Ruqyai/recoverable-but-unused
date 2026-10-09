@@ -1,0 +1,29 @@
+{
+  "phase": "direction_transfer_on_comprehended_subset",
+  "model": "qwen2_5_7b_Instruct",
+  "pair": "tier_a",
+  "subset": "comprehended_arabizi",
+  "causal_layer": 14,
+  "alpha": 1.5,
+  "n_comprehended": 5,
+  "room_baseline_refused": 0,
+  "native_dir_ablation": {
+    "flips": 0,
+    "flip_rate_pct": NaN,
+    "wilson95": [
+      NaN,
+      NaN
+    ]
+  },
+  "random_dir_ablation": {
+    "flips": 0,
+    "flip_rate_pct": NaN,
+    "wilson95": [
+      NaN,
+      NaN
+    ]
+  },
+  "specificity_gap_pp": NaN,
+  "interpretation": "high native flip + low random flip => the SAME native refusal direction mediates refusal on comprehended-romanized items: safety is intact, merely starved of input (positive half proven).",
+  "completed_at": "2026-07-04T18:32:13.813250"
+}

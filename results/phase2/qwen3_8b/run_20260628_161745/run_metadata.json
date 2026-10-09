@@ -1,0 +1,38 @@
+{
+  "phase": "phase2_stage1_extract_activations",
+  "model_key": "qwen3_8b",
+  "model_id": "Qwen/Qwen3-8B",
+  "n_layers": 36,
+  "hidden_dim": 4096,
+  "model_default_batch_size": 4,
+  "effective_batch_size": 6,
+  "measurement_position": -1,
+  "device": {
+    "device": "mps",
+    "backend": "mps_m2_pro",
+    "dtype": "torch.float16",
+    "batch_size_multiplier": 1.5,
+    "use_device_map_auto": false,
+    "chip_name": "Apple M2 Max",
+    "total_memory_gb": 32.0,
+    "notes": "Apple Silicon MPS detected: Apple M2 Max (32.0 GB unified)"
+  },
+  "run_stamp": "20260628_161745",
+  "run_dir": "/Users/ruqiya/Codeing-repos/Research/BlackboxNLP/comprehension-gated/results/phase2/qwen3_8b/run_20260628_161745",
+  "started_at": "2026-06-28T16:17:45.860845",
+  "args": {
+    "scripts": [
+      "arabic",
+      "arabizi",
+      "devanagari",
+      "itrans",
+      "english",
+      "leetspeak"
+    ],
+    "batch_size": 6,
+    "resume": false,
+    "new_run": true,
+    "prefer_device": null
+  },
+  "notes": "Size-scaling replication within the Qwen family per OSF v4. 8B parameters, 36 layers, 4096 hidden dim, Apache-2.0. Used alongside Qwen3-4B to isolate size-of-parameter-count effects from family-level effects. Tied with Qwen3-4B on the 2026-05-25 diagnostic (44/45 total coherent)."
+}

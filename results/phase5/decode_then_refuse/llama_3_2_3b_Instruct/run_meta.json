@@ -1,0 +1,12 @@
+{
+ "model": "llama_3_2_3b_Instruct",
+ "model_id": "meta-llama/Llama-3.2-3B-Instruct",
+ "n_per_pair": 50,
+ "max_new_tokens": 256,
+ "pairs": [
+  "tier_c",
+  "tier_e"
+ ],
+ "decoding": "greedy",
+ "completed_at": "2026-10-08T19:17:12.777790"
+}

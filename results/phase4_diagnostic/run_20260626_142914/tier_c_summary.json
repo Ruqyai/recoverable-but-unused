@@ -1,0 +1,30 @@
+{
+  "test_run_timestamp": "2026-06-26T14:30:53.488235",
+  "test_date": "2026-06-26",
+  "models_tested": [
+    "meta-llama/Llama-3.2-3B-Instruct"
+  ],
+  "model_results": {
+    "meta-llama/Llama-3.2-3B-Instruct": {
+      "devanagari_coherent": 14,
+      "devanagari_incoherent": 1,
+      "devanagari_avg_score": 0.8333333333333334,
+      "devanagari_min_score": 0.5,
+      "devanagari_max_score": 0.95,
+      "devanagari_distribution": {
+        "compliance": 13,
+        "unclear": 1,
+        "refusal": 1
+      },
+      "itrans_coherent": 15,
+      "itrans_incoherent": 0,
+      "itrans_avg_score": 0.85,
+      "itrans_min_score": 0.85,
+      "itrans_max_score": 0.85,
+      "itrans_distribution": {
+        "compliance": 15
+      },
+      "romanization_issues": 0
+    }
+  }
+}

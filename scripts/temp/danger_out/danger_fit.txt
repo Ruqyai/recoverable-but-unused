@@ -1,0 +1,9 @@
+quadratic fit: y = -0.005 + 0.258x + -0.240x^2
+peak (if concave): 0.538
+bootstrap: 925/1000 resamples concave with interior peak; peak 95% CI ~ [0.40,0.85]
+VERDICT: INVERTED-U: compliance peaks at intermediate comprehension (c=-0.24<0, peak=0.54)
+
+NOTE: 30 cells x n=50 is a descriptive screen. If the interior
+peak replicates, promote to per-item logistic with a quadratic
+comprehension term and model random effects before claiming a
+'danger zone' in the paper.

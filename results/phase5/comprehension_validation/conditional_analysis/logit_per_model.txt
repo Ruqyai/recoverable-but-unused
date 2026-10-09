@@ -1,0 +1,30 @@
+gemma_2_2b_it: logit failed (Error evaluating factor: TypeError: 'int' object is not callable
+    refusal ~ engaged + C(condition)
+                        ^^^^^^^^^^^^)
+gemma_2_9b_it: logit failed (Error evaluating factor: TypeError: 'int' object is not callable
+    refusal ~ engaged + C(condition)
+                        ^^^^^^^^^^^^)
+gemma_3_1b_it: logit failed (Error evaluating factor: TypeError: 'int' object is not callable
+    refusal ~ engaged + C(condition)
+                        ^^^^^^^^^^^^)
+gemma_3_27b_it: logit failed (Error evaluating factor: TypeError: 'int' object is not callable
+    refusal ~ engaged + C(condition)
+                        ^^^^^^^^^^^^)
+gemma_3_4b_it: logit failed (Error evaluating factor: TypeError: 'int' object is not callable
+    refusal ~ engaged + C(condition)
+                        ^^^^^^^^^^^^)
+llama_3_1_8b_Instruct: logit failed (Error evaluating factor: TypeError: 'int' object is not callable
+    refusal ~ engaged + C(condition)
+                        ^^^^^^^^^^^^)
+llama_3_2_3b_Instruct: logit failed (Error evaluating factor: TypeError: 'int' object is not callable
+    refusal ~ engaged + C(condition)
+                        ^^^^^^^^^^^^)
+qwen2_5_7b_Instruct: logit failed (Error evaluating factor: TypeError: 'int' object is not callable
+    refusal ~ engaged + C(condition)
+                        ^^^^^^^^^^^^)
+qwen3_4b: logit failed (Error evaluating factor: TypeError: 'int' object is not callable
+    refusal ~ engaged + C(condition)
+                        ^^^^^^^^^^^^)
+qwen3_8b: logit failed (Error evaluating factor: TypeError: 'int' object is not callable
+    refusal ~ engaged + C(condition)
+                        ^^^^^^^^^^^^)

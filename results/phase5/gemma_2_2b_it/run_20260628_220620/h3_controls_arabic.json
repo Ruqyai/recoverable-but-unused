@@ -1,0 +1,111 @@
+{
+  "phase": "phase5_stage6_h3_controls",
+  "arm": "arabic",
+  "arm_label": "Arabic ↔ Arabizi (chatspeak romanization)",
+  "model_key": "gemma_2_2b_it",
+  "model_id": "google/gemma-2-2b-it",
+  "layer": 12,
+  "sae_release": "gemma-scope-2b-pt-res-canonical",
+  "sae_id": "layer_12/width_16k/canonical",
+  "kind": "sae",
+  "k": 100,
+  "statistic": "mean",
+  "bootstrap": 1000,
+  "seed": 42,
+  "completed_at": "2026-06-28T22:08:53.631120",
+  "ladder": [
+    {
+      "label": "tier_d (meaning⇒feature VALIDITY; words only)",
+      "pair": [
+        "native_harmful",
+        "native_paraphrase"
+      ],
+      "jaccard": 0.5625,
+      "intersection": 72,
+      "union": 128,
+      "bootstrap_ci": {
+        "n_bootstrap": 1000,
+        "n_successful": 1000,
+        "mean": 0.5073250994823211,
+        "median": 0.5037593984962406,
+        "std": 0.1839342198408157,
+        "ci_99_low": 0.15603614377782207,
+        "ci_99_high": 0.9047619047619048,
+        "ci_95_low": 0.19047619047619047,
+        "ci_95_high": 0.8518518518518519
+      },
+      "expectation": "HIGH expected if the measure tracks meaning (same lang+script, paraphrase)",
+      "verdict": "INDETERMINATE (0.4 <= Jaccard < 0.6)"
+    },
+    {
+      "label": "headline (SCRIPT change, same language)",
+      "pair": [
+        "native_harmful",
+        "script_harmful"
+      ],
+      "jaccard": 0.5384615384615384,
+      "intersection": 70,
+      "union": 130,
+      "bootstrap_ci": {
+        "n_bootstrap": 1000,
+        "n_successful": 1000,
+        "mean": 0.4501904598344207,
+        "median": 0.48148148148148145,
+        "std": 0.1773700579443921,
+        "ci_99_low": 0.1111111111111111,
+        "ci_99_high": 0.7857142857142857,
+        "ci_95_low": 0.12994350282485875,
+        "ci_95_high": 0.7543859649122807
+      },
+      "expectation": "LOW expected (orthographic anchoring)",
+      "verdict": "INDETERMINATE (0.4 <= Jaccard < 0.6)"
+    },
+    {
+      "label": "cross-language (LANGUAGE change → English, same meaning)",
+      "pair": [
+        "native_harmful",
+        "xlang_harmful"
+      ],
+      "jaccard": 0.22699386503067484,
+      "intersection": 37,
+      "union": 163,
+      "bootstrap_ci": {
+        "n_bootstrap": 1000,
+        "n_successful": 1000,
+        "mean": 0.2581088205040933,
+        "median": 0.2422360248447205,
+        "std": 0.10061010980093073,
+        "ci_99_low": 0.08692714453584019,
+        "ci_99_high": 0.5625,
+        "ci_95_low": 0.10497237569060773,
+        "ci_95_high": 0.47058823529411764
+      },
+      "expectation": "isolates LANGUAGE (meaning held); foreign-language floor (English)",
+      "verdict": "SUPPORTED (point estimate; CI overlaps threshold)"
+    },
+    {
+      "label": "tier_b (harm-specificity; benign script change)",
+      "pair": [
+        "native_benign",
+        "script_benign"
+      ],
+      "jaccard": 0.20481927710843373,
+      "intersection": 34,
+      "union": 166,
+      "bootstrap_ci": {
+        "n_bootstrap": 1000,
+        "n_successful": 1000,
+        "mean": 0.19549662041416674,
+        "median": 0.1834319526627219,
+        "std": 0.054138391279270726,
+        "ci_99_low": 0.11728739913097455,
+        "ci_99_high": 0.49259342385815275,
+        "ci_95_low": 0.12994350282485875,
+        "ci_95_high": 0.33355704697986555
+      },
+      "expectation": "if HIGH while headline is LOW → fragmentation is harm-specific",
+      "verdict": "SUPPORTED (point estimate; CI overlaps threshold)"
+    }
+  ],
+  "interpretation": "VALID measure ⇒ tier_d HIGH (meaning⇒features) AND headline (script) LOW. If tier_b benign is also LOW, the fragmentation is generic (surface), not harm-specific. If tier_d is LOW, the measure does not track meaning → H3 uninterpretable. Per OSF prereg, H3 is exploratory."
+}

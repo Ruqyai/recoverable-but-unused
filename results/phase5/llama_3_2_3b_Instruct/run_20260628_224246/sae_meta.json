@@ -1,0 +1,41 @@
+{
+  "phase": "phase5_stage1_load_sae",
+  "model_key": "llama_3_2_3b_Instruct",
+  "model_id": "meta-llama/Llama-3.2-3B-Instruct",
+  "sae_repo": "",
+  "source": "hf_disk",
+  "sae_release": "Geaming/Llama-3.2-3B-Instruct_SAEs",
+  "sae_id": "BT(F)/blocks_12_hook_resid_post_16X_2048_jumprelu",
+  "kind": "sae",
+  "is_transcoder": false,
+  "requested_layer": 14,
+  "layer": 12,
+  "layer_snap_distance": 2,
+  "available_sae_layers": [
+    4,
+    12,
+    20
+  ],
+  "width": null,
+  "hook_name": "blocks.12.hook_resid_post",
+  "d_sae": 49152,
+  "d_in": 3072,
+  "hidden_dim": 3072,
+  "n_layers": 28,
+  "h3_official_gemma_sae": false,
+  "causal_layer_source": "phase2_stage04",
+  "phase2_run_dir": "/Users/ruqiya/Codeing-repos/Research/BlackboxNLP/comprehension-gated/results/phase2/llama_3_2_3b_Instruct/run_20260626_131830",
+  "device": {
+    "device": "mps",
+    "backend": "mps_m2_pro",
+    "dtype": "torch.float16",
+    "batch_size_multiplier": 1.5,
+    "use_device_map_auto": false,
+    "chip_name": "Apple M2 Max",
+    "total_memory_gb": 32.0,
+    "notes": "Apple Silicon MPS detected: Apple M2 Max (32.0 GB unified)"
+  },
+  "completed_at": "2026-06-28T22:42:46.709681",
+  "input_caveat": "Residual SAE on resid_post \u2014 Stage 02 feeds hidden_states[layer+1], an exact match.",
+  "caveat": "Per the deposited OSF preregistration, H3 is exploratory (no confirmatory weight). d_in must equal hidden_dim. If layer_snap_distance > 0 the SAE is not exactly at the causal layer."
+}

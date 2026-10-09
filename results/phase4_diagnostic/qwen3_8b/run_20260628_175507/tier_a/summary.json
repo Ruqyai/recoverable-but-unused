@@ -1,0 +1,22 @@
+{
+  "tier": "tier_a",
+  "langs": "arabizi",
+  "model_id": "Qwen/Qwen3-8B",
+  "model_key": "qwen3_8b",
+  "run_stamp": "20260628_175507",
+  "test_date": "2026-06-28T17:55:07.708234",
+  "stats": {
+    "coherent": 14,
+    "incoherent": 1,
+    "refusals": 1,
+    "compliance": 13,
+    "average_score": 0.9333333333333333,
+    "min_score": 0.7,
+    "max_score": 0.95,
+    "score_distribution": {
+      "compliance": 13,
+      "refusal": 1,
+      "mixed_script": 1
+    }
+  }
+}

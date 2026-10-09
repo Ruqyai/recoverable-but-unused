@@ -1,0 +1,11 @@
+.DS_Store
+*.aux
+*.log
+*.out
+*.bbl
+*.blg
+__pycache__/
+
+# camera-ready-only OSF link (kept out of the anonymous submission)
+demo/.osf_url
+*.pt

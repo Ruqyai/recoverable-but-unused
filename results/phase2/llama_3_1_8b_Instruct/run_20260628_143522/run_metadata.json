@@ -1,0 +1,38 @@
+{
+  "phase": "phase2_stage1_extract_activations",
+  "model_key": "llama_3_1_8b_Instruct",
+  "model_id": "meta-llama/Llama-3.1-8B-Instruct",
+  "n_layers": 32,
+  "hidden_dim": 4096,
+  "model_default_batch_size": 4,
+  "effective_batch_size": 6,
+  "measurement_position": -1,
+  "device": {
+    "device": "mps",
+    "backend": "mps_m2_pro",
+    "dtype": "torch.float16",
+    "batch_size_multiplier": 1.5,
+    "use_device_map_auto": false,
+    "chip_name": "Apple M2 Max",
+    "total_memory_gb": 32.0,
+    "notes": "Apple Silicon MPS detected: Apple M2 Max (32.0 GB unified)"
+  },
+  "run_stamp": "20260628_143522",
+  "run_dir": "/Users/ruqiya/Codeing-repos/Research/BlackboxNLP/comprehension-gated/results/phase2/llama_3_1_8b_Instruct/run_20260628_143522",
+  "started_at": "2026-06-28T14:35:22.454563",
+  "args": {
+    "scripts": [
+      "arabic",
+      "arabizi",
+      "devanagari",
+      "itrans",
+      "english",
+      "leetspeak"
+    ],
+    "batch_size": 6,
+    "resume": false,
+    "new_run": true,
+    "prefer_device": null
+  },
+  "notes": "LEGACY exploratory model (NOT in OSF v4 confirmatory set). 8B params, 32 layers, 4096 hidden dim, Llama 3.1 Community License. Original 2026-05-25 diagnostic flagged weak Devanagari coherence; the 2026-05-28 multilingual rescore showed Arabizi 14/15 coherent + 1 refusal and Tier C 3 DV refusals + 0 IT refusals \u2014 usable for Arabizi exploratory runs, marginal for ITRANS. Useful as a cross-architecture sibling to the Qwen and Gemma families when the OSF confirmatory set is complete. Promotion to v4 confirmatory requires an OSF amendment."
+}

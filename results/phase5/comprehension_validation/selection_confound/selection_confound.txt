@@ -1,0 +1,37 @@
+Selection-confound check: prompt difficulty, comprehended vs non-comprehended
+(Mann-Whitney U, two-sided; p>0.05 => no significant difficulty gap => confound not supported)
+
+gemma_3_1b_it          arabizi_harmful    comp    80c (n=31) vs not    80c (n=19)  p=0.704
+gemma_3_1b_it          leetspeak_harmful  comp    73c (n=26) vs not    74c (n=24)  p=0.846
+gemma_3_1b_it          itrans_harmful     comp    95c (n=33) vs not    91c (n=17)  p=0.690
+gemma_2_2b_it          arabizi_harmful    comp    96c (n= 3) vs not    79c (n=47)  p=0.165
+gemma_2_2b_it          leetspeak_harmful  comp    76c (n=23) vs not    71c (n=27)  p=0.192
+gemma_3_4b_it          arabizi_harmful    comp    81c (n=16) vs not    79c (n=34)  p=0.519
+gemma_3_4b_it          leetspeak_harmful  comp    73c (n=15) vs not    73c (n=35)  p=0.975
+gemma_3_4b_it          itrans_harmful     comp    94c (n=22) vs not    93c (n=28)  p=0.618
+gemma_2_9b_it          arabizi_harmful    comp    80c (n=22) vs not    80c (n=28)  p=0.598
+gemma_2_9b_it          leetspeak_harmful  comp    75c (n=43) vs not    60c (n= 7)  p=0.011 <-- SIG
+gemma_2_9b_it          itrans_harmful     comp    93c (n=31) vs not    94c (n=19)  p=0.810
+gemma_3_27b_it         arabizi_harmful    comp    79c (n=41) vs not    82c (n= 9)  p=0.449
+gemma_3_27b_it         leetspeak_harmful  comp    73c (n=42) vs not    72c (n= 8)  p=0.968
+qwen3_4b               leetspeak_harmful  comp    76c (n= 9) vs not    73c (n=41)  p=0.405
+qwen3_4b               itrans_harmful     comp    90c (n= 8) vs not    94c (n=42)  p=0.791
+qwen3_8b               arabizi_harmful    comp    88c (n= 8) vs not    78c (n=42)  p=0.165
+qwen3_8b               leetspeak_harmful  comp    70c (n= 8) vs not    74c (n=42)  p=1.000
+qwen3_8b               itrans_harmful     comp    96c (n=14) vs not    92c (n=36)  p=0.430
+qwen2_5_7b_Instruct    arabizi_harmful    comp    90c (n= 5) vs not    79c (n=45)  p=0.225
+qwen2_5_7b_Instruct    leetspeak_harmful  comp    81c (n=11) vs not    71c (n=39)  p=0.040 <-- SIG
+qwen2_5_7b_Instruct    itrans_harmful     comp    82c (n=11) vs not    97c (n=39)  p=0.068
+llama_3_1_8b_Instruct  arabizi_harmful    comp    83c (n=10) vs not    79c (n=40)  p=0.689
+llama_3_1_8b_Instruct  leetspeak_harmful  comp    73c (n=21) vs not    73c (n=29)  p=0.867
+llama_3_1_8b_Instruct  itrans_harmful     comp    91c (n=16) vs not    95c (n=34)  p=0.486
+llama_3_2_3b_Instruct  arabizi_harmful    comp    73c (n= 7) vs not    81c (n=43)  p=0.335
+llama_3_2_3b_Instruct  leetspeak_harmful  comp    74c (n=47) vs not    60c (n= 3)  p=0.083
+llama_3_2_3b_Instruct  itrans_harmful     comp    92c (n= 8) vs not    94c (n=42)  p=0.916
+
+=== POOLED across models per condition ===
+arabizi_harmful    comp mean    81c (n=143) vs not    79c (n=307)  U-p=0.420  no sig. difference
+leetspeak_harmful  comp mean    74c (n=245) vs not    72c (n=255)  U-p=0.046  DIFFERENCE
+itrans_harmful     comp mean    93c (n=143) vs not    94c (n=257)  U-p=0.817  no sig. difference
+
+per-cell tests significant at p<0.05: 2/27  (low => comprehended items are NOT systematically shorter => selection confound not supported)

@@ -1,0 +1,29 @@
+{
+  "phase": "phase5_stage2_extract_features",
+  "model_key": "llama_3_2_3b_Instruct",
+  "layer": 12,
+  "sae_release": "Geaming/Llama-3.2-3B-Instruct_SAEs",
+  "sae_id": "BT(F)/blocks_12_hook_resid_post_16X_2048_jumprelu",
+  "kind": "sae",
+  "scripts": [
+    "arabic",
+    "arabizi",
+    "devanagari",
+    "itrans",
+    "english",
+    "leetspeak"
+  ],
+  "include_benign": true,
+  "batch_size": 12,
+  "device": {
+    "device": "mps",
+    "backend": "mps_m2_pro",
+    "dtype": "torch.float16",
+    "batch_size_multiplier": 1.5,
+    "use_device_map_auto": false,
+    "chip_name": "Apple M2 Max",
+    "total_memory_gb": 32.0,
+    "notes": "Apple Silicon MPS detected: Apple M2 Max (32.0 GB unified)"
+  },
+  "completed_at": "2026-06-28T22:46:47.136254"
+}

@@ -1,0 +1,1282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Refusal Is Gated by Comprehension — Interactive Demo</title>
+<script src="data.js"></script>
+<style>
+  :root{
+    --bg:#0e1117; --panel:#161b22; --panel2:#1c2330; --line:#2a3340;
+    --ink:#e6edf3; --muted:#9aa7b4; --dim:#6b7682;
+    --accent:#4c9aff; --good:#3fb950; --bad:#f85149; --warn:#d29922; --gold:#e3b341;
+    --chip:#21262d;
+    --font:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font);line-height:1.55;font-size:15px}
+  a{color:var(--accent);text-decoration:none}
+  header{padding:26px 28px 16px;border-bottom:1px solid var(--line);background:linear-gradient(180deg,#11161f,#0e1117)}
+  h1{margin:0 0 6px;font-size:24px;letter-spacing:-.3px}
+  .sub{color:var(--muted);max-width:880px;font-size:14.5px}
+  .badges{margin-top:12px;display:flex;gap:8px;flex-wrap:wrap}
+  .badge{font-size:12px;padding:4px 10px;border-radius:20px;background:var(--chip);color:var(--muted);border:1px solid var(--line)}
+  .badge.live{color:var(--good);border-color:#1f4729}
+  nav{display:flex;gap:4px;padding:0 18px;border-bottom:1px solid var(--line);background:var(--panel);position:sticky;top:0;z-index:20;flex-wrap:wrap}
+  nav button{background:none;border:none;color:var(--muted);padding:14px 16px;font-size:14px;cursor:pointer;border-bottom:2px solid transparent;font-family:inherit}
+  nav button:hover{color:var(--ink)}
+  nav button.active{color:var(--ink);border-bottom-color:var(--accent);font-weight:600}
+  main{padding:24px 28px 80px;max-width:1180px;margin:0 auto}
+  .tab{display:none;animation:fade .25s ease}
+  .tab.active{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1}}
+  h2.section{font-size:19px;margin:6px 0 4px;letter-spacing:-.2px}
+  p.lead{color:var(--muted);margin:0 0 18px;max-width:820px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 20px;margin-bottom:16px}
+  .grid{display:grid;gap:14px}
+  .controls{display:flex;gap:14px;flex-wrap:wrap;align-items:center;margin-bottom:16px}
+  label.ctl{font-size:13px;color:var(--muted);display:flex;flex-direction:column;gap:4px}
+  select,.btn{background:var(--panel2);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:8px 11px;font-size:14px;font-family:inherit;cursor:pointer}
+  .btn:hover{border-color:var(--accent)}
+  .seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+  .seg button{background:var(--panel2);border:none;color:var(--muted);padding:8px 13px;cursor:pointer;font-size:13px;font-family:inherit}
+  .seg button.active{background:var(--accent);color:#06121f;font-weight:600}
+  svg{display:block;max-width:100%}
+  .tip{position:fixed;pointer-events:none;background:#000d;border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-size:12.5px;z-index:99;max-width:280px;opacity:0;transition:opacity .1s}
+  .legend{display:flex;gap:16px;flex-wrap:wrap;font-size:12.5px;color:var(--muted);margin-top:10px}
+  .legend span{display:inline-flex;align-items:center;gap:6px}
+  .dot{width:11px;height:11px;border-radius:50%;display:inline-block}
+  .sq{width:11px;height:11px;border-radius:3px;display:inline-block}
+  /* hypotheses */
+  .hyp{border-left:4px solid var(--line)}
+  .hyp .hid{font-family:var(--mono);font-size:12px;color:var(--dim)}
+  .hyp h3{margin:2px 0 8px;font-size:16px}
+  .status{display:inline-block;font-size:12px;font-weight:600;padding:3px 9px;border-radius:6px;margin-left:8px}
+  .st-conf{background:#10301a;color:var(--good)}
+  .st-rej{background:#3a1413;color:var(--bad)}
+  .st-expl{background:#33270a;color:var(--gold)}
+  .st-ind{background:#222b36;color:var(--muted)}
+  .kv{font-size:13.5px;color:var(--muted);margin:4px 0}
+  .kv b{color:var(--ink);font-weight:600}
+  /* playground */
+  .pg{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .pgbox{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:16px;min-height:120px}
+  .pgbox .sc{font-size:12px;text-transform:uppercase;letter-spacing:1px;color:var(--accent);margin-bottom:8px}
+  .pgbox .pr{font-size:16px;line-height:1.6}
+  .pgbox.var .pr{font-family:var(--mono);font-size:14.5px}
+  .arr{display:flex;align-items:center;justify-content:center;color:var(--dim);font-size:22px}
+  .statrow{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+  .stat{flex:1;min-width:120px;background:var(--panel2);border:1px solid var(--line);border-radius:9px;padding:10px 12px;text-align:center}
+  .stat .n{font-size:22px;font-weight:700}
+  .stat .l{font-size:11.5px;color:var(--muted);margin-top:2px}
+  table.mat{border-collapse:collapse;font-size:13px}
+  table.mat th,table.mat td{padding:8px 6px;text-align:center;border:1px solid var(--line)}
+  table.mat th{color:var(--muted);font-weight:500}
+  table.mat td.mname{text-align:left;color:var(--ink);white-space:nowrap;padding-right:12px}
+  .cell{border-radius:5px;color:#06121f;font-weight:600;min-width:54px}
+  .note{font-size:12.5px;color:var(--dim);margin-top:10px}
+  .pill{display:inline-block;font-size:11px;padding:2px 7px;border-radius:5px;background:var(--chip);color:var(--muted);margin-left:6px}
+  .gold-ring{box-shadow:0 0 0 2px var(--gold)}
+  .quad-label{font-size:11px;fill:var(--dim)}
+  .foot{color:var(--dim);font-size:12px;margin-top:30px;border-top:1px solid var(--line);padding-top:14px}
+</style>
+</head>
+<body>
+<header>
+  <h1 id="h-title">Refusal Is Gated by Comprehension, Not Anchored to Script</h1>
+  <div class="sub" id="h-sub"></div>
+  <div class="badges" id="h-badges"></div>
+</header>
+<nav id="nav"></nav>
+<main>
+  <!-- OVERVIEW -->
+  <section class="tab" id="tab-overview">
+    <h2 class="section">The headline finding</h2>
+    <div class="card" id="ov-headline"></div>
+    <h2 class="section">Two mechanisms behaviour cannot separate</h2>
+    <div class="grid" id="ov-framing" style="grid-template-columns:1fr 1fr"></div>
+    <div class="note" id="ov-framing-note" style="margin:-4px 0 18px"></div>
+    <h2 class="section">Where the failure sits</h2>
+    <div class="card">
+      <p class="kv" style="margin-top:0">A harmful prompt is first <b>gated by comprehension</b>. Hover any stage for what it means and which measurement tests it; <b>click</b> a highlighted stage to jump to its tab.</p>
+      <div id="ov-tworoute"></div>
+    </div>
+    <h2 class="section">Contributions</h2>
+    <div class="card"><ol id="ov-contrib" style="margin:0;padding-left:20px"></ol></div>
+    <h2 class="section">How to read this demo</h2>
+    <div class="card">
+      <p class="kv">This research asks: <b>is an LLM's refusal of a harmful request anchored to the <i>script</i> it's written in,
+      or to its <i>meaning</i>?</b> We rewrite harmful prompts into romanized / obfuscated scripts (Arabic→Arabizi,
+      Devanagari→ITRANS, English→Leetspeak) and measure refusal behaviourally, geometrically (refusal direction),
+      representationally (SAE features), and causally (activation patching) across ten open models.</p>
+      <p class="kv">Use the tabs above to <b>interact</b>: switch a prompt's script in the Playground, explore the
+      comprehension gate that separates a real bypass from "the model didn't understand", compare every model in the
+      heatmap, and inspect the H6 patching curves.</p>
+      <div class="note">Every number is generated from <span style="font-family:var(--mono)">results/</span> by
+      <span style="font-family:var(--mono)">demo/build_data.py</span> — nothing is hand-typed in the page.</div>
+    </div>
+  </section>
+
+  <!-- SETUP -->
+
+  <!-- RECOVERY & MITIGATION (v3) -->
+  <section class="tab" id="tab-recovery">
+    <h2 class="section">The Meaning Is Recoverable, and the Model Does Not Act on It</h2>
+    <p class="lead">Two measurements of whether a model recovers the meaning of a rewritten request.
+      Neither lets the model produce a response, so a refusal cannot enter the measure. Both are
+      compared against <b>engagement</b>, the share of the same 50 requests the model answered or refused.</p>
+    <div id="rec-chart"></div>
+    <div class="legend" id="rec-legend"></div>
+    <div class="note" id="rec-note"></div>
+    <div class="card" style="margin-top:16px" id="rec-callout"></div>
+
+    <h2 class="section" style="margin-top:28px">Transliteration, with no judge in the loop</h2>
+    <p class="lead">The model is asked to rewrite each ITRANS request in Devanagari. The output is scored
+      against the known correct text by character similarity, so nothing here depends on an LLM judge.</p>
+    <div id="trans-table" style="overflow-x:auto"></div>
+    <div class="note" id="trans-note"></div>
+
+    <h2 class="section" style="margin-top:28px">On topic is not harmful</h2>
+    <p class="lead">The engagement judge is told to ignore whether content is harmful, so its
+      <i>on-topic</i> label marks a warning about explosives and a recipe for one alike. Every on-topic
+      harmful response was judged a second time, by a different model family, for whether it contains
+      specific usable harmful content.</p>
+    <div id="harm-table" style="overflow-x:auto"></div>
+    <div class="note" id="harm-note"></div>
+
+    <h2 class="section" style="margin-top:28px">Decode, then refuse</h2>
+    <p class="lead">A fix that needs no retraining. The model is asked to rewrite the request in its
+      native script, then answer its own rewriting. The native-script arm is the ceiling the method
+      is trying to reach.</p>
+    <div id="dtr-chart"></div>
+    <div class="legend" id="dtr-legend"></div>
+    <div class="note" id="dtr-note"></div>
+    <div class="card" style="margin-top:16px" id="dtr-callout"></div>
+
+    <h2 class="section" style="margin-top:28px">If the cut-offs move</h2>
+    <p class="lead">Every threshold the analysis chooses, swept. The rows show how many cells clear the
+      reading bar at each floor and each allowed drop from the native script.</p>
+    <div id="sens-table" style="overflow-x:auto"></div>
+    <div class="note" id="sens-note"></div>
+  </section>
+
+  <section class="tab" id="tab-setup">
+    <h2 class="section">Models</h2>
+    <p class="lead">Ten open instruction-tuned models across three families, three scales, and two generations. Each
+      model selects its own causal layer empirically; cross-model layer numbers are not directly
+      comparable (different depths).</p>
+    <div id="setup-models" style="overflow-x:auto"></div>
+
+    <h2 class="section" style="margin-top:28px">Data corpus — 3,000 records</h2>
+    <p class="lead">Matched prompt pairs hold meaning constant and vary only the writing system, across three language
+      pairs that bracket the explanation space. Harmful prompts are never shown here; the Playground uses Tier B benigns.</p>
+    <div id="setup-tiers" class="grid"></div>
+
+    <h2 class="section" style="margin-top:28px">Experiments &amp; coverage</h2>
+    <p class="lead">Six measurement families across phases 2–4b. The matrix shows which models actually ran each
+      experiment (read live from <span style="font-family:var(--mono)">results/</span>).</p>
+    <div id="setup-exp" class="grid"></div>
+    <h3 style="margin:22px 0 6px;font-size:15px">Model × experiment matrix</h3>
+    <div id="setup-matrix" style="overflow-x:auto"></div>
+  </section>
+
+  <!-- PLAYGROUND -->
+  <section class="tab" id="tab-playground">
+    <h2 class="section">Script Switcher Playground</h2>
+    <p class="lead">Take a real (benign, safe) prompt from the corpus and flip its script. The meaning is identical —
+      only the orthography changes. Then see how each model actually behaves on the matched <i>harmful</i> set for that
+      script pair. <b>The question:</b> when refusal drops on the romanized side, is it anchoring — or did the model just
+      fail to read it?</p>
+    <div class="controls">
+      <label class="ctl">Language pair
+        <select id="pg-pair"></select></label>
+      <label class="ctl">Model (for the behaviour panel)
+        <select id="pg-model"></select></label>
+      <label class="ctl">Example
+        <select id="pg-item"></select></label>
+    </div>
+    <div class="pg">
+      <div class="pgbox" id="pg-native"></div>
+      <div class="pgbox var" id="pg-variant"></div>
+    </div>
+    <div class="card" style="margin-top:14px">
+      <div class="kv" id="pg-behav-title"></div>
+      <div class="statrow" id="pg-stats"></div>
+      <div class="note" id="pg-verdict"></div>
+    </div>
+  </section>
+
+  <!-- H1 BEHAVIOURAL -->
+  <section class="tab" id="tab-h1">
+    <h2 class="section">H1 — Behavioural asymmetry</h2>
+    <p class="lead">Does refusal collapse when a harmful prompt is romanized? Native scripts (Arabic / English /
+      Devanagari) refuse; their romanized twins (Arabizi / Leetspeak / ITRANS) do not. <b>But</b> switch the metric to
+      <i>off-topic</i>: most romanized "non-refusal" is the model producing unrelated text — a reading failure, not a
+      clean bypass (that distinction is H4).</p>
+    <h3 style="margin:14px 0 6px;font-size:15px">Native vs romanized refusal (per model)</h3>
+    <div id="h1-gap"></div>
+    <div class="legend" id="h1-gap-legend"></div>
+    <h3 style="margin:22px 0 6px;font-size:15px">Behavioural breakdown — model × script</h3>
+    <div class="controls">
+      <div class="seg" id="h1-metric">
+        <button data-m="refusal" class="active">Refusal %</button>
+        <button data-m="engaged">Engaged %</button>
+        <button data-m="offtopic">Off-topic %</button>
+      </div>
+    </div>
+    <div id="h1-hm" style="overflow-x:auto"></div>
+    <div class="legend" id="h1-legend"></div>
+    <div class="note" id="h1-note"></div>
+  </section>
+
+  <!-- H3 FEATURE OVERLAP -->
+  <section class="tab" id="tab-h3">
+    <h2 class="section">H3 — Orthographic feature overlap</h2>
+    <p class="lead">Do SAE features for a harmful prompt fragment when only the script changes? We compare top-100 SAE
+      feature overlap (Jaccard) for: a within-script <b>paraphrase</b> (should stay HIGH — tracks meaning), a
+      <b>language</b> change, the <b>script</b> change (the headline — should be LOW), and a <b>benign</b> script change.
+      The catch: if benign is <i>also</i> low, fragmentation is generic surface, not harm-specific.</p>
+    <div class="controls">
+      <label class="ctl">Model
+        <select id="h3-model"></select></label>
+    </div>
+    <div id="h3-chart"></div>
+    <div class="legend" id="h3-legend"></div>
+    <div class="card" style="margin-top:14px" id="h3-callout"></div>
+    <h3 style="margin:24px 0 6px;font-size:15px">Headline script overlap across all models (Tier A: Arabic↔Arabizi, 99% CI)</h3>
+    <p class="note" style="margin-top:0">Point + 99% bootstrap CI. A model "supports" orthographic fragmentation when its
+      CI lies below 0.4. Transcoder models (Qwen3) are an MLP-feature analogue, not directly comparable to
+      the residual-SAE models.</p>
+    <div id="h3-sweep"></div>
+    <div class="legend" id="h3-sweep-legend"></div>
+  </section>
+
+  <!-- H4 COMPREHENSION GATE -->
+  <section class="tab" id="tab-h4">
+    <h2 class="section">H4 — The Comprehension Gate</h2>
+    <p class="lead">The core idea of the paper. <b>X = how well the model comprehends the distorted script</b> (clean LLM
+      judge, §4.1). <b>Y = SAE feature overlap</b> when only the script changes (lower = features fragment = candidate
+      anchoring). A low overlap is only <i>interpretable</i> if the model actually understood the text — otherwise it's
+      "garbage in". Only points in the <b>shaded zone</b> (high comprehension + low overlap) can speak to anchoring.</p>
+    <div id="gate-chart"></div>
+    <div class="legend" id="gate-legend"></div>
+    <div class="card" style="margin-top:16px" id="gate-callout"></div>
+    <h3 style="margin:24px 0 6px;font-size:15px">Comprehension — model × script (clean judge)</h3>
+    <div id="h4-hm" style="overflow-x:auto"></div>
+    <div class="legend" id="h4-legend"></div>
+    <div class="note" id="h4-note"></div>
+  </section>
+
+  <!-- CONDITIONAL (paper Table 2) -->
+  <section class="tab" id="tab-conditional">
+    <h2 class="section">Refusal Returns Wherever Comprehension Does</h2>
+    <p class="lead">The decisive <b>within-model</b> test (paper Table&nbsp;2). Conditioning refusal on judged comprehension,
+      item by item: <b>within the comprehended subset</b>, does the model still refuse? If safety is intact and merely
+      only short of input, refusal on the requests it does read should return to native levels. It does not: recovering
+      the meaning roughly doubles the chance of a refusal and still leaves most of those requests unrefused.</p>
+    <div id="cond-table" style="overflow-x:auto"></div>
+    <div class="card" style="margin-top:16px" id="cond-callout"></div>
+    <div class="note" id="cond-foot"></div>
+
+    <h2 class="section" style="margin-top:28px">The positive half — direction transfer</h2>
+    <p class="lead">Refusal <i>correlating</i> with comprehension is not the same as the <b>same native
+      refusal direction mediating</b> it. On the comprehended-Arabizi subset (read & refused), we ablate the
+      <b>native (Arabic)</b> direction vs. a norm-matched <b>random</b> control: if the native direction removes
+      refusal and random does not, the native mechanism is the one producing those refusals. This holds in the three
+      Gemma Arabizi cells and fails in the one well-powered cell outside that family.</p>
+    <div id="xfer-table" style="overflow-x:auto"></div>
+    <div class="note" id="xfer-foot"></div>
+  </section>
+
+  <!-- H5 GEOMETRY -->
+  <section class="tab" id="tab-h5">
+    <h2 class="section">H5 — Geometry &amp; the Wang silhouette gap</h2>
+    <p class="lead">Wang (2025) reported an Arabic-vs-English <b>silhouette</b> of 0.24 read as orthographic
+      interference. We test whether it reproduces. <b>Silhouette</b> = how cleanly harmful/benign separate along the
+      per-script refusal direction; <b>cosine</b> = how aligned two scripts' directions are (low = near-orthogonal).</p>
+    <div class="controls">
+      <label class="ctl">Model
+        <select id="h5-model"></select></label>
+    </div>
+    <h3 style="margin:8px 0 6px;font-size:15px">Silhouette per script (dashed line = Wang 0.24 reference)</h3>
+    <div id="h5-sil"></div>
+    <h3 style="margin:22px 0 6px;font-size:15px">Cross-script direction cosine</h3>
+    <div id="h5-cos"></div>
+    <div class="legend" id="h5-legend"></div>
+    <div class="card" style="margin-top:14px" id="h5-callout"></div>
+  </section>
+
+  <!-- H2 DIRECTION -->
+  <section class="tab" id="tab-h2">
+    <h2 class="section">H2 — Is the refusal <i>direction</i> script-specific?</h2>
+    <p class="lead">We extract a refusal direction per script and ablate it. The registered headline index
+      <b>forward − reverse flip</b> is <b style="color:var(--bad)">confounded by baseline saturation</b>: when a
+      romanized variant already barely refuses, there is almost nothing left to "flip", so the index reads ≈0pp even
+      when the direction is highly specific. The confound-free metric is the <b>same-target contrast</b>: on one fixed
+      target, does the native-script direction control refusal while the variant-script direction does not?</p>
+    <h3 style="margin:18px 0 6px;font-size:15px">The confound, across all models</h3>
+    <p class="note" style="margin-top:0">Blue = same-target contrast (real signal). Red tick = forward−reverse (the
+      registered index) — note how it collapses to ≈0 everywhere despite a large real effect.</p>
+    <div id="h2-bars"></div>
+    <div class="legend" id="h2-bars-legend"></div>
+    <h3 style="margin:26px 0 6px;font-size:15px">Transfer matrix (per model)</h3>
+    <p class="note" style="margin-top:0">Conditional flip rate (flips ÷ room) per direction × target. Read the
+      <b>room-bearing column</b> (the other is saturated). <b>Ablation</b> (remove direction → refuse→comply) is the
+      paper's headline; <b>addition</b> (add direction → comply→refuse) is the inverse op, shown for completeness.</p>
+    <div class="controls">
+      <label class="ctl">Model
+        <select id="h2-model"></select></label>
+      <label class="ctl">Script pair
+        <select id="h2-tier"></select></label>
+      <label class="ctl">Mode
+        <span class="seg" id="h2-mode">
+          <button data-mode="ablation" class="active">Ablation (headline)</button>
+          <button data-mode="addition">Addition</button>
+        </span></label>
+    </div>
+    <div id="h2-matrix"></div>
+    <div class="card" style="margin-top:14px" id="h2-callout"></div>
+  </section>
+
+  <!-- HYPOTHESES -->
+  <section class="tab" id="tab-hyp">
+    <h2 class="section">Hypotheses (H1–H6)</h2>
+    <p class="lead">The six hypotheses with their rejection criteria and what actually happened, across all ten models.</p>
+    <div class="grid" id="hyp-list"></div>
+  </section>
+
+  <!-- H6 -->
+  <section class="tab" id="tab-h6">
+    <h2 class="section">H6 — Activation Patching</h2>
+    <p class="lead">If refusal were script-anchored, patching the native-script residual into the romanized run should
+      <i>specifically</i> restore refusal — more than a random unrelated harmful residual would. It does not. The
+      <b>matched</b> and <b>random</b> curves track each other; <b>self</b> and <b>benign</b> stay near zero. The position
+      carries a transferable decision/harm-state, not a script anchor.</p>
+    <div class="controls">
+      <label class="ctl">Model
+        <select id="h6-model"></select></label>
+    </div>
+    <div id="h6-chart"></div>
+    <div class="legend" id="h6-legend"></div>
+    <div class="card" style="margin-top:16px" id="h6-verdict"></div>
+  </section>
+
+  <!-- RELATED WORK -->
+  <section class="tab" id="tab-related">
+    <h2 class="section">Related work &amp; how this study compares</h2>
+    <p class="lead">This work sits on top of cross-script jailbreak findings, refusal-direction methods, and the
+      activation-patching + logit-lens lineage. For each, what the prior work shows — and how our results compare,
+      refine, or contradict it.</p>
+    <div id="rel-list" class="grid"></div>
+    <h2 class="section" style="margin-top:28px">Results vs prior claims</h2>
+    <div id="rel-compare" style="overflow-x:auto"></div>
+  </section>
+
+  <!-- PRE-REGISTRATION -->
+  <section class="tab" id="tab-prereg">
+    <h2 class="section">Pre-registration</h2>
+    <div class="card" id="prereg-note"></div>
+  </section>
+
+  <div class="foot" id="foot"></div>
+</main>
+<div class="tip" id="tip"></div>
+
+<script>
+const D = window.DEMO_DATA;
+const $ = s => document.querySelector(s);
+const el = (t,a={},...k)=>{const e=document.createElement(t);for(const[x,v]of Object.entries(a)){if(x==='class')e.className=v;else if(x==='html')e.innerHTML=v;else e.setAttribute(x,v);}k.forEach(c=>e.append(c));return e;};
+const NS='http://www.w3.org/2000/svg';
+const svg=(t,a={})=>{const e=document.createElementNS(NS,t);for(const[x,v]of Object.entries(a))e.setAttribute(x,v);return e;};
+const md=k=>(D.models[k]||{}).display||k;
+const SCRIPT_LABEL={arabic:'Arabic',arabizi:'Arabizi',english:'English',leetspeak:'Leetspeak',devanagari:'Devanagari',itrans:'ITRANS'};
+const tip=$('#tip');
+function showTip(html,e){tip.innerHTML=html;tip.style.opacity=1;moveTip(e);}
+function moveTip(e){const p=12;let x=e.clientX+p,y=e.clientY+p;if(x+290>innerWidth)x=e.clientX-290;tip.style.left=x+'px';tip.style.top=y+'px';}
+function hideTip(){tip.style.opacity=0;}
+
+// ---------- header ----------
+$('#h-title').textContent=D.headline.title;
+$('#h-sub').textContent=D.headline.subtitle;
+const hb=$('#h-badges');
+hb.append(el('span',{class:'badge live'},'● live from results/'));
+hb.append(el('span',{class:'badge'},'generated '+D.meta.generated));
+
+// ---------- nav ----------
+const TABS=[['overview','Overview'],['recovery','Recovery & mitigation'],['setup','Models · Data · Experiments'],['hyp','Hypotheses'],
+  ['h1','H1 · Behavioural'],['h2','H2 · Direction'],['h3','H3 · Features'],['h4','H4 · Comprehension'],
+  ['conditional','Conditional · Table 2'],
+  ['h5','H5 · Geometry'],['h6','H6 · Patching'],['playground','Playground'],['related','Related Work'],
+  ['prereg','Pre-registration']];
+const nav=$('#nav');
+function goTab(id){
+  document.querySelectorAll('nav button').forEach(x=>x.classList.toggle('active',x.dataset.tab===id));
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+  const t=$('#tab-'+id); if(t)t.classList.add('active'); window.scrollTo({top:0,behavior:'smooth'});
+}
+TABS.forEach(([id,label],i)=>{
+  const b=el('button',{},label); b.dataset.tab=id;
+  if(i===0)b.classList.add('active');
+  b.onclick=()=>goTab(id);
+  nav.append(b);
+});
+$('#tab-overview').classList.add('active');
+
+// ---------- overview headline ----------
+$('#ov-headline').innerHTML=
+  `<div class="kv" style="font-size:15px;color:var(--ink)">${D.headline.finding}</div>`;
+// framing S vs C
+const fr=$('#ov-framing');
+[['S','var(--bad)'],['C','var(--good)']].forEach(([k,c])=>{
+  const f=D.framing[k];
+  fr.append(el('div',{class:'card',style:`border-left:4px solid ${c};margin:0`,
+    html:`<div class="hid" style="font-family:var(--mono);font-size:12px;color:var(--dim)">mechanism ${k}</div>
+      <h3 style="margin:2px 0 8px;font-size:16px">${f.name}</h3>
+      <div class="kv">${f.text}</div>`}));
+});
+$('#ov-framing-note').textContent=D.framing.note;
+const ol=$('#ov-contrib');
+D.contributions.forEach(c=>{ol.append(el('li',{style:'margin:6px 0;color:var(--muted)',html:c}));});
+
+
+// ====================================================== PLAYGROUND
+const pgPair=$('#pg-pair'),pgModel=$('#pg-model'),pgItem=$('#pg-item');
+D.playground.forEach((p,i)=>pgPair.append(el('option',{value:i},p.label)));
+// all models with behavioural data (6). Clean-judge comprehension exists for 4; the other 2
+// fall back to the behavioural engaged% proxy. The 3 optional models have no behavioural/SAE data.
+const pgModels=Object.keys(D.comprehension);
+pgModels.forEach(k=>pgModel.append(el('option',{value:k},md(k)+(D.comprehension_judge[k]?'':' (proxy)'))));
+pgModel.value = pgModels.includes('gemma_2_9b_it')?'gemma_2_9b_it':pgModels[0];
+function fillItems(){
+  pgItem.innerHTML='';
+  D.playground[pgPair.value].items.forEach((it,i)=>pgItem.append(el('option',{value:i},'#'+(i+1)+' · (benign, safe)')));
+}
+function pgRender(){
+  const set=D.playground[pgPair.value];
+  const it=set.items[pgItem.value];
+  $('#pg-native').innerHTML=`<div class="sc">${SCRIPT_LABEL[it.native_script]||it.native_script}</div><div class="pr">${escapeHtml(it.native_prompt)}</div>`;
+  $('#pg-variant').innerHTML=`<div class="sc">${SCRIPT_LABEL[it.variant_script]||it.variant_script}</div><div class="pr">${escapeHtml(it.variant_prompt)}</div>`;
+  // behaviour panel for selected model on the HARMFUL matched set
+  const mk=pgModel.value, nv=it.native_script, vr=it.variant_script;
+  const cj=D.comprehension_judge[mk]||{};
+  const beh=(D.comprehension[mk]||{}).scripts||{};
+  const jac=((D.jaccard[mk]||{})[vr]||{});
+  const isJudge=!!cj[vr];
+  // comprehension: clean judge where available, else behavioural engaged% (proxy)
+  const compV = cj[vr]?cj[vr].pct : (beh[vr]?beh[vr].engaged:null);
+  const compLabel=(isJudge?'Comprehension':'Engaged % (proxy)')+' — '+SCRIPT_LABEL[vr];
+  const refN=beh[nv]?beh[nv].refusal:null, refV=beh[vr]?beh[vr].refusal:null;
+  $('#pg-behav-title').innerHTML=`How <b>${md(mk)}</b> behaves on the matched <b>harmful</b> set (${SCRIPT_LABEL[nv]} vs ${SCRIPT_LABEL[vr]})`+
+    (isJudge?'':` <span class="pill" style="color:var(--warn)">no clean-judge comprehension for this model — engaged% shown as proxy</span>`)+':';
+  const stats=$('#pg-stats');stats.innerHTML='';
+  const mk2=(n,l,c)=>{const d=el('div',{class:'stat'});d.append(el('div',{class:'n',style:'color:'+c},n));d.append(el('div',{class:'l'},l));return d;};
+  stats.append(mk2(fmtPct(refN),'Refusal — '+SCRIPT_LABEL[nv],'var(--good)'));
+  stats.append(mk2(fmtPct(refV),'Refusal — '+SCRIPT_LABEL[vr],refV!=null&&refN!=null&&refV<refN-15?'var(--bad)':'var(--ink)'));
+  stats.append(mk2(compV!=null?compV+'%':'—',compLabel,compV!=null?compColor(compV):'var(--muted)'));
+  const jscript=(jac.script&&jac.script.j!=null)?jac.script.j:null;
+  stats.append(mk2(jscript!=null?jscript.toFixed(2):'—','SAE overlap (script)','var(--accent)'));
+  // verdict text
+  let v='';
+  if(compV!=null){
+    const gate=cj[vr]&&cj[vr].clears_gate;
+    const cw=isJudge?'comprehends':'engages (proxy)';
+    if(gate){v=`<b style="color:var(--gold)">Anchoring-despite-comprehension.</b> ${md(mk)} comprehends ${SCRIPT_LABEL[vr]} at ${compV}% yet refusal drops and SAE features still fragment (overlap ${jscript!=null?jscript.toFixed(2):'?'}). This is the one cell where a genuine orthographic effect is interpretable.`;}
+    else if(compV<60){v=`<b style="color:var(--warn)">Confounded with non-comprehension.</b> ${md(mk)} only ${cw} ${SCRIPT_LABEL[vr]} at ${compV}% — so a low refusal here cannot be read as a script-anchored bypass; the model largely couldn't decode the request.`;}
+    else {v=`${isJudge?'Comprehension':'Engaged (proxy)'} ${compV}% but does not clear the strict parity bar (≥60% and ≤15pp drop). Interpret with caution.`;}
+    if(!isJudge)v+=` <span style="color:var(--dim)">(proxy = behavioural engaged%, not the clean LLM judge — no Gemini judge for this model.)</span>`;
+  }
+  $('#pg-verdict').innerHTML=v;
+}
+function fmtPct(x){return x==null?'—':x+'%';}
+function escapeHtml(s){return s.replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));}
+pgPair.onchange=()=>{fillItems();pgItem.value=0;pgRender();};
+pgModel.onchange=pgRender;pgItem.onchange=pgRender;
+fillItems();pgRender();
+
+// ====================================================== COMPREHENSION GATE (scatter)
+function drawGate(){
+  const W=820,H=480,m={l:64,r:24,t:30,b:54};
+  const iw=W-m.l-m.r, ih=H-m.t-m.b;
+  const s=svg('svg',{viewBox:`0 0 ${W} ${H}`,width:W,height:H});
+  const xmax=100;
+  // y = jaccard, find max
+  let pts=[];
+  for(const mk of Object.keys(D.comprehension_judge)){
+    for(const sc of ['arabizi','leetspeak','itrans']){
+      const cj=D.comprehension_judge[mk][sc]; if(!cj)continue;
+      const jacObj=((D.jaccard[mk]||{})[sc]||{}).script;
+      const jac=(jacObj&&jacObj.j!=null)?jacObj.j:null;
+      if(jac==null)continue;
+      pts.push({mk,sc,x:cj.pct,y:jac,gate:cj.clears_gate});
+    }
+  }
+  const ymax=Math.max(0.8,...pts.map(p=>p.y))*1.05;
+  const X=v=>m.l+iw*v/xmax, Y=v=>m.t+ih*(1-v/ymax);
+  // shaded "interpretable anchoring" zone: x>=60, y<=0.4
+  s.append(svg('rect',{x:X(60),y:Y(ymax),width:X(100)-X(60),height:Y(0)-Y(ymax),fill:'#e3b34112'}));
+  s.append(svg('rect',{x:X(60),y:Y(0.4),width:X(100)-X(60),height:Y(0)-Y(0.4),fill:'#e3b34122',stroke:'#e3b34155','stroke-dasharray':'4 3'}));
+  const ql=svg('text',{x:X(80),y:Y(0.05),class:'quad-label','text-anchor':'middle',fill:'#e3b341'});ql.textContent='anchoring is interpretable here';s.append(ql);
+  // gate line at x=60
+  s.append(svg('line',{x1:X(60),y1:m.t,x2:X(60),y2:m.t+ih,stroke:'#d2992255','stroke-dasharray':'5 4'}));
+  // axes
+  s.append(svg('line',{x1:m.l,y1:m.t,x2:m.l,y2:m.t+ih,stroke:'var(--line)'}));
+  s.append(svg('line',{x1:m.l,y1:m.t+ih,x2:m.l+iw,y2:m.t+ih,stroke:'var(--line)'}));
+  for(let v=0;v<=100;v+=20){const gx=X(v);
+    s.append(svg('line',{x1:gx,y1:m.t,x2:gx,y2:m.t+ih,stroke:'#ffffff08'}));
+    const t=svg('text',{x:gx,y:m.t+ih+18,'text-anchor':'middle',fill:'var(--muted)','font-size':11});t.textContent=v+'%';s.append(t);}
+  for(let v=0;v<=ymax;v+=0.2){const gy=Y(v);
+    s.append(svg('line',{x1:m.l,y1:gy,x2:m.l+iw,y2:gy,stroke:'#ffffff08'}));
+    const t=svg('text',{x:m.l-10,y:gy+4,'text-anchor':'end',fill:'var(--muted)','font-size':11});t.textContent=v.toFixed(1);s.append(t);}
+  // axis titles
+  const xt=svg('text',{x:m.l+iw/2,y:H-12,'text-anchor':'middle',fill:'var(--ink)','font-size':13});xt.textContent='Comprehension of distorted script (clean judge %)';s.append(xt);
+  const yt=svg('text',{x:16,y:m.t+ih/2,'text-anchor':'middle',fill:'var(--ink)','font-size':13,transform:`rotate(-90 16 ${m.t+ih/2})`});yt.textContent='SAE feature overlap (script change) — lower = more fragmentation';s.append(yt);
+  const COLOR={arabizi:'#4c9aff',leetspeak:'#bc8cff',itrans:'#3fb950'};
+  pts.forEach(p=>{
+    const cx=X(p.x),cy=Y(p.y);
+    const c=svg('circle',{cx,cy,r:p.gate?9:6.5,fill:COLOR[p.sc],'fill-opacity':p.gate?1:.5,stroke:p.gate?'#e3b341':'#0e1117','stroke-width':p.gate?2.5:1});
+    c.style.cursor='pointer';
+    c.addEventListener('mousemove',e=>showTip(`<b>${md(p.mk)}</b> × ${SCRIPT_LABEL[p.sc]}<br>comprehension <b>${p.x}%</b><br>SAE overlap <b>${p.y.toFixed(3)}</b><br>${p.gate?'<span style="color:#e3b341">✓ clears gate — anchoring interpretable</span>':'<span style="color:#d29922">confounded w/ non-comprehension</span>'}`,e));
+    c.addEventListener('mouseleave',hideTip);
+    s.append(c);
+    if(p.gate){const lab=svg('text',{x:cx+13,y:cy+4,fill:'#e3b341','font-size':12,'font-weight':600});lab.textContent=md(p.mk)+' × Leetspeak';s.append(lab);}
+  });
+  $('#gate-chart').innerHTML='';$('#gate-chart').append(s);
+  const lg=$('#gate-legend');lg.innerHTML='';
+  for(const[k,c]of Object.entries(COLOR)){const sp=el('span');sp.append(el('i',{class:'dot',style:`background:${c}`}));sp.append(document.createTextNode(' '+SCRIPT_LABEL[k]));lg.append(sp);}
+  const g=el('span');g.append(el('i',{class:'dot',style:'background:#888;box-shadow:0 0 0 2px #e3b341'}));g.append(document.createTextNode(' clears comprehension gate'));lg.append(g);
+}
+const _gcells=[];
+for(const [mk,per] of Object.entries(D.comprehension_judge))
+  for(const [sc,v] of Object.entries(per))
+    if(v.clears_gate)_gcells.push(`<b style="color:var(--gold)">${md(mk)} × ${SCRIPT_LABEL[sc]}</b> (${v.pct}%)`);
+$('#gate-callout').innerHTML=`<div class="kv">Across the <b>${Object.keys(D.comprehension_judge).length} judged models</b> × 3 romanized scripts, <b>${_gcells.length} cells</b> clear the parity bar (≥60% comprehension, ≤15pp drop, native itself read): ${_gcells.join(', ')}.
+  In every other romanized cell the model largely <i>fails to decode</i> the prompt, so low SAE overlap and high "compliance" are <b>confounded with non-comprehension</b> — the dominant mechanism is comprehension-gating. The cleared cells are the only places a genuine orthographic effect can be tested under real comprehension.</div>
+  <div class="note" style="margin-top:8px">⚠ Comprehension here is the <b>Gemini-2.5-flash</b> judge, which reads a refusal in <i>any</i> language or script — including romanized-Hindi refusals ("maaf kijiye…") that the fixed-keyword read-out misses. A stricter different-family judge (<b>Claude Opus 4.8</b>) + a native human pass validate the gate.</div>`;
+drawGate();
+
+// ---- Conditional analysis (paper Table 2): refusal within the comprehended subset ----
+function renderConditional(){
+  const C=D.conditional||{}; const bm=C.by_model||{};
+  const keys=Object.keys(bm).sort((a,b)=>(bm[b].romanized||0)-(bm[a].romanized||0));
+  const t=el('table',{class:'mat'});
+  const hr=el('tr',{});
+  ['Model','native ref|comp','romanized ref|comp (n)','OR †','Fisher p'].forEach(h=>hr.append(el('th',{},h)));
+  t.append(hr);
+  for(const k of keys){
+    const e=bm[k]; const tr=el('tr',{});
+    tr.append(el('td',{class:'mname'},md(k)));
+    tr.append(el('td',{},e.native==null?'–':e.native+'%'));
+    const rc=e.romanized==null?'–':e.romanized+'%';
+    const col=e.romanized>=80?'#2e7d32':(e.romanized>=50?'#b58900':'#c0392b');
+    const td=el('td',{},`${rc} (${e.n_roman})`); td.style.color=col; td.style.fontWeight='600';
+    tr.append(td);
+    tr.append(el('td',{},String(e.cmh_or)));
+    tr.append(el('td',{},String(e.fisher_p)));
+    t.append(tr);
+  }
+  $('#cond-table').innerHTML=''; $('#cond-table').append(t);
+  $('#cond-callout').innerHTML=`<div class="kv">${C.note||''}</div>`;
+  $('#cond-foot').innerHTML=`† CMH common odds ratio for refusal-given-comprehension from an <b>independent</b>
+    keyword classifier (Arabizi+Leetspeak strata; ITRANS excluded — the classifier is blind to Devanagari refusals).
+    "sep." = complete separation (zero refusals among non-comprehended items). ${C.selection_confound||''}`;
+}
+renderConditional();
+
+// ---- Direction transfer (positive half) ----
+function renderTransfer(){
+  const X=D.direction_transfer||{}; const rows=X.rows||[];
+  if(!rows.length){return;}
+  const t=el('table',{class:'mat'});
+  const hr=el('tr',{});['Model','room','ablate native','ablate random','gap'].forEach(h=>hr.append(el('th',{},h)));t.append(hr);
+  for(const r of rows){
+    const tr=el('tr',{});
+    tr.append(el('td',{class:'mname'},r.display+(r.well_powered?' ✓':'')));
+    tr.append(el('td',{},String(r.room)));
+    const nt=el('td',{},r.native==null?'–':r.native+'%');nt.style.color='#2e7d32';nt.style.fontWeight='600';tr.append(nt);
+    const rt=el('td',{},r.random==null?'–':r.random+'%');rt.style.color=r.random>20?'#b58900':'#8a94a6';tr.append(rt);
+    tr.append(el('td',{},r.gap==null?'–':'+'+r.gap));
+    if(!r.well_powered)tr.style.opacity='.6';
+    t.append(tr);
+  }
+  $('#xfer-table').innerHTML='';$('#xfer-table').append(t);
+  $('#xfer-foot').innerHTML=`<b>✓</b> = well-powered (room ≥15). ${X.note||''} ${X.caveat||''}`;
+}
+renderTransfer();
+
+// ---- Pre-registration (brief note) ----
+(function(){
+  const R=D.registration_detail||{};
+  const link=R.url?` <a href="${R.url}" target="_blank" rel="noopener" style="color:var(--accent)">view-only OSF link</a>`:'';
+  $('#prereg-note').innerHTML=`<div class="kv">${R.note||''}</div>
+    <div class="note" style="margin-top:10px">Registered on <b>${R.platform||'OSF'}</b>.${link}
+    &nbsp;·&nbsp; Per-hypothesis outcomes are in the <b>Hypotheses</b> tab.</div>`;
+})();
+
+// ---- Interactive stage diagram (Overview) ----
+function drawTwoRoute(){
+  const host=$('#ov-tworoute'); if(!host) return;
+  const W=640,H=470,RED='#c0392b',GRN='#2e7d32',YEL='#c99a2e';
+  const s=svg('svg',{viewBox:`0 0 ${W} ${H}`,width:'100%',style:'max-width:640px;display:block;margin:6px auto 0'});
+  const defs=svg('defs');
+  ['ar','arR','arG'].forEach((id,i)=>{const col=[ '#8a94a6',RED,GRN][i];
+    const mk=svg('marker',{id,viewBox:'0 0 10 10',refX:8,refY:5,markerWidth:6,markerHeight:6,orient:'auto'});
+    mk.append(svg('path',{d:'M0 0 L10 5 L0 10 z',fill:col}));defs.append(mk);});
+  s.append(defs);
+  function arrow(x1,y1,x2,y2,mk){s.append(svg('line',{x1,y1,x2,y2,stroke:mk==='arR'?RED:mk==='arG'?GRN:'#8a94a6','stroke-width':1.6,'marker-end':`url(#${mk||'ar'})`}));}
+  function box(x,y,w,h,lines,o={}){
+    const col=o.col||'#8a94a6';
+    const g=svg('g',{style:'cursor:'+(o.tab?'pointer':'default')});
+    const r=svg('rect',{x,y,width:w,height:h,rx:8,fill:col+'14',stroke:col,'stroke-width':o.thick?2.4:1.3});
+    g.append(r);
+    lines.forEach((ln,i)=>{const t=svg('text',{x:x+w/2,y:y+h/2-(lines.length-1)*8+i*16+1,'text-anchor':'middle','font-size':o.fs||12.5,fill:'var(--ink)','font-weight':o.bold?'700':'400'});t.textContent=ln;g.append(t);});
+    g.addEventListener('mousemove',e=>showTip(o.tip||lines.join(' '),e));
+    g.addEventListener('mouseleave',hideTip);
+    g.addEventListener('mouseover',()=>r.setAttribute('stroke-width',o.thick?3.2:2.2));
+    g.addEventListener('mouseout',()=>r.setAttribute('stroke-width',o.thick?2.4:1.3));
+    if(o.tab)g.addEventListener('click',()=>goTab(o.tab));
+    s.append(g);
+  }
+  function tag(x,y,txt){const t=svg('text',{x,y,'text-anchor':'middle','font-size':11,'font-style':'italic',fill:'var(--muted)'});t.textContent=txt;s.append(t);}
+  function foot(x,y,txt,col){const t=svg('text',{x,y,'text-anchor':'middle','font-size':11,'font-style':'italic',fill:col});t.textContent=txt;s.append(t);}
+  // prompt
+  box(230,10,180,42,['Harmful prompt','(native or romanized)'],{bold:true,tip:'The same request in native script vs a romanized / obfuscated script.'});
+  arrow(320,52,320,74);
+  // decision diamond
+  const cx=320,cy=112;
+  const dia=svg('polygon',{points:`${cx},${cy-36} ${cx+84},${cy} ${cx},${cy+36} ${cx-84},${cy}`,fill:YEL+'22',stroke:YEL,'stroke-width':1.7,style:'cursor:pointer'});
+  s.append(dia);
+  const dt=svg('text',{x:cx,y:cy+4,'text-anchor':'middle','font-size':13.5,'font-weight':700,fill:'var(--ink)'});dt.textContent='Model decodes it?';s.append(dt);
+  const gtag=svg('text',{x:cx+92,y:cy-4,'font-size':11,'font-style':'italic',fill:YEL});gtag.textContent='comprehension gate (§5.1)';s.append(gtag);
+  dia.addEventListener('mousemove',e=>showTip('The comprehension gate (§5.1) — the whole result turns on this one question. Click → Comprehension tab.',e));
+  dia.addEventListener('mouseleave',hideTip);
+  dia.addEventListener('mouseover',()=>dia.setAttribute('stroke-width',2.8));
+  dia.addEventListener('mouseout',()=>dia.setAttribute('stroke-width',1.7));
+  dia.addEventListener('click',()=>goTab('h4'));
+  // branch labels + arrows to columns
+  arrow(255,132,175,178,'arR');arrow(385,132,465,178,'arG');
+  foot(196,150,'No / partial',RED);foot(444,150,'Yes',GRN);
+  // left (bypass) column
+  box(30,180,200,42,['Harmful concept','not built'],{col:RED,tip:'Logit lens (§5.2): on romanized prompts the harmful concept rarely enters the residual stream (validated on Leetspeak: 0.74→0.04).'});
+  box(30,256,200,48,['Refusal direction inert;','patching non-specific'],{col:RED,tab:'h2',tip:'Direction ablation (§5.3) + activation patching (§5.4): the romanized direction carries no causal signal; matched≈random. Click → H2.'});
+  box(30,344,200,54,['Shallow "looks-off"','caution ⇒ BYPASS'],{col:RED,thick:true,bold:true,tip:'At most a shallow, early cue fires — the request is bypassed. This is the jailbreak.'});
+  // right (refusal) column
+  box(410,180,200,42,['Harmful concept','constructed'],{col:GRN,tip:'Where the prompt is decoded, the concept is built internally.'});
+  box(410,256,200,48,['Refusal direction','causal'],{col:GRN,tab:'h2',tip:'Direction ablation (§5.3): the native direction is potent (up to 94%). Click → H2.'});
+  box(410,344,200,54,['Deep semantic','REFUSAL'],{col:GRN,thick:true,bold:true,tab:'conditional',tip:'Where the model comprehends the romanized request, it refuses at near-native rates (83–100%). Click → Conditional.'});
+  // vertical arrows
+  arrow(130,222,130,254,'arR');arrow(130,304,130,342,'arR');
+  arrow(510,222,510,254,'arG');arrow(510,304,510,342,'arG');
+  // middle measurement tags
+  tag(320,207,'logit lens (§5.2)');
+  tag(320,285,'ablation (§5.3) · patching (§5.4)');
+  // footers
+  foot(130,420,'romanized prompts (mostly)',RED);
+  foot(510,420,'native · rare strong decoders',GRN);
+  host.innerHTML='';host.append(s);
+}
+drawTwoRoute();
+
+// ====================================================== HEATMAPS (shared) + H1/H4
+const HM_SCRIPTS=D.scripts;
+const NATIVE_SET=new Set(['arabic','english','devanagari']);
+function hmValue(mk,sc,metric){
+  if(metric==='comp'){const c=(D.comprehension_judge[mk]||{})[sc];return c?c.pct:null;}
+  const b=((D.comprehension[mk]||{}).scripts||{})[sc];if(!b)return null;
+  if(metric==='refusal')return b.refusal;
+  if(metric==='engaged')return b.engaged;
+  if(metric==='offtopic')return b.off_topic;
+  return null;
+}
+function compColor(v){ if(v==null)return '#21262d';
+  const t=v/100;const r=Math.round(248+(63-248)*t),g=Math.round(81+(185-81)*t),b=Math.round(73+(80-73)*t);
+  return `rgb(${r},${g},${b})`;}
+function scaleLegend(sel){const lg=$(sel);lg.innerHTML='';lg.append(el('span',{},'scale: '));
+  [['0%','#f85149'],['50%','#cdae3b'],['100%','#3fb950']].forEach(([l,c])=>{const s=el('span');s.append(el('i',{class:'sq',style:`background:${c}`}));s.append(document.createTextNode(' '+l));lg.append(s);});}
+const HM_NOTES={comp:'Clean-judge comprehension — Gemini-2.5-flash, Stage 08, 50 prompts/condition, 6 models. Native scripts (Arabic/English/Devanagari) are well-understood; romanized scripts are not. Gold ring = clears the parity gate. ⚠ Distorted-cell numbers are judge-inflated upper bounds (a stricter Claude judge + human rate them ~15–20pp lower).',
+  refusal:'Behavioural refusal rate (auto-classifier, n=50). Romanized refusal collapses — but cross-check off-topic.',
+  engaged:'Engaged % = refusal + on-topic (the model treated the text as the request that was asked). On topic is not harm: see the Recovery & mitigation tab for the separate harm judgment.',
+  offtopic:'Off-topic % — fluent but unrelated text: a silent comprehension failure that refusal-marker proxies miss.'};
+function drawHeatmapInto(metric,chartSel,noteSel,models){
+  const t=el('table',{class:'mat'});
+  const hr=el('tr');hr.append(el('th',{},'Model'));
+  HM_SCRIPTS.forEach(sc=>hr.append(el('th',{},SCRIPT_LABEL[sc])));t.append(hr);
+  models.forEach(mk=>{
+    const tr=el('tr');const nm=el('td',{class:'mname'});nm.append(document.createTextNode(md(mk)));
+    const _role=(D.models[mk]||{}).role||'';if(_role)nm.append(el('span',{class:'pill'},_role));tr.append(nm);
+    HM_SCRIPTS.forEach(sc=>{const v=hmValue(mk,sc,metric);const td=el('td');const d=el('div',{class:'cell'});
+      d.style.background=compColor(v);d.style.padding='10px 4px';d.textContent=v==null?'·':(v+'%');
+      if(metric==='comp'){const c=(D.comprehension_judge[mk]||{})[sc];if(c&&c.clears_gate)d.classList.add('gold-ring');}
+      td.append(d);tr.append(td);});
+    t.append(tr);});
+  $(chartSel).innerHTML='';$(chartSel).append(t);
+  if(noteSel)$(noteSel).textContent=HM_NOTES[metric]||'';
+}
+const behavModels=Object.keys(D.comprehension);
+const judgeModelsList=Object.keys(D.comprehension_judge);
+
+// ---- H1 behavioural gap bars ----
+function drawH1Gap(){
+  const pairs=[['arabic','arabizi'],['english','leetspeak'],['devanagari','itrans']];
+  const models=behavModels;
+  const W=820,rowH=30,m={l:170,r:36,t:10,b:28};const H=m.t+m.b+models.length*rowH;const iw=W-m.l-m.r;
+  const X=v=>m.l+iw*v/100;
+  const s=svg('svg',{viewBox:`0 0 ${W} ${H}`,width:W,height:H});
+  for(let v=0;v<=100;v+=20){const gx=X(v);s.append(svg('line',{x1:gx,y1:m.t,x2:gx,y2:H-m.b,stroke:'#ffffff0a'}));
+    const t=svg('text',{x:gx,y:H-m.b+16,'text-anchor':'middle',fill:'var(--muted)','font-size':10});t.textContent=v+'%';s.append(t);}
+  models.forEach((mk,i)=>{
+    const beh=(D.comprehension[mk]||{}).scripts||{};
+    let nv=[],rv=[];pairs.forEach(([n,r])=>{if(beh[n])nv.push(beh[n].refusal);if(beh[r])rv.push(beh[r].refusal);});
+    const nAvg=nv.length?nv.reduce((a,b)=>a+b,0)/nv.length:null, rAvg=rv.length?rv.reduce((a,b)=>a+b,0)/rv.length:null;
+    const y=m.t+i*rowH+rowH/2;
+    const nm=svg('text',{x:m.l-12,y:y+4,'text-anchor':'end',fill:'var(--ink)','font-size':12});nm.textContent=md(mk);s.append(nm);
+    if(nAvg!=null){const r=svg('rect',{x:m.l,y:y-9,width:Math.max(0,X(nAvg)-m.l),height:8,rx:2,fill:'#3fb950'});
+      r.addEventListener('mousemove',e=>showTip(`<b>${md(mk)}</b> · native refusal avg <b>${Math.round(nAvg)}%</b>`,e));r.addEventListener('mouseleave',hideTip);s.append(r);
+      const tt=svg('text',{x:X(nAvg)+5,y:y-2,fill:'#3fb950','font-size':10});tt.textContent=Math.round(nAvg);s.append(tt);}
+    if(rAvg!=null){const r=svg('rect',{x:m.l,y:y+1,width:Math.max(0,X(rAvg)-m.l),height:8,rx:2,fill:'#f85149'});
+      r.addEventListener('mousemove',e=>showTip(`<b>${md(mk)}</b> · romanized refusal avg <b>${Math.round(rAvg)}%</b><br>gap ≈ ${Math.round(nAvg-rAvg)}pp`,e));r.addEventListener('mouseleave',hideTip);s.append(r);
+      const tt=svg('text',{x:X(rAvg)+5,y:y+8,fill:'#f85149','font-size':10});tt.textContent=Math.round(rAvg);s.append(tt);}
+  });
+  $('#h1-gap').innerHTML='';$('#h1-gap').append(s);
+  const lg=$('#h1-gap-legend');lg.innerHTML='';
+  [['native script refusal','#3fb950'],['romanized refusal','#f85149']].forEach(([l,c])=>{const sp=el('span');sp.append(el('i',{class:'sq',style:`background:${c}`}));sp.append(document.createTextNode(' '+l));lg.append(sp);});
+  lg.append(el('span',{},'(avg over the 3 script pairs; behavioural readout, n=50)'));
+}
+$('#h1-metric').querySelectorAll('button').forEach(b=>b.onclick=()=>{
+  $('#h1-metric').querySelectorAll('button').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active');drawHeatmapInto(b.dataset.m,'#h1-hm','#h1-note',behavModels);});
+scaleLegend('#h1-legend');
+drawH1Gap();drawHeatmapInto('refusal','#h1-hm','#h1-note',behavModels);
+
+// ---- H4 comprehension heatmap (gate scatter handled by drawGate above) ----
+scaleLegend('#h4-legend');
+drawHeatmapInto('comp','#h4-hm','#h4-note',judgeModelsList);
+
+// ====================================================== H3 FEATURE OVERLAP
+function drawH3(mk){
+  const arms=[['arabizi','Arabic ↔ Arabizi'],['leetspeak','English ↔ Leetspeak'],['itrans','Devanagari ↔ ITRANS']];
+  const ladder=[['paraphrase','paraphrase','#3fb950'],['xlang','language','#bc8cff'],['script','SCRIPT','#4c9aff'],['benign','benign','#d29922']];
+  const data=D.jaccard[mk]||{};
+  const cj=D.comprehension_judge[mk]||{};
+  const W=820,panelH=150,gap=20,m={t:36,b:42};
+  const pw=(W-(arms.length-1)*gap)/arms.length;
+  const H=m.t+panelH+m.b;
+  const s=svg('svg',{viewBox:`0 0 ${W} ${H}`,width:W,height:H});
+  arms.forEach(([arm,label],ai)=>{
+    const ox=ai*(pw+gap);const py0=m.t,py1=m.t+panelH;const Y=v=>py1-(py1-py0)*Math.min(1,v);
+    const c=cj[arm];
+    // comprehension-gate shading + badge
+    if(c){
+      if(c.clears_gate) s.append(svg('rect',{x:ox,y:py0,width:pw,height:panelH,fill:'#e3b34114',stroke:'#e3b34155'}));
+      else if(c.pct<60) s.append(svg('rect',{x:ox,y:py0,width:pw,height:panelH,fill:'#d2992210'}));
+      const col=c.clears_gate?'#e3b341':(c.pct<60?'#d29922':'#9aa7b4');
+      const bt=svg('text',{x:ox+pw/2,y:m.t-20,'text-anchor':'middle',fill:col,'font-size':10.5,'font-weight':600});
+      bt.textContent=`comprehension ${c.pct}% ${c.clears_gate?'✓ clean cell':(c.pct<60?'✗ confounded':'~ borderline')}`;s.append(bt);
+    }
+    [[0.4,'#3fb95066'],[0.6,'#f8514966']].forEach(([th,cc])=>s.append(svg('line',{x1:ox,y1:Y(th),x2:ox+pw,y2:Y(th),stroke:cc,'stroke-dasharray':'3 3'})));
+    const lab=svg('text',{x:ox+pw/2,y:H-8,'text-anchor':'middle',fill:'var(--ink)','font-size':11.5});lab.textContent=label;s.append(lab);
+    const a=data[arm];
+    if(!a){const t=svg('text',{x:ox+pw/2,y:m.t+panelH/2,'text-anchor':'middle',fill:'var(--dim)','font-size':11});t.textContent='no SAE data';s.append(t);return;}
+    const bw=pw/ladder.length*0.6;
+    ladder.forEach(([key,kl,col],bi)=>{
+      const v=a[key];if(v==null||v.j==null)return;
+      const bx=ox+(bi+0.5)*(pw/ladder.length)-bw/2, cx=bx+bw/2;
+      const r=svg('rect',{x:bx,y:Y(v.j),width:bw,height:py1-Y(v.j),rx:2,fill:col});
+      r.addEventListener('mousemove',e=>showTip(`<b>${label}</b><br>${kl}: <b>${v.j.toFixed(3)}</b>`+(v.lo!=null?`<br>99% CI [${v.lo.toFixed(2)}, ${v.hi.toFixed(2)}]`:''),e));r.addEventListener('mouseleave',hideTip);s.append(r);
+      if(v.lo!=null&&v.hi!=null){s.append(svg('line',{x1:cx,y1:Y(v.lo),x2:cx,y2:Y(v.hi),stroke:'#e6edf3bb','stroke-width':1.3}));
+        [v.lo,v.hi].forEach(b=>s.append(svg('line',{x1:cx-3,y1:Y(b),x2:cx+3,y2:Y(b),stroke:'#e6edf3bb','stroke-width':1.3})));}
+      const vt=svg('text',{x:cx,y:Y(v.hi!=null?v.hi:v.j)-3,'text-anchor':'middle',fill:col,'font-size':9.5});vt.textContent=v.j.toFixed(2);s.append(vt);
+    });
+  });
+  $('#h3-chart').innerHTML='';$('#h3-chart').append(s);
+  const lg=$('#h3-legend');lg.innerHTML='';
+  ladder.forEach(([k,kl,c])=>{const sp=el('span');sp.append(el('i',{class:'sq',style:`background:${c}`}));sp.append(document.createTextNode(' '+kl));lg.append(sp);});
+  lg.append(el('span',{},'· whisker = 99% CI · dashed 0.4/0.6 thresholds · top badge = comprehension gate'));
+  const hd=D.jaccard_headline[mk]||{};
+  const tcNote=hd.transcoder?` <b style="color:var(--gold)">${md(mk)} uses an MLP transcoder</b> — its overlap is an analogue, NOT directly comparable to the residual-SAE models.`:'';
+  $('#h3-callout').innerHTML=`<div class="kv">Read each panel against its <b>comprehension badge</b>: a low SCRIPT overlap is only
+    interpretable where comprehension is high. Across the grid only <b style="color:var(--gold)">Gemma-2-9B-it × Leetspeak</b>
+    is a clean cell (86 % + features still fragment); the other distorted arms are <i>confounded with non-comprehension</i>.
+    Pattern: <b>paraphrase HIGH</b> (tracks meaning) but <b>SCRIPT LOW ≈ benign LOW</b> → fragmentation is generic surface, not harm-specific.${tcNote}</div>`;
+}
+// cross-model headline sweep (Tier A, all 9 models, 99% CI)
+function drawH3Sweep(){
+  const order=Object.keys(D.jaccard_headline).sort((a,b)=>D.jaccard_headline[a].j-D.jaccard_headline[b].j);
+  const W=820,rowH=30,m={l:180,r:36,t:14,b:30};const H=m.t+m.b+order.length*rowH;const iw=W-m.l-m.r;
+  const xmax=0.8, X=v=>m.l+iw*Math.min(v,xmax)/xmax;
+  const s=svg('svg',{viewBox:`0 0 ${W} ${H}`,width:W,height:H});
+  [[0.4,'#3fb950aa'],[0.6,'#f85149aa']].forEach(([th,c])=>{s.append(svg('line',{x1:X(th),y1:m.t,x2:X(th),y2:H-m.b,stroke:c,'stroke-dasharray':'4 3'}));
+    const t=svg('text',{x:X(th),y:m.t-3,fill:c,'font-size':9.5,'text-anchor':'middle'});t.textContent=th;s.append(t);});
+  for(let v=0;v<=xmax;v+=0.2){const gx=X(v);const t=svg('text',{x:gx,y:H-m.b+16,'text-anchor':'middle',fill:'var(--muted)','font-size':10});t.textContent=v.toFixed(1);s.append(t);}
+  order.forEach((mk,i)=>{
+    const v=D.jaccard_headline[mk];const y=m.t+i*rowH+rowH/2;
+    const nm=svg('text',{x:m.l-12,y:y+4,'text-anchor':'end',fill:'var(--ink)','font-size':11.5});nm.textContent=md(mk)+(v.transcoder?' ⟨tc⟩':'');s.append(nm);
+    const supported=(v.hi!=null&&v.hi<0.4);
+    const col=v.transcoder?'#9aa7b4':(supported?'#4c9aff':(v.j>=0.4?'#f85149':'#d29922'));
+    s.append(svg('rect',{x:m.l,y:y-7,width:Math.max(0,X(v.j)-m.l),height:14,rx:2,fill:col,'fill-opacity':v.transcoder?0.55:1}));
+    if(v.lo!=null&&v.hi!=null){s.append(svg('line',{x1:X(v.lo),y1:y,x2:X(v.hi),y2:y,stroke:'#e6edf3cc','stroke-width':1.3}));
+      [v.lo,v.hi].forEach(b=>s.append(svg('line',{x1:X(b),y1:y-4,x2:X(b),y2:y+4,stroke:'#e6edf3cc','stroke-width':1.3})));}
+    const vt=svg('text',{x:(v.hi!=null?X(v.hi):X(v.j))+6,y:y+4,fill:col,'font-size':10.5});vt.textContent=v.j.toFixed(2);s.append(vt);
+    const hit=svg('rect',{x:m.l,y:y-rowH/2,width:iw,height:rowH,fill:'transparent'});
+    hit.addEventListener('mousemove',e=>showTip(`<b>${md(mk)}</b>${v.transcoder?' (transcoder analogue)':''}<br>Tier A J=<b>${v.j.toFixed(3)}</b><br>99% CI [${v.lo!=null?v.lo.toFixed(2):'?'}, ${v.hi!=null?v.hi.toFixed(2):'?'}]<br>${v.verdict||''}`,e));hit.addEventListener('mouseleave',hideTip);s.append(hit);
+  });
+  $('#h3-sweep').innerHTML='';$('#h3-sweep').append(s);
+  const lg=$('#h3-sweep-legend');lg.innerHTML='';
+  [['CI < 0.4 → supports fragmentation','#4c9aff'],['CI overlaps threshold','#d29922'],['≥ 0.4 (indeterminate)','#f85149'],['transcoder analogue ⟨tc⟩','#9aa7b4']].forEach(([l,c])=>{const sp=el('span');sp.append(el('i',{class:'sq',style:`background:${c}`}));sp.append(document.createTextNode(' '+l));lg.append(sp);});
+}
+const h3sel=$('#h3-model');
+Object.keys(D.jaccard).forEach(k=>h3sel.append(el('option',{value:k},md(k))));
+h3sel.value=Object.keys(D.jaccard).includes('gemma_2_9b_it')?'gemma_2_9b_it':Object.keys(D.jaccard)[0];
+h3sel.onchange=()=>drawH3(h3sel.value);
+drawH3(h3sel.value);drawH3Sweep();
+
+// ====================================================== H5 GEOMETRY
+function drawH5(mk){
+  const g=D.geometry[mk]||{};const sil=g.silhouette||{};const cos=g.cosine||{};
+  // silhouette bars
+  const scripts=D.scripts.filter(sc=>sil[sc]!=null);
+  const W=820,m={l:96,r:36,t:14,b:28},barH=26;const H=m.t+m.b+scripts.length*barH;
+  const vmax=Math.max(0.4,D.wang_silhouette,...scripts.map(sc=>sil[sc]||0))*1.12;
+  const X=v=>m.l+(W-m.l-m.r)*v/vmax;
+  const s=svg('svg',{viewBox:`0 0 ${W} ${H}`,width:W,height:H});
+  s.append(svg('line',{x1:X(D.wang_silhouette),y1:m.t,x2:X(D.wang_silhouette),y2:H-m.b,stroke:'#e3b341','stroke-dasharray':'5 4'}));
+  const wl=svg('text',{x:X(D.wang_silhouette),y:m.t-3,fill:'#e3b341','font-size':10,'text-anchor':'middle'});wl.textContent='Wang 0.24';s.append(wl);
+  scripts.forEach((sc,i)=>{const y=m.t+i*barH+barH/2;const v=sil[sc];
+    const nm=svg('text',{x:m.l-10,y:y+4,'text-anchor':'end',fill:'var(--ink)','font-size':11.5});nm.textContent=SCRIPT_LABEL[sc];s.append(nm);
+    const col=NATIVE_SET.has(sc)?'#4c9aff':'#9aa7b4';
+    const r=svg('rect',{x:m.l,y:y-8,width:Math.max(0,X(v)-m.l),height:16,rx:2,fill:col});
+    r.addEventListener('mousemove',e=>showTip(`<b>${SCRIPT_LABEL[sc]}</b> silhouette <b>${v.toFixed(3)}</b>`,e));r.addEventListener('mouseleave',hideTip);s.append(r);
+    const vt=svg('text',{x:X(v)+5,y:y+4,fill:col,'font-size':10.5});vt.textContent=v.toFixed(3);s.append(vt);});
+  for(let v=0;v<=vmax;v+=0.1){const gx=X(v);const t=svg('text',{x:gx,y:H-m.b+16,'text-anchor':'middle',fill:'var(--muted)','font-size':10});t.textContent=v.toFixed(1);s.append(t);}
+  $('#h5-sil').innerHTML='';$('#h5-sil').append(s);
+  // cosine bars
+  const pairs=Object.keys(cos);
+  const W2=820,m2={l:170,r:30,t:6,b:24},bh=26;const H2=m2.t+m2.b+pairs.length*bh;
+  const cmin=-0.2,cmax=1;const X2=v=>m2.l+(W2-m2.l-m2.r)*(v-cmin)/(cmax-cmin);
+  const s2=svg('svg',{viewBox:`0 0 ${W2} ${H2}`,width:W2,height:H2});
+  s2.append(svg('line',{x1:X2(0),y1:m2.t,x2:X2(0),y2:H2-m2.b,stroke:'#ffffff22'}));
+  pairs.forEach((p,i)=>{const y=m2.t+i*bh+bh/2;const v=cos[p];
+    const nm=svg('text',{x:m2.l-10,y:y+4,'text-anchor':'end',fill:'var(--ink)','font-size':11});nm.textContent=p.replace('__',' ↔ ').replace(/_/g,' ');s2.append(nm);
+    const x0=X2(0),x1=X2(v);const col=v<0.3?'#3fb950':(v<0.6?'#d29922':'#f85149');
+    const r=svg('rect',{x:Math.min(x0,x1),y:y-8,width:Math.max(1,Math.abs(x1-x0)),height:16,rx:2,fill:col});
+    r.addEventListener('mousemove',e=>showTip(`<b>${p.replace('__',' ↔ ')}</b> cosine <b>${v.toFixed(3)}</b>`,e));r.addEventListener('mouseleave',hideTip);s2.append(r);
+    const vt=svg('text',{x:x1+(v>=0?5:-5),y:y+4,fill:col,'font-size':10.5,'text-anchor':v>=0?'start':'end'});vt.textContent=v.toFixed(2);s2.append(vt);});
+  $('#h5-cos').innerHTML='';$('#h5-cos').append(s2);
+  const lg=$('#h5-legend');lg.innerHTML='';
+  [['native script','#4c9aff'],['romanized script','#9aa7b4'],['cosine: <0.3 / <0.6 / ≥0.6','#d29922']].forEach(([l,c])=>{const sp=el('span');sp.append(el('i',{class:'sq',style:`background:${c}`}));sp.append(document.createTextNode(' '+l));lg.append(sp);});
+  $('#h5-callout').innerHTML=`<div class="kv">Silhouette peaks well below Wang's 0.24 and is model-specific — <b>H5
+    indeterminate</b> (0.24 not reproduced on any of the 9 models). Cosine shows cross-script directions are NOT
+    uniformly orthogonal (e.g. Devanagari↔ITRANS aligns; Arabic↔Arabizi much less) — geometry is heterogeneous, not a law.</div>`;
+}
+const h5sel=$('#h5-model');
+Object.keys(D.geometry).forEach(k=>h5sel.append(el('option',{value:k},md(k))));
+h5sel.value=Object.keys(D.geometry).includes('qwen3_4b')?'qwen3_4b':Object.keys(D.geometry)[0];
+h5sel.onchange=()=>drawH5(h5sel.value);
+drawH5(h5sel.value);
+
+// ====================================================== HYPOTHESES
+const stClass=s=>{const x=s.toLowerCase();if(x.includes('reject'))return'st-rej';if(x.includes('confirm'))return'st-conf';if(x.includes('indeter'))return'st-ind';return'st-expl';};
+const stColor=s=>{const x=s.toLowerCase();if(x.includes('reject'))return'var(--bad)';if(x.includes('confirm'))return'var(--good)';if(x.includes('indeter'))return'var(--muted)';return'var(--gold)';};
+const hl=$('#hyp-list');
+D.hypotheses.forEach(h=>{
+  const c=el('div',{class:'card hyp'});
+  c.style.borderLeftColor=stColor(h.status);
+  c.innerHTML=`<div class="hid">${h.id}</div>
+    <h3>${h.title}<span class="status ${stClass(h.status)}">${h.status}</span></h3>
+    <div class="kv"><b>Question:</b> ${h.question||h.claim}</div>
+    <div class="kv"><b>Experiment / method:</b> ${h.method||'—'} <span class="pill">${h.models||''}</span></div>
+    <div class="kv"><b>Rejection criterion:</b> ${h.criterion}</div>
+    <div class="kv"><b>Result:</b> ${h.result}</div>`;
+  hl.append(c);
+});
+
+// ====================================================== H2 DIRECTION
+function drawH2Bars(){
+  const models=Object.keys(D.h2).filter(k=>(D.h2[k]||{})[h2tier]).sort((a,b)=>(((D.h2[b]||{})[h2tier]||{}).same_target_pp||0)-(((D.h2[a]||{})[h2tier]||{}).same_target_pp||0));
+  const rowH=34,W=820,m={l:170,r:30,t:10,b:30};
+  const H=m.t+m.b+models.length*rowH;
+  const iw=W-m.l-m.r;
+  const X=v=>m.l+iw*v/100;
+  const s=svg('svg',{viewBox:`0 0 ${W} ${H}`,width:W,height:H});
+  for(let v=0;v<=100;v+=20){const gx=X(v);
+    s.append(svg('line',{x1:gx,y1:m.t,x2:gx,y2:H-m.b,stroke:'#ffffff0a'}));
+    const t=svg('text',{x:gx,y:H-m.b+18,'text-anchor':'middle',fill:'var(--muted)','font-size':11});t.textContent=v+'pp';s.append(t);}
+  models.forEach((mk,i)=>{
+    const h=D.h2[mk][h2tier];const y=m.t+i*rowH+rowH/2;
+    const nm=svg('text',{x:m.l-12,y:y+4,'text-anchor':'end',fill:'var(--ink)','font-size':12.5});nm.textContent=md(mk);s.append(nm);
+    // same-target bar
+    const bw=X(h.same_target_pp)-m.l;
+    const r=svg('rect',{x:m.l,y:y-9,width:Math.max(0,bw),height:14,rx:3,fill:'#4c9aff'});
+    r.style.cursor='pointer';
+    r.addEventListener('mousemove',e=>showTip(`<b>${md(mk)}</b><br>same-target contrast <b>+${h.same_target_pp}pp</b> (real signal)<br>forward−reverse <b>${h.ff_minus_rf_pp}pp</b> (confounded)<br>${SCRIPT_LABEL[h.native]} ↔ ${SCRIPT_LABEL[h.variant]} · L${h.layer}`,e));
+    r.addEventListener('mouseleave',hideTip);s.append(r);
+    const vt=svg('text',{x:X(h.same_target_pp)+6,y:y+4,fill:'#4c9aff','font-size':11.5,'font-weight':600});vt.textContent='+'+h.same_target_pp;s.append(vt);
+    // ff-rf tick
+    const fx=X(Math.max(0,h.ff_minus_rf_pp));
+    s.append(svg('line',{x1:fx,y1:y-12,x2:fx,y2:y+12,stroke:'#f85149','stroke-width':2.5}));
+  });
+  $('#h2-bars').innerHTML='';$('#h2-bars').append(s);
+  const lg=$('#h2-bars-legend');lg.innerHTML='';
+  const a=el('span');a.append(el('i',{class:'sq',style:'background:#4c9aff'}));a.append(document.createTextNode(' same-target contrast (confound-free)'));lg.append(a);
+  const b=el('span');b.append(el('i',{class:'sq',style:'background:#f85149'}));b.append(document.createTextNode(' forward − reverse (registered, saturation-confounded)'));lg.append(b);
+}
+let h2mode='ablation', h2tier='tier_a';
+function drawH2Matrix(mk){
+  const src=h2mode==='addition'?(D.h2_addition||{}):D.h2;
+  const h=(src[mk]||{})[h2tier];
+  if(!h){
+    $('#h2-matrix').innerHTML=`<div class="note" style="padding:18px">No ${h2mode} run for <b>${md(mk)}</b> on this script pair yet.</div>`;
+    $('#h2-callout').innerHTML='';return;
+  }
+  const c=h.cells, verb=h2mode==='addition'?'add':'ablate';
+  const nv=SCRIPT_LABEL[h.native],vr=SCRIPT_LABEL[h.variant];
+  // which target column has the room (informative) — primary_target; the other is saturated
+  const infNative=(h.primary_target===h.native);
+  const nativeColRoom=Math.max(c.native_dir_native_tgt.room||0,c.variant_dir_native_tgt.room||0);
+  const variantColRoom=Math.max(c.native_dir_variant_tgt.room||0,c.variant_dir_variant_tgt.room||0);
+  const satNative=nativeColRoom<10, satVariant=variantColRoom<10;
+  const cellHtml=(cell,sat)=>{const col=compColor(cell.rate);
+    return `<td><div class="cell" style="background:${col};padding:14px 6px;${sat?'opacity:.4':''}">
+      ${cell.rate}%<div style="font-size:10px;font-weight:400;color:#06121fbb">${cell.flips}/${cell.room} room</div></div></td>`;};
+  const colTag=s=>s?'<span style="font-size:10px;color:var(--dim)">saturated</span>':'<span style="font-size:10px;color:var(--good)">informative</span>';
+  const t=el('table',{class:'mat'});
+  t.innerHTML=`<tr><th></th><th>target: ${nv}<br>${colTag(satNative)}</th><th>target: ${vr}<br>${colTag(satVariant)}</th></tr>
+    <tr><td class="mname">${verb} <b>${nv}</b> direction</td>${cellHtml(c.native_dir_native_tgt,satNative)}${cellHtml(c.native_dir_variant_tgt,satVariant)}</tr>
+    <tr><td class="mname">${verb} <b>${vr}</b> direction</td>${cellHtml(c.variant_dir_native_tgt,satNative)}${cellHtml(c.variant_dir_variant_tgt,satVariant)}</tr>`;
+  $('#h2-matrix').innerHTML='';$('#h2-matrix').append(t);
+  // informative-column contrast (native-dir vs variant-dir on the room-bearing target)
+  const tgtLab=infNative?nv:vr, room=infNative?nativeColRoom:variantColRoom;
+  const ndir=infNative?c.native_dir_native_tgt.rate:c.native_dir_variant_tgt.rate;
+  const vdir=infNative?c.variant_dir_native_tgt.rate:c.variant_dir_variant_tgt.rate;
+  const flipDir=h2mode==='addition'?'to refusal':'to compliance';
+  const dep=h2mode==='addition'?` <span class="pill" style="color:var(--warn)">addition is deprecated from the paper headline (inverse op; native target has ~0 room) — ablation is the registered/headline mode</span>`:'';
+  $('#h2-callout').innerHTML=`<div class="kv">${h2mode==='addition'?'Adding':'Ablating'} at L${h.layer}${h.alpha!=null?` (α=${h.alpha})`:''}. On the <b>${tgtLab}</b> target
+    (room = ${room}, reliable): the <b>${infNative?nv:vr}</b> direction flips <b style="color:var(--good)">${ndir}%</b> ${flipDir}, but the
+    <b>${infNative?vr:nv}</b> direction flips only <b style="color:var(--bad)">${vdir}%</b> — a <b>+${(ndir-vdir).toFixed(1)}pp</b> same-target
+    contrast. Refusal is driven by the <i>native-script</i> direction, not a shared one.${dep}</div>`;
+}
+const h2sel=$('#h2-model');
+Object.keys(D.h2).forEach(k=>h2sel.append(el('option',{value:k},md(k))));
+h2sel.value=Object.keys(D.h2).includes('qwen3_4b')?'qwen3_4b':Object.keys(D.h2)[0];
+const H2_TIERS=[['tier_a','Arabic ↔ Arabizi'],['tier_c','Devanagari ↔ ITRANS'],['tier_e','English ↔ Leetspeak']];
+const h2tsel=$('#h2-tier');
+H2_TIERS.forEach(([v,l])=>h2tsel.append(el('option',{value:v},l)));
+h2tsel.value=h2tier;
+function redrawH2(){drawH2Bars();drawH2Matrix(h2sel.value);}
+h2sel.onchange=()=>drawH2Matrix(h2sel.value);
+h2tsel.onchange=()=>{h2tier=h2tsel.value;redrawH2();};
+$('#h2-mode').querySelectorAll('button').forEach(b=>b.onclick=()=>{
+  $('#h2-mode').querySelectorAll('button').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active');h2mode=b.dataset.mode;drawH2Matrix(h2sel.value);});
+redrawH2();
+
+// ====================================================== H6 PATCHING
+const h6sel=$('#h6-model');
+Object.keys(D.h6.curves).forEach(k=>h6sel.append(el('option',{value:k},md(k))));
+function drawH6(mk){
+  const cur=D.h6.curves[mk];const ver=D.h6.verdicts[mk];
+  const W=820,H=420,m={l:54,r:20,t:20,b:46};
+  const iw=W-m.l-m.r,ih=H-m.t-m.b;
+  const all=[].concat(cur.matched,cur.random,cur.self,cur.benign);
+  const xs=all.map(p=>p.layer);const xmin=Math.min(...xs),xmax=Math.max(...xs);
+  const ymax=Math.max(10,...all.map(p=>p.rate))*1.1;
+  const X=v=>m.l+iw*(v-xmin)/(xmax-xmin||1),Y=v=>m.t+ih*(1-v/ymax);
+  const s=svg('svg',{viewBox:`0 0 ${W} ${H}`,width:W,height:H});
+  // grid + axes
+  for(let v=0;v<=ymax;v+=20){const gy=Y(v);s.append(svg('line',{x1:m.l,y1:gy,x2:m.l+iw,y2:gy,stroke:'#ffffff08'}));
+    const t=svg('text',{x:m.l-8,y:gy+4,'text-anchor':'end',fill:'var(--muted)','font-size':11});t.textContent=v+'%';s.append(t);}
+  for(let v=Math.ceil(xmin/5)*5;v<=xmax;v+=5){const gx=X(v);
+    const t=svg('text',{x:gx,y:m.t+ih+18,'text-anchor':'middle',fill:'var(--muted)','font-size':11});t.textContent='L'+v;s.append(t);}
+  s.append(svg('line',{x1:m.l,y1:m.t,x2:m.l,y2:m.t+ih,stroke:'var(--line)'}));
+  s.append(svg('line',{x1:m.l,y1:m.t+ih,x2:m.l+iw,y2:m.t+ih,stroke:'var(--line)'}));
+  const xt=svg('text',{x:m.l+iw/2,y:H-8,'text-anchor':'middle',fill:'var(--ink)','font-size':13});xt.textContent='Patch layer';s.append(xt);
+  const yt=svg('text',{x:14,y:m.t+ih/2,'text-anchor':'middle',fill:'var(--ink)','font-size':13,transform:`rotate(-90 14 ${m.t+ih/2})`});yt.textContent='Refusal recovery rate';s.append(yt);
+  // peak line
+  if(cur.peak_layer!=null){const px=X(cur.peak_layer);s.append(svg('line',{x1:px,y1:m.t,x2:px,y2:m.t+ih,stroke:'#ffffff22','stroke-dasharray':'4 4'}));}
+  const series=[['matched','#4c9aff','matched (cross-script)'],['random','#f85149','random harmful'],['benign','#3fb950','benign'],['self','#9aa7b4','self (no-op)']];
+  series.forEach(([key,col])=>{
+    const pts=cur[key];if(!pts||!pts.length)return;
+    const dpath=pts.map((p,i)=>(i?'L':'M')+X(p.layer).toFixed(1)+' '+Y(p.rate).toFixed(1)).join(' ');
+    s.append(svg('path',{d:dpath,fill:'none',stroke:col,'stroke-width':2.2,'stroke-opacity':.9}));
+    pts.forEach(p=>{const c=svg('circle',{cx:X(p.layer),cy:Y(p.rate),r:3,fill:col});
+      c.addEventListener('mousemove',e=>showTip(`<b>${key}</b> · L${p.layer}<br>recovery <b>${p.rate}%</b>`,e));
+      c.addEventListener('mouseleave',hideTip);s.append(c);});
+  });
+  $('#h6-chart').innerHTML='';$('#h6-chart').append(s);
+  const lg=$('#h6-legend');lg.innerHTML='';
+  series.forEach(([k,c,lab])=>{const sp=el('span');sp.append(el('i',{class:'dot',style:`background:${c}`}));sp.append(document.createTextNode(' '+lab));lg.append(sp);});
+  $('#h6-verdict').innerHTML=`<div class="kv"><b>matched − random:</b> <span style="color:${ver.matched_minus_random<10?'var(--bad)':'var(--good)'}">${ver.matched_minus_random>0?'+':''}${ver.matched_minus_random}pp</span>
+     (matched ${ver.matched}% vs random ${ver.random}%) · <b>benign:</b> ${ver.benign}% · <b>concept present in variant:</b> ${(ver.concept_frac*100).toFixed(1)}%</div>
+     <div class="kv"><b>H6a:</b> <span class="status st-rej">${ver.h6a}</span></div>
+     <div class="kv"><b>H6c:</b> ${ver.h6c}</div>
+     <div class="note">matched ≈ random ⇒ the patch is non-specific (rejects parse-bottleneck); benign ≈ 0 + concept not represented ⇒ the position carries a transferable decision/harm-state, so script-anchoring is <b>not declarable</b>.</div>`;
+}
+h6sel.onchange=()=>drawH6(h6sel.value);
+drawH6(Object.keys(D.h6.curves)[0]);
+
+// ====================================================== SETUP
+(function(){
+  // models table
+  const t=el('table',{class:'mat'});
+  t.append(el('tr',{html:'<th>Model</th><th>Family</th><th>Params</th><th>Layers</th><th>Hidden</th><th>Causal L</th><th>SAE</th>'}));
+  D.models_detail.forEach(m=>{
+    const tr=el('tr');
+    tr.innerHTML=`<td class="mname">${m.display}</td><td>${m.family}</td><td>${m.params||'·'}</td>
+      <td>${m.layers||'·'}</td><td>${m.dim||'·'}</td>
+      <td><b style="color:var(--accent)">${m.causal_layer!=null?('L'+m.causal_layer):'·'}</b></td>
+      <td style="font-size:11px;color:var(--muted)">${m.sae?(m.sae+(m.sae_kind==='transcoder'?' <span class="pill" style="color:var(--gold)">transcoder</span>':'')):'—'}</td>`;
+    t.append(tr);
+  });
+  $('#setup-models').append(t);
+
+  // tiers
+  const kindColor={harmful:'var(--bad)',benign:'var(--good)'};
+  const tw=$('#setup-tiers');tw.style.gridTemplateColumns='1fr 1fr';
+  D.tiers.forEach(t=>{
+    tw.append(el('div',{class:'card',style:'margin:0',html:
+      `<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+        <span style="font-family:var(--mono);font-size:18px;font-weight:700;color:var(--ink)">Tier ${t.tier}</span>
+        <span style="font-size:15px">${t.name}</span>
+        <span class="pill" style="color:${kindColor[t.kind]}">${t.kind}</span></div>
+      <div class="kv"><b>${t.count}</b> · scripts: ${t.pair}</div>
+      <div class="kv" style="font-size:12.5px;color:var(--dim)">source: ${t.source}</div>
+      ${t.reviewed?`<div class="kv" style="font-size:12.5px;color:var(--good)">✓ reviewed: ${t.reviewed}</div>`:''}
+      <div class="kv">${t.role}</div>`}));
+  });
+
+  // experiments cards
+  const ew=$('#setup-exp');ew.style.gridTemplateColumns='1fr 1fr';
+  D.experiments.forEach(e=>{
+    ew.append(el('div',{class:'card',style:'margin:0',html:
+      `<div style="display:flex;justify-content:space-between;align-items:baseline">
+        <h3 style="margin:0 0 4px;font-size:15px">${e.name}</h3>
+        <span class="pill">${e.phase}</span></div>
+      <div class="kv"><b>Q:</b> ${e.question}</div>
+      <div class="kv" style="font-size:13px"><b>How:</b> ${e.method}</div>
+      <div class="kv" style="font-size:12.5px;color:var(--dim)">metric: ${e.metric} · <b style="color:var(--accent)">${e.n_models} models</b></div>`}));
+  });
+
+  // coverage matrix
+  const order=D.models_detail.map(m=>m.key);
+  const mt=el('table',{class:'mat'});
+  const hr=el('tr');hr.append(el('th',{},'Experiment'));
+  order.forEach(k=>{const th=el('th');th.innerHTML=md(k).replace(/-/g,'-<wbr>');th.style.fontSize='10.5px';th.style.writingMode='vertical-rl';th.style.transform='rotate(180deg)';th.style.maxHeight='120px';th.style.padding='6px 2px';hr.append(th);});
+  mt.append(hr);
+  D.experiments.forEach(e=>{
+    const tr=el('tr');
+    const nm=el('td',{class:'mname'});nm.innerHTML=`${e.name} <span class="pill">${e.n_models}</span>`;tr.append(nm);
+    order.forEach(k=>{
+      const has=e.models.includes(k);
+      const td=el('td');
+      td.innerHTML=has?'<span style="color:var(--good);font-weight:700">●</span>':'<span style="color:#2a3340">·</span>';
+      tr.append(td);
+    });
+    mt.append(tr);
+  });
+  $('#setup-matrix').append(mt);
+})();
+
+// ====================================================== RELATED WORK
+(function(){
+  const rl=$('#rel-list');rl.style.gridTemplateColumns='1fr';
+  D.related_work.forEach(r=>{
+    rl.append(el('div',{class:'card',style:'margin:0',html:
+      `<div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap">
+        <h3 style="margin:0;font-size:15px">${r.cite}</h3>
+        <span class="pill">${r.topic}</span></div>
+      <div class="kv" style="margin-top:6px"><b style="color:var(--muted)">They show:</b> ${r.they}</div>
+      <div class="kv"><b style="color:var(--accent)">We find:</b> ${r.us}</div>`}));
+  });
+  // comparison table
+  const verdictColor=v=>{const x=v.toLowerCase();if(x.includes('reject')||x.includes('not repro'))return'var(--bad)';
+    if(x.includes('weak'))return'var(--warn)';if(x.includes('refram')||x.includes('refin'))return'var(--gold)';return'var(--muted)';};
+  const t=el('table',{class:'mat'});
+  t.append(el('tr',{html:'<th style="text-align:left">Prior claim</th><th style="text-align:left">Prior</th><th style="text-align:left">Our result</th><th>Verdict</th>'}));
+  D.result_comparisons.forEach(c=>{
+    const tr=el('tr');
+    tr.innerHTML=`<td class="mname" style="max-width:220px;white-space:normal">${c.claim}</td>
+      <td style="text-align:left;max-width:220px;white-space:normal;color:var(--muted);font-size:12.5px">${c.prior}</td>
+      <td style="text-align:left;max-width:280px;white-space:normal;font-size:12.5px">${c.ours}</td>
+      <td><span class="status" style="background:#1c2330;color:${verdictColor(c.verdict)}">${c.verdict}</span></td>`;
+    t.append(tr);
+  });
+  $('#rel-compare').append(t);
+})();
+
+
+// ====================================================== RECOVERY & MITIGATION (v3)
+const C_REC='#58a6ff', C_ENG='#d29922', C_CEIL='#3fb950', C_BASE='#f85149';
+
+function legendInto(sel, items, tail){
+  const lg=$(sel); if(!lg) return; lg.innerHTML='';
+  items.forEach(([l,c])=>{const s=el('span');s.append(el('i',{class:'sq',style:`background:${c}`}));
+    s.append(document.createTextNode(' '+l));lg.append(s);});
+  if(tail) lg.append(el('span',{},tail));
+}
+
+// ---- recovery against engagement, one row per model x script cell ----
+function drawRecovery(){
+  const host=$('#rec-chart'); if(!host||!D.recovery) return;
+  const rows=[];
+  for(const [mk,m] of Object.entries(D.recovery))
+    for(const [sc,c] of Object.entries(m.cells))
+      rows.push({mk,sc,...c});
+  rows.sort((a,b)=>(b.format_valid-a.format_valid)||((b.diff??-1e9)-(a.diff??-1e9)));
+  const W=880,rowH=30,m={l:200,r:70,t:30,b:30},H=m.t+m.b+rows.length*rowH,iw=W-m.l-m.r;
+  const X=v=>m.l+iw*v/100;
+  const s=svg('svg',{viewBox:`0 0 ${W} ${H}`,width:'100%',height:H});
+  for(let v=0;v<=100;v+=20){const gx=X(v);
+    s.append(svg('line',{x1:gx,y1:m.t,x2:gx,y2:H-m.b,stroke:'#ffffff0a'}));
+    const t=svg('text',{x:gx,y:H-m.b+16,'text-anchor':'middle',fill:'var(--muted)','font-size':10});
+    t.textContent=v+'%';s.append(t);}
+  const ch=svg('line',{x1:X(25),y1:m.t,x2:X(25),y2:H-m.b,stroke:'#8b949e',
+    'stroke-dasharray':'3 3','stroke-width':1});s.append(ch);
+  const cht=svg('text',{x:X(25),y:m.t-8,'text-anchor':'middle',fill:'var(--muted)','font-size':10});
+  cht.textContent='chance 25%';s.append(cht);
+  rows.forEach((r,i)=>{
+    const y=m.t+i*rowH+rowH/2;
+    const nm=svg('text',{x:m.l-12,y:y+4,'text-anchor':'end',fill:'var(--ink)','font-size':11});
+    nm.textContent=`${md(r.mk)} × ${SCRIPT_LABEL[r.sc]}`;s.append(nm);
+    if(!r.format_valid){
+      const t=svg('text',{x:m.l+6,y:y+4,fill:'var(--muted)','font-size':11,'font-style':'italic'});
+      t.textContent=`format check failed — recovery not interpretable (engagement ${Math.round(r.engagement)}%)`;
+      s.append(t);return;}
+    const b1=svg('rect',{x:m.l,y:y-9,width:Math.max(0,X(r.recovery)-m.l),height:8,rx:2,fill:C_REC});
+    b1.addEventListener('mousemove',e=>showTip(`<b>${md(r.mk)}</b> × ${SCRIPT_LABEL[r.sc]}<br>recovers the meaning of <b>${r.recovery}%</b> of ${r.n} requests<br>near-paraphrase alternatives, 4 rotations each`,e));
+    b1.addEventListener('mouseleave',hideTip);s.append(b1);
+    const b2=svg('rect',{x:m.l,y:y+1,width:Math.max(0,X(r.engagement)-m.l),height:8,rx:2,fill:C_ENG});
+    b2.addEventListener('mousemove',e=>showTip(`<b>${md(r.mk)}</b> × ${SCRIPT_LABEL[r.sc]}<br>engages <b>${r.engagement}%</b> (refused or answered on topic)`,e));
+    b2.addEventListener('mouseleave',hideTip);s.append(b2);
+    const g=svg('text',{x:W-m.r+8,y:y+4,fill:C_REC,'font-size':11});
+    g.textContent='+'+Math.round(r.diff);s.append(g);
+  });
+  host.innerHTML='';host.append(s);
+  legendInto('#rec-legend',[['recovers the meaning',C_REC],['engages the request',C_ENG]],
+    '· right-hand number = recovery minus engagement, in points');
+  const valid=rows.filter(r=>r.format_valid);
+  const recs=valid.map(r=>r.recovery), gaps=valid.map(r=>r.diff);
+  $('#rec-note').textContent=`Four candidate meanings in the native script, the three wrong ones chosen as the nearest other requests by content-word overlap and length. The answer letter is read from the output distribution. Each item is shown four times with the correct option in each position. A cell is dropped where the model cannot pick a verbatim copy of the text in front of it.`;
+  $('#rec-callout').innerHTML=`<div class="kv">Recovery exceeds engagement in <b>all ${valid.length}</b>
+    interpretable cells, by <b>${Math.round(Math.min(...gaps))} to ${Math.round(Math.max(...gaps))} points</b>.
+    Recovery itself runs from <b>${Math.min(...recs)}%</b> to <b>${Math.max(...recs)}%</b> against a chance
+    level of 25%. The models identify what is being asked far more often than they treat it as a request.</div>`;
+}
+
+// ---- transliteration (judge-free) ----
+function drawTransliteration(){
+  const host=$('#trans-table'); if(!host||!D.transliteration) return;
+  const t=el('table',{class:'mat'});
+  const hr=el('tr');['Model','rewrites ITRANS correctly','mean character similarity','engages ITRANS requests']
+    .forEach(h=>hr.append(el('th',{},h)));t.append(hr);
+  const entries=Object.entries(D.transliteration).sort((a,b)=>b[1].decode_accuracy_pct-a[1].decode_accuracy_pct);
+  entries.forEach(([mk,v])=>{
+    const tr=el('tr');tr.append(el('td',{class:'mname'},md(mk)));
+    const cells=[[v.decode_accuracy_pct+'%',v.decode_accuracy_pct],
+                 [(v.mean_char_similarity??'·').toString(),
+                  v.mean_char_similarity!=null?v.mean_char_similarity*100:null],
+                 [(v.engagement_pct!=null?v.engagement_pct+'%':'·'),v.engagement_pct]];
+    cells.forEach(([x,num])=>{
+      const td=el('td');const d=el('div',{class:'cell'});d.style.padding='10px 4px';d.textContent=x;
+      d.style.background=compColor(num);td.append(d);tr.append(td);});
+    t.append(tr);});
+  host.innerHTML='';host.append(t);
+  const high=entries.filter(([,v])=>v.decode_accuracy_pct>=97).length;
+  $('#trans-note').textContent=`${high} of ${entries.length} models rewrite above 97% of the requests correctly, and the same models engage the same text as a request far less often. The score is character similarity against the known Devanagari text, with a 0.5 threshold. n = 200 per model.`;
+}
+
+// ---- harm: specific usable content per cell ----
+function drawHarm(){
+  const host=$('#harm-table'); if(!host||!D.harm) return;
+  const CONDS=['arabic_harmful','arabizi_harmful','devanagari_harmful','itrans_harmful',
+               'english_harmful','leetspeak_harmful'];
+  const LAB={arabic_harmful:'Arabic',arabizi_harmful:'Arabizi',devanagari_harmful:'Devanagari',
+             itrans_harmful:'ITRANS',english_harmful:'English',leetspeak_harmful:'Leetspeak'};
+  const t=el('table',{class:'mat'});
+  const hr=el('tr');hr.append(el('th',{},'Model'));CONDS.forEach(c=>hr.append(el('th',{},LAB[c])));t.append(hr);
+  for(const [mk,per] of Object.entries(D.harm.by_model)){
+    const tr=el('tr');tr.append(el('td',{class:'mname'},md(mk)));
+    CONDS.forEach(c=>{
+      const v=per[c]||{};const sp=v.SPECIFIC||0, ge=v.GENERIC||0;
+      const td=el('td');const d=el('div',{class:'cell'});d.style.padding='10px 4px';
+      d.textContent=sp?sp+'%':'0';
+      d.style.background=sp>=4?'#f85149':(sp>0?'#d8b43c':'#3fb950');
+      d.addEventListener('mousemove',e=>showTip(`<b>${md(mk)}</b> × ${LAB[c]}<br>specific usable harmful content <b>${sp}%</b><br>generic or non-actionable ${ge}%<br>refused ${v.REFUSAL||0}% · off topic ${v.OFF_TOPIC||0}%`,e));
+      d.addEventListener('mouseleave',hideTip);td.append(d);tr.append(td);});
+    t.append(tr);}
+  host.innerHTML='';host.append(t);
+  $('#harm-note').textContent=`Specific usable harmful content, as a share of 50 requests. Zero in ${D.harm.n_cells_zero} of ${D.harm.n_cells} cells, and never above ${D.harm.max_specific_pct}%, native scripts included. The paper's earlier "harmful compliance" column was this judge's on-topic label, which is not a harm judgment.`;
+}
+
+// ---- decode-then-refuse ----
+function drawDecodeThenRefuse(){
+  const host=$('#dtr-chart'); if(!host||!D.decode_then_refuse) return;
+  const rows=D.decode_then_refuse.cells.slice()
+    .sort((a,b)=>(b.gap_closed_pct??-1)-(a.gap_closed_pct??-1));
+  const W=880,rowH=38,m={l:200,r:80,t:14,b:30},H=m.t+m.b+rows.length*rowH,iw=W-m.l-m.r;
+  const X=v=>m.l+iw*v/100;
+  const s=svg('svg',{viewBox:`0 0 ${W} ${H}`,width:'100%',height:H});
+  for(let v=0;v<=100;v+=20){const gx=X(v);
+    s.append(svg('line',{x1:gx,y1:m.t,x2:gx,y2:H-m.b,stroke:'#ffffff0a'}));
+    const t=svg('text',{x:gx,y:H-m.b+16,'text-anchor':'middle',fill:'var(--muted)','font-size':10});
+    t.textContent=v+'%';s.append(t);}
+  rows.forEach((r,i)=>{
+    const y=m.t+i*rowH+6;
+    const nm=svg('text',{x:m.l-12,y:y+12,'text-anchor':'end',fill:'var(--ink)','font-size':11});
+    nm.textContent=`${md(r.model)} × ${SCRIPT_LABEL[r.script]}`;s.append(nm);
+    [[r.baseline,C_BASE,'as rewritten'],[r.self_decode,C_REC,'its own decoding'],
+     [r.oracle_decode,C_CEIL,'native text']].forEach(([v,c,lab],j)=>{
+      if(v==null)return;
+      const bar=svg('rect',{x:m.l,y:y+j*7,width:Math.max(0,X(v)-m.l),height:6,rx:2,fill:c});
+      bar.addEventListener('mousemove',e=>showTip(`<b>${md(r.model)}</b> × ${SCRIPT_LABEL[r.script]}<br>${lab}: refuses <b>${v}%</b> of ${r.n}`+(r.decode_similarity!=null&&j===1?`<br>decode similarity ${r.decode_similarity}`:''),e));
+      bar.addEventListener('mouseleave',hideTip);s.append(bar);});
+    if(r.gap_closed_pct!=null){
+      const g=svg('text',{x:W-m.r+8,y:y+12,fill:C_REC,'font-size':11});
+      g.textContent=Math.round(r.gap_closed_pct)+'%';s.append(g);}
+  });
+  host.innerHTML='';host.append(s);
+  legendInto('#dtr-legend',[['the request as rewritten',C_BASE],['the model decodes it first',C_REC],
+    ['the native text (ceiling)',C_CEIL]],'· right-hand number = share of the gap to the ceiling that is closed');
+  const closed=rows.map(r=>r.gap_closed_pct).filter(v=>v!=null);
+  const ceil=rows.map(r=>r.oracle_decode).filter(v=>v!=null);
+  $('#dtr-note').textContent=`Refusal rate per arm, 50 requests per cell. The decoding is the model's own, so an attacker who degrades it degrades the protection. This locates where the failure is; it is not a defence.`;
+  $('#dtr-callout').innerHTML=`<div class="kv">Refusal improves in <b>${D.decode_then_refuse.n_improved}
+    of ${D.decode_then_refuse.n_cells}</b> cells, with no retraining. The largest gain closes
+    <b>${Math.round(Math.max(...closed))}%</b> of the distance to the native-script arm, which itself sits at
+    <b>${Math.min(...ceil)}% to ${Math.max(...ceil)}%</b>. Little is wrong with the refusal behaviour that
+    the input does not explain.</div>`;
+}
+
+// ---- threshold sensitivity ----
+function drawSensitivity(){
+  const host=$('#sens-table'); if(!host||!D.threshold_sensitivity||!D.threshold_sensitivity.gate) return;
+  const t=el('table',{class:'mat'});
+  const hr=el('tr');['reading floor','largest drop from native allowed','cells that clear it','which cells']
+    .forEach(h=>hr.append(el('th',{},h)));t.append(hr);
+  D.threshold_sensitivity.gate.forEach(g=>{
+    const tr=el('tr');
+    tr.append(el('td',{class:'mname'},g.floor+'%'));
+    [[g.max_drop_pp+' pp',null],[String(g.n_pass),100*g.n_pass/6]].forEach(([x,num])=>{
+      const td=el('td');const d=el('div',{class:'cell'});d.style.padding='10px 4px';d.textContent=x;
+      d.style.background=num==null?'#8b949e':compColor(num);td.append(d);tr.append(td);});
+    const td=el('td');td.style.textAlign='left';td.style.fontSize='11px';td.style.color='var(--muted)';
+    td.textContent=(g.passing||[]).join(' · ')||'none';tr.append(td);
+    t.append(tr);});
+  host.innerHTML='';host.append(t);
+  const ps=D.threshold_sensitivity.patching_summary||{};
+  const peak=(ps['gap_at_peak_pp|all']||{}).registered_rule||{};
+  const best=(ps['max_gap_pp|all']||{}).registered_rule||{};
+  const fmt=o=>['REJECT','INDETERMINATE','CONFIRM'].filter(k=>o[k]).map(k=>o[k]+' '+k.toLowerCase()).join(', ');
+  $('#sens-note').textContent='Every cut-off the analysis chooses, swept over a grid. The three cells the paper treats as well read survive every setting in this range. '+
+    (Object.keys(peak).length?`The patching test is scored by the registered three-way rule: reject below 10 points, indeterminate from 10 to 25, confirm above 25. At the matched peak layer the 30 cells give ${fmt(peak)}. Taking the largest gap over all layers gives ${fmt(best)}.`:'');
+}
+
+drawRecovery();drawTransliteration();drawHarm();drawDecodeThenRefuse();drawSensitivity();
+
+// ---------- footer ----------
+$('#foot').innerHTML=`Data generated ${D.meta.generated} from <span style="font-family:var(--mono)">${D.meta.source}</span>.
+  Regenerate with <span style="font-family:var(--mono)">python3 demo/build_data.py</span>. Harmful prompts are never displayed —
+  the Playground shows only benign (Tier B) matched pairs. Pre-registration details are in the Pre-registration tab.`;
+window.addEventListener('mousemove',e=>{if(tip.style.opacity==='1')moveTip(e);});
+</script>
+</body>
+</html>

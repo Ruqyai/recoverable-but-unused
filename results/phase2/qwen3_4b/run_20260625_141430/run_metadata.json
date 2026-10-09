@@ -1,0 +1,38 @@
+{
+  "phase": "phase2_stage1_extract_activations",
+  "model_key": "qwen3_4b",
+  "model_id": "Qwen/Qwen3-4B",
+  "n_layers": 36,
+  "hidden_dim": 2560,
+  "model_default_batch_size": 8,
+  "effective_batch_size": 12,
+  "measurement_position": -1,
+  "device": {
+    "device": "mps",
+    "backend": "mps_m2_pro",
+    "dtype": "torch.float16",
+    "batch_size_multiplier": 1.5,
+    "use_device_map_auto": false,
+    "chip_name": "Apple M2 Max",
+    "total_memory_gb": 32.0,
+    "notes": "Apple Silicon MPS detected: Apple M2 Max (32.0 GB unified)"
+  },
+  "run_stamp": "20260625_141430",
+  "run_dir": "/Users/ruqiya/Codeing-repos/Research/BlackboxNLP/comprehension-gated/results/phase2/qwen3_4b/run_20260625_141430",
+  "started_at": "2026-06-25T14:14:30.581625",
+  "args": {
+    "scripts": [
+      "arabic",
+      "arabizi",
+      "devanagari",
+      "itrans",
+      "english",
+      "leetspeak"
+    ],
+    "batch_size": 12,
+    "resume": false,
+    "new_run": true,
+    "prefer_device": null
+  },
+  "notes": "Primary analysis model per OSF v4. 4B parameters, 36 transformer layers, 2560 hidden dim, Apache-2.0. NOTE (2026-05-30 [BUGFIX]): hidden dim is 2560, NOT 3584 \u2014 it does NOT match Qwen2.5-7B (3584). The earlier claim that the shared 3584 dim enabled an H5 silhouette comparison was based on a wrong architecture constant; silhouette is computed within each model's own space and does not require matching hidden dims, so H5 is unaffected, but any cross-model reasoning that assumed dimensional parity must be re-checked. No public SAEs available, so H3 is delegated to the two Gemma models."
+}

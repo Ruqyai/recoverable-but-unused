@@ -1,0 +1,38 @@
+{
+  "phase": "phase2_stage1_extract_activations",
+  "model_key": "llama_3_2_3b_Instruct",
+  "model_id": "meta-llama/Llama-3.2-3B-Instruct",
+  "n_layers": 28,
+  "hidden_dim": 3072,
+  "model_default_batch_size": 8,
+  "effective_batch_size": 12,
+  "measurement_position": -1,
+  "device": {
+    "device": "mps",
+    "backend": "mps_m2_pro",
+    "dtype": "torch.float16",
+    "batch_size_multiplier": 1.5,
+    "use_device_map_auto": false,
+    "chip_name": "Apple M2 Max",
+    "total_memory_gb": 32.0,
+    "notes": "Apple Silicon MPS detected: Apple M2 Max (32.0 GB unified)"
+  },
+  "run_stamp": "20260626_131830",
+  "run_dir": "/Users/ruqiya/Codeing-repos/Research/BlackboxNLP/comprehension-gated/results/phase2/llama_3_2_3b_Instruct/run_20260626_131830",
+  "started_at": "2026-06-26T13:18:30.837896",
+  "args": {
+    "scripts": [
+      "arabic",
+      "arabizi",
+      "devanagari",
+      "itrans",
+      "english",
+      "leetspeak"
+    ],
+    "batch_size": 12,
+    "resume": false,
+    "new_run": true,
+    "prefer_device": null
+  },
+  "notes": "OPTIONAL exploratory model (OSF v8 optional set, post-deposit; NO confirmatory weight, enters no confirmation rule). 3B params, 28 layers, 3072 hidden dim, Llama 3.2 Community License. Scale series with llama_3_1_8b_Instruct (3B vs 8B). Repo is GATED \u2014 constants from the published spec; re-verify on first successful load. No public SAE at 3B, so H3 is not testable here. Promotion to a confirmatory rule requires an OSF amendment."
+}

@@ -1,0 +1,12 @@
+{
+ "model": "gemma_2_9b_it",
+ "model_id": "google/gemma-2-9b-it",
+ "n_per_pair": 50,
+ "max_new_tokens": 256,
+ "pairs": [
+  "tier_c",
+  "tier_e"
+ ],
+ "decoding": "greedy",
+ "completed_at": "2026-10-09T00:05:32.705485"
+}

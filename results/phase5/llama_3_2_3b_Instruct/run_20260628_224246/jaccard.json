@@ -1,0 +1,90 @@
+{
+  "phase": "phase5_stage4_jaccard",
+  "model_key": "llama_3_2_3b_Instruct",
+  "model_id": "meta-llama/Llama-3.2-3B-Instruct",
+  "layer": 12,
+  "layer_snap_distance": 2,
+  "k": 100,
+  "statistic": "mean",
+  "bootstrap_iterations": 1000,
+  "bootstrap_seed": 42,
+  "is_official_gemma_sae": false,
+  "is_transcoder_analogue": false,
+  "thresholds": {
+    "supported_below": 0.4,
+    "rejected_at_or_above": 0.6
+  },
+  "completed_at": "2026-06-28T22:47:03.027261",
+  "pairs": {
+    "tier_a": {
+      "pair": [
+        "arabic",
+        "arabizi"
+      ],
+      "k": 100,
+      "intersection": 34,
+      "union": 166,
+      "jaccard": 0.20481927710843373,
+      "bootstrap_ci": {
+        "n_bootstrap": 1000,
+        "n_successful": 1000,
+        "mean": 0.2044969412467638,
+        "median": 0.20481927710843373,
+        "std": 0.009608908280110262,
+        "ci_99_low": 0.17647058823529413,
+        "ci_99_high": 0.22699386503067484,
+        "ci_95_low": 0.1834319526627219,
+        "ci_95_high": 0.21951219512195122
+      },
+      "verdict": "SUPPORTED (CI excludes threshold)",
+      "is_headline": true
+    },
+    "tier_c": {
+      "pair": [
+        "devanagari",
+        "itrans"
+      ],
+      "k": 100,
+      "intersection": 43,
+      "union": 157,
+      "jaccard": 0.27388535031847133,
+      "bootstrap_ci": {
+        "n_bootstrap": 1000,
+        "n_successful": 1000,
+        "mean": 0.27195054867789503,
+        "median": 0.27388535031847133,
+        "std": 0.008596879055710627,
+        "ci_99_low": 0.25,
+        "ci_99_high": 0.2987012987012987,
+        "ci_95_low": 0.2578616352201258,
+        "ci_95_high": 0.2903225806451613
+      },
+      "verdict": "SUPPORTED (CI excludes threshold)",
+      "is_headline": false
+    },
+    "tier_e": {
+      "pair": [
+        "english",
+        "leetspeak"
+      ],
+      "k": 100,
+      "intersection": 30,
+      "union": 170,
+      "jaccard": 0.17647058823529413,
+      "bootstrap_ci": {
+        "n_bootstrap": 1000,
+        "n_successful": 1000,
+        "mean": 0.18359861971422628,
+        "median": 0.1834319526627219,
+        "std": 0.007507042602757862,
+        "ci_99_low": 0.16279069767441862,
+        "ci_99_high": 0.20481927710843373,
+        "ci_95_low": 0.1695906432748538,
+        "ci_95_high": 0.19760479041916168
+      },
+      "verdict": "SUPPORTED (CI excludes threshold)",
+      "is_headline": false
+    }
+  },
+  "caveat": "H3 is EXPLORATORY per the deposited OSF preregistration \u2014 no confirmatory weight. Headline pair is tier_a (Arabic\u2194Arabizi). Transcoder-analogue results (Qwen3) and snapped-layer results (Gemma IT SAEs at non-causal layers) are not directly comparable to the official Gemma residual-SAE Jaccard at the exact causal layer."
+}

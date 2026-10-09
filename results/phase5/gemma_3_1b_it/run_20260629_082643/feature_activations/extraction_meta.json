@@ -1,0 +1,29 @@
+{
+  "phase": "phase5_stage2_extract_features",
+  "model_key": "gemma_3_1b_it",
+  "layer": 7,
+  "sae_release": "gemma-scope-2-1b-it-res",
+  "sae_id": "layer_7_width_16k_l0_big",
+  "kind": "sae",
+  "scripts": [
+    "arabic",
+    "arabizi",
+    "devanagari",
+    "itrans",
+    "english",
+    "leetspeak"
+  ],
+  "include_benign": true,
+  "batch_size": 24,
+  "device": {
+    "device": "mps",
+    "backend": "mps_m2_pro",
+    "dtype": "torch.float16",
+    "batch_size_multiplier": 1.5,
+    "use_device_map_auto": false,
+    "chip_name": "Apple M2 Max",
+    "total_memory_gb": 32.0,
+    "notes": "Apple Silicon MPS detected: Apple M2 Max (32.0 GB unified)"
+  },
+  "completed_at": "2026-06-29T08:27:47.091405"
+}

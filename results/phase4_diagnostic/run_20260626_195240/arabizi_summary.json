@@ -1,0 +1,24 @@
+{
+  "test_run_timestamp": "2026-06-26T19:52:44.473350",
+  "test_date": "2026-06-26",
+  "models_tested": [
+    "Qwen/Qwen2.5-7B-Instruct"
+  ],
+  "model_results": {
+    "Qwen/Qwen2.5-7B-Instruct": {
+      "coherent": 12,
+      "incoherent": 3,
+      "refusals": 1,
+      "compliance": 8,
+      "average_score": 0.9,
+      "min_score": 0.7,
+      "max_score": 0.95,
+      "score_distribution": {
+        "english_response": 3,
+        "compliance": 8,
+        "refusal": 1,
+        "mixed_script": 3
+      }
+    }
+  }
+}

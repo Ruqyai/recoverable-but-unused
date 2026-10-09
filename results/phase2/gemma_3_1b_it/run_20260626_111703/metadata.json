@@ -1,0 +1,98 @@
+{
+  "phase": "phase2_stage2_compute_directions",
+  "model_key": "gemma_3_1b_it",
+  "model_id": "google/gemma-3-1b-it",
+  "n_layers": 26,
+  "hidden_dim": 1152,
+  "run_stamp": "20260626_111703",
+  "run_dir": "/Users/ruqiya/Codeing-repos/Research/BlackboxNLP/comprehension-gated/results/phase2/gemma_3_1b_it/run_20260626_111703",
+  "completed_at": "2026-06-26T11:18:02.954603",
+  "directions": {
+    "arabic": [
+      26,
+      1152
+    ],
+    "arabizi": [
+      26,
+      1152
+    ],
+    "devanagari": [
+      26,
+      1152
+    ],
+    "itrans": [
+      26,
+      1152
+    ],
+    "english": [
+      26,
+      1152
+    ],
+    "leetspeak": [
+      26,
+      1152
+    ]
+  },
+  "per_script_stats": {
+    "arabic": {
+      "n_pairs": 200,
+      "n_harmful_loaded": 200,
+      "n_benign_loaded": 200,
+      "n_dropped_harmful": 0,
+      "n_dropped_benign": 0,
+      "harmful_mean_norm_per_layer": 6162.94189453125,
+      "benign_mean_norm_per_layer": 6167.94873046875,
+      "diff_mean_norm_per_layer": 215.70787048339844
+    },
+    "arabizi": {
+      "n_pairs": 200,
+      "n_harmful_loaded": 200,
+      "n_benign_loaded": 200,
+      "n_dropped_harmful": 0,
+      "n_dropped_benign": 0,
+      "harmful_mean_norm_per_layer": 5757.1298828125,
+      "benign_mean_norm_per_layer": 5357.01025390625,
+      "diff_mean_norm_per_layer": 533.4617919921875
+    },
+    "devanagari": {
+      "n_pairs": 200,
+      "n_harmful_loaded": 200,
+      "n_benign_loaded": 200,
+      "n_dropped_harmful": 0,
+      "n_dropped_benign": 0,
+      "harmful_mean_norm_per_layer": 6843.931640625,
+      "benign_mean_norm_per_layer": 6182.22705078125,
+      "diff_mean_norm_per_layer": 736.8326416015625
+    },
+    "itrans": {
+      "n_pairs": 200,
+      "n_harmful_loaded": 200,
+      "n_benign_loaded": 200,
+      "n_dropped_harmful": 0,
+      "n_dropped_benign": 0,
+      "harmful_mean_norm_per_layer": 5723.42431640625,
+      "benign_mean_norm_per_layer": 5100.759765625,
+      "diff_mean_norm_per_layer": 788.3713989257812
+    },
+    "english": {
+      "n_pairs": 200,
+      "n_harmful_loaded": 200,
+      "n_benign_loaded": 200,
+      "n_dropped_harmful": 0,
+      "n_dropped_benign": 0,
+      "harmful_mean_norm_per_layer": 6551.1611328125,
+      "benign_mean_norm_per_layer": 6296.41162109375,
+      "diff_mean_norm_per_layer": 368.1308288574219
+    },
+    "leetspeak": {
+      "n_pairs": 200,
+      "n_harmful_loaded": 200,
+      "n_benign_loaded": 200,
+      "n_dropped_harmful": 0,
+      "n_dropped_benign": 0,
+      "harmful_mean_norm_per_layer": 4869.177734375,
+      "benign_mean_norm_per_layer": 4765.45849609375,
+      "diff_mean_norm_per_layer": 206.93740844726562
+    }
+  }
+}

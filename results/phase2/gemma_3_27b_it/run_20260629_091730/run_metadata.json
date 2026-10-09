@@ -1,0 +1,38 @@
+{
+  "phase": "phase2_stage1_extract_activations",
+  "model_key": "gemma_3_27b_it",
+  "model_id": "google/gemma-3-27b-it",
+  "n_layers": 62,
+  "hidden_dim": 5376,
+  "model_default_batch_size": 2,
+  "effective_batch_size": 4,
+  "measurement_position": -1,
+  "device": {
+    "device": "cuda",
+    "backend": "cuda",
+    "dtype": "torch.bfloat16",
+    "batch_size_multiplier": 2.0,
+    "use_device_map_auto": true,
+    "chip_name": "NVIDIA A100-SXM4-80GB",
+    "total_memory_gb": 79.2,
+    "notes": "CUDA GPU detected: NVIDIA A100-SXM4-80GB (79.2 GB)"
+  },
+  "run_stamp": "20260629_091730",
+  "run_dir": "/workspace/results/phase2/gemma_3_27b_it/run_20260629_091730",
+  "started_at": "2026-06-29T09:17:30.977727",
+  "args": {
+    "scripts": [
+      "arabic",
+      "arabizi",
+      "devanagari",
+      "itrans",
+      "english",
+      "leetspeak"
+    ],
+    "batch_size": 4,
+    "resume": false,
+    "new_run": true,
+    "prefer_device": null
+  },
+  "notes": "OPTIONAL exploratory large-model extension (RERUN_PLAN \u00a77; OSF v8 exploratory, NO confirmatory weight). 27B params, 62 layers, 5376 hidden, Gemma Terms of Use. Within-family scale point above gemma_3_4b_it (Gemma-3, 4B\u219227B). MULTIMODAL: loads as Gemma3ForConditionalGeneration; text decoder at model.model.language_model.layers \u2014 Phase 2/4/5 branch on IS_MULTIMODAL/MODEL_CLASS/LAYERS_PATH/TEXT_SUBMODULE_PATH (supported 2026-06-21, same path as gemma_3_4b_it). H3: Gemma Scope 2 SAEs in standard sae-lens layout (no .pt adapter needed). Run only after the primary + replication re-run confirms the thesis; runs in bf16 on ~1\u00d7A100-80GB (forward-only) \u2014 NOT 4-bit (quantization would distort the residual-stream measurements). bf16 is also mandatory for Gemma-3 (float16 overflows). Gated weights \u2192 HF_TOKEN required. Promotion to a confirmatory rule requires an OSF amendment."
+}

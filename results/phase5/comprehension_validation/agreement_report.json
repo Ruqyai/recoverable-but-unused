@@ -1,0 +1,207 @@
+{
+  "models": [
+    "gemma_2_2b_it",
+    "gemma_2_9b_it",
+    "gemma_3_1b_it",
+    "gemma_3_27b_it",
+    "gemma_3_4b_it",
+    "llama_3_1_8b_Instruct",
+    "llama_3_2_3b_Instruct",
+    "qwen2_5_7b_Instruct",
+    "qwen3_4b",
+    "qwen3_8b"
+  ],
+  "counts": {
+    "gemini_items": 5496,
+    "claude_items": 465,
+    "human_arabic_labeled": 117,
+    "human_english_labeled": 200,
+    "human_hindi_labeled": 120
+  },
+  "comparisons": {
+    "gemini_vs_claude": {
+      "n": 464,
+      "kappa_4class": 0.6845,
+      "agreement_4class": 0.8341,
+      "kappa_binary": 0.6927,
+      "agreement_binary": 0.8707,
+      "per_script": {
+        "arabic_harmful": {
+          "n": 60,
+          "binary_kappa": 0.6429,
+          "binary_agreement": 0.95
+        },
+        "arabizi_harmful": {
+          "n": 60,
+          "binary_kappa": 0.5265,
+          "binary_agreement": 0.7667
+        },
+        "devanagari_harmful": {
+          "n": 66,
+          "binary_kappa": 0.0,
+          "binary_agreement": 0.9242
+        },
+        "english_harmful": {
+          "n": 107,
+          "binary_kappa": 0.0,
+          "binary_agreement": 0.9907
+        },
+        "itrans_harmful": {
+          "n": 65,
+          "binary_kappa": 0.5076,
+          "binary_agreement": 0.7538
+        },
+        "leetspeak_harmful": {
+          "n": 106,
+          "binary_kappa": 0.6063,
+          "binary_agreement": 0.8019
+        }
+      }
+    },
+    "human_arabic_vs_gemini": {
+      "n": 117,
+      "kappa_4class": 0.6731,
+      "agreement_4class": 0.812,
+      "kappa_binary": 0.7628,
+      "agreement_binary": 0.8974,
+      "per_script": {
+        "arabic_harmful": {
+          "n": 57,
+          "binary_kappa": 0.0,
+          "binary_agreement": 0.8947
+        },
+        "arabizi_harmful": {
+          "n": 60,
+          "binary_kappa": 0.7984,
+          "binary_agreement": 0.9
+        }
+      }
+    },
+    "human_arabic_vs_claude": {
+      "n": 117,
+      "kappa_4class": 0.7551,
+      "agreement_4class": 0.8462,
+      "kappa_binary": 0.7959,
+      "agreement_binary": 0.906,
+      "per_script": {
+        "arabic_harmful": {
+          "n": 57,
+          "binary_kappa": 0.0,
+          "binary_agreement": 0.9474
+        },
+        "arabizi_harmful": {
+          "n": 60,
+          "binary_kappa": 0.7033,
+          "binary_agreement": 0.8667
+        }
+      }
+    },
+    "human_english_vs_gemini": {
+      "n": 199,
+      "kappa_4class": 0.8171,
+      "agreement_4class": 0.9246,
+      "kappa_binary": 0.8823,
+      "agreement_binary": 0.9548,
+      "per_script": {
+        "english_harmful": {
+          "n": 100,
+          "binary_kappa": 0.0,
+          "binary_agreement": 0.99
+        },
+        "leetspeak_harmful": {
+          "n": 99,
+          "binary_kappa": 0.8393,
+          "binary_agreement": 0.9192
+        }
+      }
+    },
+    "human_english_vs_claude": {
+      "n": 200,
+      "kappa_4class": 0.7518,
+      "agreement_4class": 0.885,
+      "kappa_binary": 0.7886,
+      "agreement_binary": 0.91,
+      "per_script": {
+        "english_harmful": {
+          "n": 100,
+          "binary_kappa": 1.0,
+          "binary_agreement": 1.0
+        },
+        "leetspeak_harmful": {
+          "n": 100,
+          "binary_kappa": 0.6273,
+          "binary_agreement": 0.82
+        }
+      }
+    },
+    "human_hindi_vs_gemini": {
+      "n": 120,
+      "kappa_4class": 0.5987,
+      "agreement_4class": 0.7667,
+      "kappa_binary": 0.7049,
+      "agreement_binary": 0.875,
+      "per_script": {
+        "devanagari_harmful": {
+          "n": 60,
+          "binary_kappa": 0.4,
+          "binary_agreement": 0.9167
+        },
+        "itrans_harmful": {
+          "n": 60,
+          "binary_kappa": 0.6667,
+          "binary_agreement": 0.8333
+        }
+      }
+    },
+    "human_hindi_vs_claude": {
+      "n": 120,
+      "kappa_4class": 0.6394,
+      "agreement_4class": 0.775,
+      "kappa_binary": 0.5918,
+      "agreement_binary": 0.8333,
+      "per_script": {
+        "devanagari_harmful": {
+          "n": 60,
+          "binary_kappa": 0.0,
+          "binary_agreement": 0.9333
+        },
+        "itrans_harmful": {
+          "n": 60,
+          "binary_kappa": 0.4667,
+          "binary_agreement": 0.7333
+        }
+      }
+    },
+    "english_vs_hindi": {
+      "n": 0
+    },
+    "fleiss_binary_arabic": {
+      "n": 117,
+      "fleiss_kappa": 0.7468,
+      "raters": [
+        "gemini",
+        "claude",
+        "human_arabic"
+      ]
+    },
+    "fleiss_binary_english": {
+      "n": 199,
+      "fleiss_kappa": 0.8019,
+      "raters": [
+        "gemini",
+        "claude",
+        "human_english"
+      ]
+    },
+    "fleiss_binary_hindi": {
+      "n": 120,
+      "fleiss_kappa": 0.6192,
+      "raters": [
+        "gemini",
+        "claude",
+        "human_hindi"
+      ]
+    }
+  },
+  "note": "Robustness check on the exploratory comprehension-gating measure. Binary W1 gate = COMPREHENDED (ON_TOPIC+REFUSAL) vs NOT. kappa_binary is the headline number. Inter-human kappa (english vs hindi on the shared English overlap) is an independent-annotator cross-check; report it alongside human↔LLM."
+}

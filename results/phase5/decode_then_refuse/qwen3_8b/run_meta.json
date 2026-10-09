@@ -1,0 +1,12 @@
+{
+ "model": "qwen3_8b",
+ "model_id": "Qwen/Qwen3-8B",
+ "n_per_pair": 50,
+ "max_new_tokens": 256,
+ "pairs": [
+  "tier_c",
+  "tier_e"
+ ],
+ "decoding": "greedy",
+ "completed_at": "2026-10-08T21:24:46.989185"
+}

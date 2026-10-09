@@ -1,0 +1,145 @@
+{
+  "phase": "phase3_stage3_silhouette",
+  "model_key": "qwen3_8b",
+  "model_id": "Qwen/Qwen3-8B",
+  "n_layers": 36,
+  "hidden_dim": 4096,
+  "test_layer": 18,
+  "relative_depth": 0.5142857142857142,
+  "metric": "cosine",
+  "bootstrap_iterations": 1000,
+  "bootstrap_seed": 42,
+  "phase2_run_dir": "/Users/ruqiya/Codeing-repos/Research/BlackboxNLP/comprehension-gated/results/phase2/qwen3_8b/run_20260628_161745",
+  "phase3_run_dir": "/Users/ruqiya/Codeing-repos/Research/BlackboxNLP/comprehension-gated/results/phase3/qwen3_8b/run_20260628_175232",
+  "completed_at": "2026-06-28T17:55:07.004225",
+  "scripts_loaded": {
+    "arabic": 200,
+    "arabizi": 200,
+    "devanagari": 200,
+    "itrans": 200,
+    "english": 200,
+    "leetspeak": 200
+  },
+  "binary_silhouette_one_vs_rest": {
+    "arabic": {
+      "silhouette_one_vs_rest": 0.13988696038722992,
+      "bootstrap_ci": {
+        "n_bootstrap_iterations": 1000,
+        "n_successful": 1000,
+        "mean": 0.14144819116592408,
+        "median": 0.14117565006017685,
+        "std": 0.01087579133226735,
+        "ci_99_low": 0.1143070251122117,
+        "ci_99_high": 0.17032607674598693,
+        "ci_95_low": 0.12228733114898205,
+        "ci_95_high": 0.1627267237752676
+      }
+    },
+    "arabizi": {
+      "silhouette_one_vs_rest": 0.05491213500499725,
+      "bootstrap_ci": {
+        "n_bootstrap_iterations": 1000,
+        "n_successful": 1000,
+        "mean": 0.055578613199293615,
+        "median": 0.05552983283996582,
+        "std": 0.00913747062726575,
+        "ci_99_low": 0.03074002147652209,
+        "ci_99_high": 0.07857308808714152,
+        "ci_95_low": 0.038025790452957155,
+        "ci_95_high": 0.07349144741892814
+      }
+    },
+    "devanagari": {
+      "silhouette_one_vs_rest": 0.08251634985208511,
+      "bootstrap_ci": {
+        "n_bootstrap_iterations": 1000,
+        "n_successful": 1000,
+        "mean": 0.08350499883294106,
+        "median": 0.08292674273252487,
+        "std": 0.009418625267713709,
+        "ci_99_low": 0.0606468671374023,
+        "ci_99_high": 0.11002213321626186,
+        "ci_95_low": 0.06640998553484678,
+        "ci_95_high": 0.10347134340554476
+      }
+    },
+    "itrans": {
+      "silhouette_one_vs_rest": 0.0514485239982605,
+      "bootstrap_ci": {
+        "n_bootstrap_iterations": 1000,
+        "n_successful": 1000,
+        "mean": 0.052892871061339976,
+        "median": 0.05270313657820225,
+        "std": 0.009821830037667427,
+        "ci_99_low": 0.02844864864833653,
+        "ci_99_high": 0.07801612690091134,
+        "ci_95_low": 0.03415485192090273,
+        "ci_95_high": 0.07298952862620353
+      }
+    },
+    "english": {
+      "silhouette_one_vs_rest": 0.344948947429657,
+      "bootstrap_ci": {
+        "n_bootstrap_iterations": 1000,
+        "n_successful": 1000,
+        "mean": 0.34575080579519274,
+        "median": 0.3454977124929428,
+        "std": 0.009449617906092651,
+        "ci_99_low": 0.3227159498631954,
+        "ci_99_high": 0.36984911099076273,
+        "ci_95_low": 0.3275557063519955,
+        "ci_95_high": 0.36346421465277673
+      }
+    },
+    "leetspeak": {
+      "silhouette_one_vs_rest": 0.30126631259918213,
+      "bootstrap_ci": {
+        "n_bootstrap_iterations": 1000,
+        "n_successful": 1000,
+        "mean": 0.3024911905229092,
+        "median": 0.3025398999452591,
+        "std": 0.007493295117093822,
+        "ci_99_low": 0.2847868049144745,
+        "ci_99_high": 0.3235531210899353,
+        "ci_95_low": 0.2882235959172249,
+        "ci_95_high": 0.31744018122553824
+      }
+    }
+  },
+  "multi_cluster_silhouette": {
+    "global": 0.337697833776474,
+    "per_cluster": {
+      "arabic": 0.28655192255973816,
+      "arabizi": 0.4357925355434418,
+      "devanagari": 0.3419070839881897,
+      "english": 0.32387205958366394,
+      "itrans": 0.18295681476593018,
+      "leetspeak": 0.4551064968109131
+    }
+  },
+  "h5_test": {
+    "is_confirmatory_model": true,
+    "wang_baseline_sil_arabic": 0.24,
+    "wang_baseline_sil_english": 0.39,
+    "our_sil_arabic": 0.13988696038722992,
+    "our_sil_arabizi": 0.05491213500499725,
+    "confirmation_threshold": 0.3,
+    "rejection_range": [
+      0.19,
+      0.29
+    ],
+    "verdict": "INDETERMINATE (between thresholds)",
+    "arabizi_bootstrap_ci": {
+      "n_bootstrap_iterations": 1000,
+      "n_successful": 1000,
+      "mean": 0.055578613199293615,
+      "median": 0.05552983283996582,
+      "std": 0.00913747062726575,
+      "ci_99_low": 0.03074002147652209,
+      "ci_99_high": 0.07857308808714152,
+      "ci_95_low": 0.038025790452957155,
+      "ci_95_high": 0.07349144741892814
+    }
+  },
+  "caveat": "Layer choice defaults to relative depth 0.5. For OSF v4 H5 confirmation, re-run with --layer set to the empirically-identified causal layer from Phase 4 on this model. Gemma models are exploratory; Wang's 0.24 baseline is Qwen2.5-7B-specific."
+}
