@@ -41,8 +41,8 @@
       27
     ],
     "skip_guard": false,
-    "run_dir": "/Users/ruqiya/Codeing-repos/Research/BlackboxNLP/comprehension-gated/results/phase2/qwen2_5_7b_Instruct/run_20260626_181311",
-    "directions_path": "/Users/ruqiya/Codeing-repos/Research/BlackboxNLP/comprehension-gated/results/phase2/qwen2_5_7b_Instruct/run_20260626_181311/directions/arabic.pt",
+    "run_dir": "results/phase2/qwen2_5_7b_Instruct/run_20260626_181311",
+    "directions_path": "results/phase2/qwen2_5_7b_Instruct/run_20260626_181311/directions/arabic.pt",
     "device": {
       "device": "mps",
       "backend": "mps_m2_pro",

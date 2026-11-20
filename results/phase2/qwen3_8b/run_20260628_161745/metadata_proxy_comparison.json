@@ -96,7 +96,7 @@
         "delta_separation_minus_causal_lexical": 19,
         "delta_logit_diff_minus_causal_guard": 19,
         "delta_logit_diff_minus_causal_lexical": 19,
-        "source_path": "/Users/ruqiya/Codeing-repos/Research/BlackboxNLP/comprehension-gated/results/phase2/qwen3_8b/run_20260628_161745/causal_layer_selection.json"
+        "source_path": "results/phase2/qwen3_8b/run_20260628_161745/causal_layer_selection.json"
       }
     },
     "arabizi": {

@@ -24,7 +24,7 @@
   "n_layers": 42,
   "h3_official_gemma_sae": true,
   "causal_layer_source": "phase2_stage04",
-  "phase2_run_dir": "/Users/ruqiya/Codeing-repos/Research/BlackboxNLP/comprehension-gated/results/phase2/gemma_2_9b_it/run_20260628_182213",
+  "phase2_run_dir": "results/phase2/gemma_2_9b_it/run_20260628_182213",
   "device": {
     "device": "mps",
     "backend": "mps_m2_pro",

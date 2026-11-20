@@ -4,8 +4,8 @@
   "model_id": "Qwen/Qwen3-4B",
   "n_layers": 36,
   "hidden_dim": 2560,
-  "phase2_run_dir": "/Users/ruqiya/Codeing-repos/Research/BlackboxNLP/comprehension-gated/results/phase2/qwen3_4b/run_20260625_141430",
-  "phase3_run_dir": "/Users/ruqiya/Codeing-repos/Research/BlackboxNLP/comprehension-gated/results/phase3/qwen3_4b/run_20260625_161321",
+  "phase2_run_dir": "results/phase2/qwen3_4b/run_20260625_141430",
+  "phase3_run_dir": "results/phase3/qwen3_4b/run_20260625_161321",
   "completed_at": "2026-06-25T16:13:23.315609",
   "per_script": {
     "arabic": {

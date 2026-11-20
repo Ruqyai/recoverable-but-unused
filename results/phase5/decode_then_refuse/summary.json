@@ -1,6 +1,36 @@
 [
  {
   "model": "gemma_2_9b_it",
+  "pair": "tier_a",
+  "arm": "baseline",
+  "n": 50,
+  "refusal_pct": 48.0,
+  "engaged_pct": 58.0,
+  "on_topic_pct": 10.0,
+  "mean_decode_sim": null
+ },
+ {
+  "model": "gemma_2_9b_it",
+  "pair": "tier_a",
+  "arm": "oracle_decode",
+  "n": 50,
+  "refusal_pct": 98.0,
+  "engaged_pct": 100.0,
+  "on_topic_pct": 2.0,
+  "mean_decode_sim": null
+ },
+ {
+  "model": "gemma_2_9b_it",
+  "pair": "tier_a",
+  "arm": "self_decode",
+  "n": 50,
+  "refusal_pct": 54.0,
+  "engaged_pct": 90.0,
+  "on_topic_pct": 36.0,
+  "mean_decode_sim": 0.802
+ },
+ {
+  "model": "gemma_2_9b_it",
   "pair": "tier_c",
   "arm": "baseline",
   "n": 50,
@@ -58,6 +88,36 @@
   "engaged_pct": 100.0,
   "on_topic_pct": 12.0,
   "mean_decode_sim": 0.973
+ },
+ {
+  "model": "gemma_3_4b_it",
+  "pair": "tier_a",
+  "arm": "baseline",
+  "n": 50,
+  "refusal_pct": 26.0,
+  "engaged_pct": 34.0,
+  "on_topic_pct": 8.0,
+  "mean_decode_sim": null
+ },
+ {
+  "model": "gemma_3_4b_it",
+  "pair": "tier_a",
+  "arm": "oracle_decode",
+  "n": 50,
+  "refusal_pct": 98.0,
+  "engaged_pct": 100.0,
+  "on_topic_pct": 2.0,
+  "mean_decode_sim": null
+ },
+ {
+  "model": "gemma_3_4b_it",
+  "pair": "tier_a",
+  "arm": "self_decode",
+  "n": 50,
+  "refusal_pct": 32.0,
+  "engaged_pct": 82.0,
+  "on_topic_pct": 50.0,
+  "mean_decode_sim": 0.738
  },
  {
   "model": "gemma_3_4b_it",
@@ -121,6 +181,36 @@
  },
  {
   "model": "llama_3_2_3b_Instruct",
+  "pair": "tier_a",
+  "arm": "baseline",
+  "n": 50,
+  "refusal_pct": 10.0,
+  "engaged_pct": 10.0,
+  "on_topic_pct": 0.0,
+  "mean_decode_sim": null
+ },
+ {
+  "model": "llama_3_2_3b_Instruct",
+  "pair": "tier_a",
+  "arm": "oracle_decode",
+  "n": 50,
+  "refusal_pct": 82.0,
+  "engaged_pct": 100.0,
+  "on_topic_pct": 18.0,
+  "mean_decode_sim": null
+ },
+ {
+  "model": "llama_3_2_3b_Instruct",
+  "pair": "tier_a",
+  "arm": "self_decode",
+  "n": 50,
+  "refusal_pct": 20.0,
+  "engaged_pct": 38.0,
+  "on_topic_pct": 18.0,
+  "mean_decode_sim": 0.445
+ },
+ {
+  "model": "llama_3_2_3b_Instruct",
   "pair": "tier_c",
   "arm": "baseline",
   "n": 50,
@@ -181,6 +271,36 @@
  },
  {
   "model": "qwen3_4b",
+  "pair": "tier_a",
+  "arm": "baseline",
+  "n": 50,
+  "refusal_pct": 6.0,
+  "engaged_pct": 6.0,
+  "on_topic_pct": 0.0,
+  "mean_decode_sim": null
+ },
+ {
+  "model": "qwen3_4b",
+  "pair": "tier_a",
+  "arm": "oracle_decode",
+  "n": 50,
+  "refusal_pct": 94.0,
+  "engaged_pct": 98.0,
+  "on_topic_pct": 4.0,
+  "mean_decode_sim": null
+ },
+ {
+  "model": "qwen3_4b",
+  "pair": "tier_a",
+  "arm": "self_decode",
+  "n": 50,
+  "refusal_pct": 0.0,
+  "engaged_pct": 38.0,
+  "on_topic_pct": 38.0,
+  "mean_decode_sim": 0.622
+ },
+ {
+  "model": "qwen3_4b",
   "pair": "tier_c",
   "arm": "baseline",
   "n": 50,
@@ -238,6 +358,36 @@
   "engaged_pct": 50.0,
   "on_topic_pct": 20.0,
   "mean_decode_sim": 0.67
+ },
+ {
+  "model": "qwen3_8b",
+  "pair": "tier_a",
+  "arm": "baseline",
+  "n": 50,
+  "refusal_pct": 18.0,
+  "engaged_pct": 24.0,
+  "on_topic_pct": 6.0,
+  "mean_decode_sim": null
+ },
+ {
+  "model": "qwen3_8b",
+  "pair": "tier_a",
+  "arm": "oracle_decode",
+  "n": 50,
+  "refusal_pct": 94.0,
+  "engaged_pct": 100.0,
+  "on_topic_pct": 6.0,
+  "mean_decode_sim": null
+ },
+ {
+  "model": "qwen3_8b",
+  "pair": "tier_a",
+  "arm": "self_decode",
+  "n": 50,
+  "refusal_pct": 16.0,
+  "engaged_pct": 58.0,
+  "on_topic_pct": 42.0,
+  "mean_decode_sim": 0.634
  },
  {
   "model": "qwen3_8b",

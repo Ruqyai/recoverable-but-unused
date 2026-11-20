@@ -431,34 +431,41 @@ def build_conditional() -> dict:
 
 # ============================================================ Direction transfer (positive half)
 def build_direction_transfer() -> dict:
-    """Direction transfer on the comprehended-Arabizi subset: ablating the NATIVE (Arabic)
-    refusal direction removes refusal, a norm-matched random direction does not — the positive
-    half of 'safety is intact but starved'. Live from results/phase4_intervention/<m>/direction_transfer/."""
+    """Direction transfer on the comprehended subset across both regimes (Arabizi and Leetspeak).
+    Live from results/phase4_intervention/<m>/direction_transfer/."""
     rows = []
+    seen = set()
     for key in MODELS:
-        fs = sorted(glob.glob(str(P4I / key / "direction_transfer" / "transfer_*.json")))
-        if not fs:
-            continue
-        d = load(fs[-1])
-        room = d.get("room_baseline_refused") or 0
-        if room <= 0:
-            continue
-        nat = d.get("native_dir_ablation", {}).get("flip_rate_pct")
-        rnd = d.get("random_dir_ablation", {}).get("flip_rate_pct")
-        rows.append({"model": key, "display": MODELS[key][0], "room": room,
-                     "native": None if nat is None else round(nat),
-                     "random": None if rnd is None else round(rnd),
-                     "gap": None if (nat is None or rnd is None) else round(nat - rnd),
-                     "well_powered": room >= 15})
+        fs = sorted(glob.glob(str(P4I / key / "direction_transfer" / "transfer_*.json")), reverse=True)
+        for f in fs:
+            d = load(f)
+            if not d or d.get("phase") != "direction_transfer_on_comprehended_subset":
+                continue
+            pair = d.get("pair", "tier_a")
+            if (key, pair) in seen:
+                continue
+            seen.add((key, pair))
+            room = d.get("room_baseline_refused") or 0
+            if room <= 0:
+                continue
+            nat = d.get("native_dir_ablation", {}).get("flip_rate_pct")
+            rnd = d.get("random_dir_ablation", {}).get("flip_rate_pct")
+            script_lab = {"tier_a": "Arabizi", "tier_c": "ITRANS", "tier_e": "Leetspeak"}.get(pair, pair)
+            rows.append({"model": key, "display": f"{MODELS[key][0]} ({script_lab})", "pair": pair,
+                         "script": script_lab, "room": room,
+                         "native": None if nat is None else round(nat),
+                         "random": None if rnd is None else round(rnd),
+                         "gap": None if (nat is None or rnd is None) else round(nat - rnd),
+                         "well_powered": room >= 15})
     rows.sort(key=lambda r: -r["room"])
     return {
         "rows": rows,
-        "note": ("On items the model comprehended and refused, ablating the NATIVE (Arabic) refusal "
-                 "direction removes refusal while a norm-matched random direction does not — the SAME "
-                 "native circuit mediates refusal once the romanized prompt is read (safety intact, not bypassed)."),
-        "caveat": ("Well-powered on the two Gemma cells with large comprehended-refusal rooms "
-                   "(Gemma-3-1B-it 72% vs 0%; Gemma-2-9B-it 71% vs 0%); small-room models are directional. "
-                   "Refusal scored by the lexical/coherence classifier; run locally (≤9B), 27B needs a GPU."),
+        "note": ("Two regimes separated by reading level: where reading is low (Arabizi), ablating the "
+                 "native refusal direction flips 45% to 100% of refusals (vs 0% random); where reading "
+                 "is high (Leetspeak on Gemma-2-9B-it and Llama-3.2-3B-Instruct), flip rates drop to 29% "
+                 "and 0-2%, even within the same model (Gemma-2-9B-it: 100% Arabizi vs 29% Leetspeak)."),
+        "caveat": ("Five well-powered cells (room >= 17) across Gemma and Llama, bounded by the "
+                   "five-model cross-native transfer baseline (cross_native_summary.json)."),
     }
 
 
@@ -695,11 +702,11 @@ FRAMING = {
             "those cells separately.",
 }
 CONTRIBUTIONS = [
-    "Two measurements of whether a model recovers the meaning of a rewritten request, neither of which involves refusal: transliteration back to the native script, and a four-way meaning choice read from the output distribution.",
-    "A harm judgment on every on-topic response. Specific usable harmful content is at most 4% of items in any cell, so what the rewritten requests mostly produce is off-topic text, not harm.",
+    "Within-language and cross-language measurements of whether a model recovers the meaning of a rewritten request without generating a response: transliteration back to the native script, and four-way meaning choice with both native-script and English options.",
+    "A 12,000-response behavioural and harm evaluation (200 items per cell) plus a 256-token audit across fifteen cells. Specific usable harmful content is at most 4.5% in any rewritten cell (1.0% overall), while off-topic text is the largest outcome on all three rewritings.",
     "A per-item analysis showing that refusal does not follow recovery. Recovering the meaning roughly doubles the chance of a refusal and still leaves 82% of those requests unrefused.",
-    "A causal result with two regimes, including the first well-powered cell outside the Gemma family.",
-    "A test of the fix this implies: making the model decode the request first, then answer its own decoding, improves refusal in eight of ten cells.",
+    "A two-regime causal direction-transfer analysis within a single model (Gemma-2-9B-it: 100% Arabizi vs 29% Leetspeak) and across families (Llama-3.2-3B: 0-2% Leetspeak), bounded by a five-model cross-native transfer baseline.",
+    "A fifteen-cell test of explicit self-decoding across Arabizi, ITRANS, and Leetspeak: making the model decode the request first improves refusal in eleven of fifteen cells (r = 0.62) with specific harm at 0% to 2%.",
     "A sensitivity analysis over every cut-off the paper chooses, and a format check that marks six of eighteen recovery cells as not interpretable.",
 ]
 
@@ -715,17 +722,17 @@ MOTIVATION = {
     ),
     "takeaways": [
         {"t": "A jailbreak rate measures two things",
-         "d": "Averaged over ten models, 62.6% of Arabizi responses are off topic against 1.0% of the same requests in Arabic. Counting those as bypasses credits safety with a failure that happens before safety is reached."},
+         "d": "Averaged over ten models (200 requests per cell), 64.2% of Arabizi responses are off topic against 1.2% of the same requests in Arabic. Counting those as bypasses credits safety with a failure that happens before safety is reached."},
         {"t": "On topic is not harmful",
-         "d": "Of the 123 on-topic harmful responses here, specific usable harmful content appears in 27, and no cell exceeds 4%. Reporting attack success as non-refusal overstates the harm found by about three times."},
+         "d": "Of the 548 on-topic harmful responses across 12,000 generations, specific usable harmful content appears in 116 (1.0% overall), and no rewritten cell exceeds 4.5%. Reporting attack success as non-refusal overstates actual harm nearly fivefold."},
         {"t": "A fix that needs no retraining",
-         "d": "Asking the model to rewrite the request and then answer its own rewriting improves refusal in eight of ten cells and closes up to 79% of the gap to the native-script ceiling."},
+         "d": "Asking the model to rewrite the request and then answer its own rewriting improves refusal in eleven of fifteen cells across Arabizi, ITRANS, and Leetspeak, closing up to 79% of the gap to the native-script ceiling."},
         {"t": "It is the model's own decoding",
-         "d": "The protection is only as good as the decoding, so an attacker who degrades the decoding degrades the protection. The result locates where the failure is, not a defence."},
-        {"t": "Two cells behave differently",
-         "d": "Llama-3.2-3B-Instruct engages 94% of Leetspeak requests and still refuses them unlike English. Where a model does read the script, safety training across scripts is what would help."},
+         "d": "The protection tracks decoding quality (r = 0.62 across 15 cells), so an attacker who degrades the decoding degrades the protection. The result locates where the failure is, not a complete defence."},
+        {"t": "Two regimes by reading level",
+         "d": "Within Gemma-2-9B-it, native-direction transfer drops from 100% on low-reading Arabizi to 29% on high-reading Leetspeak (and 0-2% on Llama-3.2-3B Leetspeak), while cross-native transfer stays high."},
         {"t": "Measurements that cannot be contaminated by refusal",
-         "d": "Both recovery tests are scored without letting the model produce a response, so a refusal cannot enter the measure."},
+         "d": "Both within-language and cross-language recovery tests are scored without letting the model produce a response, so refusal cannot enter the measure."},
     ],
 }
 
@@ -867,15 +874,27 @@ def build_recovery() -> dict:
         h = load(f)
         if not h:
             continue
+        gem_by_id = {r["id"]: r["label"].upper() for r in (json.loads(l) for l in open(CV / key / "items_gemini.jsonl"))
+                     } if (CV / key / "items_gemini.jsonl").exists() else {}
+        idof = {}
+        for gf in glob.glob(str(P5 / key / "run_*" / "generations.jsonl")):
+            for g in (json.loads(l) for l in open(gf)):
+                idof[(g["condition"], g["source_id"])] = g["id"]
         J = _judge_counts(key)
         cells = {}
         for pair, rom, _nat in V3_PAIRS:
             s_hard = h["summary"].get(f"{pair}|romanized_harmful")
             if not s_hard:
                 continue
-            c = J.get(f"{rom}_harmful")
-            n = sum(c.values()) if c else 0
-            eng = round(100 * (c["REFUSAL"] + c["ON_TOPIC"]) / n, 1) if n else None
+            cond = f"{rom}_harmful"
+            sids = [r["source_id"] for r in h.get("records", []) if r.get("condition") == "romanized_harmful" and r.get("pair") == pair]
+            sub_labs = [gem_by_id[idof[(cond, s)]] for s in sids if (cond, s) in idof and idof[(cond, s)] in gem_by_id]
+            if sub_labs:
+                eng = round(100 * sum(x in ("REFUSAL", "ON_TOPIC") for x in sub_labs) / len(sub_labs), 1)
+            else:
+                c = J.get(cond)
+                n = sum(c.values()) if c else 0
+                eng = round(100 * (c["REFUSAL"] + c["ON_TOPIC"]) / n, 1) if n else None
             rec = s_hard["debiased_acc_pct"]
             soft = (easy.get("summary", {}) or {}).get(f"{pair}|romanized_harmful", {})
             cells[rom] = {
@@ -968,22 +987,21 @@ def build_harm() -> dict:
 
 HEADLINE = {
     "title": "Recoverable but Unused: Cross-Script Jailbreaks Are a Failure to Act on Meaning the Model Can Recover",
-    "subtitle": "Ten open instruction-tuned models, three rewritings (Arabic to Arabizi, Hindi Devanagari to ITRANS, English to Leetspeak), 1B to 27B parameters.",
+    "subtitle": "Ten open instruction-tuned models, three rewritings (Arabic to Arabizi, Hindi Devanagari to ITRANS, English to Leetspeak), 1B to 27B parameters, 200 requests per cell (12,000 responses).",
     "finding": (
         "Instruction-tuned models refuse a harmful request in its native script and answer the same "
-        "request written in Latin letters. The usual reading is that safety training is tied to the "
-        "script. A second reading is that the model cannot read the rewritten text. Neither survives "
-        "our measurements. We test recovery two ways, and neither lets the model produce a response "
-        "that could be scored as a refusal. Asked to rewrite ITRANS as Devanagari, five of six models "
-        "score above 97% character similarity. Shown the rewritten request and four candidate meanings "
-        "in the native script, models pick the right one in 42% to 97.5% of items, read from the output "
-        "distribution. Recovery exceeds engagement in every interpretable cell, by 22 to 80 percentage "
-        "points. The model neither refuses nor complies: scoring every on-topic response for harmful "
-        "content, specific usable material appears in at most 4% of items in any cell, and the largest "
-        "outcome for two of the three rewritings is off-topic text. Making the recovery explicit "
-        "restores refusal. Asking the model to rewrite the request and then answer its own rewriting "
-        "improves refusal in eight of ten cells with no retraining, closing up to 79% of the gap to the "
-        "native-script ceiling, and how much it gains tracks how well the model decoded (r = 0.75)."
+        "request written in Latin letters. Neither script-tied safety nor inability to read survives "
+        "our measurements. Asked to rewrite ITRANS as Devanagari, five of six models score above 97% "
+        "character similarity. Shown the rewritten request and four near-paraphrase candidates, models "
+        "pick the right meaning in 42% to 97.5% of items, exceeding engagement in every interpretable "
+        "cell by 22 to 81 percentage points, and by 15 to 54 points across all ten cells when options "
+        "are presented in English with no native script on screen. Across 12,000 responses (200 per "
+        "cell), specific usable harmful material appears in at most 4.5% of items in any rewritten cell "
+        "(1.0% overall, and <= 4.0% at 256 tokens), while off-topic text is the largest outcome on all "
+        "three rewritings. Making recovery explicit restores refusal: asking the model to rewrite the "
+        "request and then answer its own rewriting improves refusal in eleven of fifteen cells across "
+        "Arabizi, ITRANS, and Leetspeak without retraining, closing up to 79% of the gap to the native "
+        "ceiling in proportion to decoding quality (r = 0.62)."
     ),
     "registration": "OSF pre-registration",
     "registration_url": "",

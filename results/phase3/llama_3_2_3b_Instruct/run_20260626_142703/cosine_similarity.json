@@ -4,8 +4,8 @@
   "model_id": "meta-llama/Llama-3.2-3B-Instruct",
   "n_layers": 28,
   "hidden_dim": 3072,
-  "phase2_run_dir": "/Users/ruqiya/Codeing-repos/Research/BlackboxNLP/comprehension-gated/results/phase2/llama_3_2_3b_Instruct/run_20260626_131830",
-  "phase3_run_dir": "/Users/ruqiya/Codeing-repos/Research/BlackboxNLP/comprehension-gated/results/phase3/llama_3_2_3b_Instruct/run_20260626_142703",
+  "phase2_run_dir": "results/phase2/llama_3_2_3b_Instruct/run_20260626_131830",
+  "phase3_run_dir": "results/phase3/llama_3_2_3b_Instruct/run_20260626_142703",
   "completed_at": "2026-06-26T14:27:03.983731",
   "scripts_analyzed": [
     "arabic",

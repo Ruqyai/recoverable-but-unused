@@ -102,8 +102,8 @@ SYSTEM_PROMPT = (
 _VALID = {"ON_TOPIC", "REFUSAL", "OFF_TOPIC", "GIBBERISH"}
 
 
-def _parse_label(txt: str) -> str:
-    txt = txt.strip().upper()
+def _parse_label(txt: str | None) -> str:
+    txt = (txt or "").strip().upper()
     for label in _VALID:  # tolerate extra words around the token
         if label in txt:
             return label

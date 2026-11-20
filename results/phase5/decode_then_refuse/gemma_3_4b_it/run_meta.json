@@ -4,9 +4,10 @@
  "n_per_pair": 50,
  "max_new_tokens": 256,
  "pairs": [
+  "tier_a",
   "tier_c",
   "tier_e"
  ],
  "decoding": "greedy",
- "completed_at": "2026-10-08T18:44:47.710133"
+ "completed_at": "2026-11-19T13:36:55.297421"
 }

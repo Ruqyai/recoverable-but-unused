@@ -78,7 +78,7 @@ Dates: 2026-06-22 → 2026-06-25. All edits made to source `.jsonl`; backups und
 - `data/review/MERGED_all_variants_compare.csv` — 200 × 16 wide table, all variants side-by-side (rebuilt from current source).
 - `data/review/MY_EDITS_log.csv` — 84 content edits (pre Hindi annotator, round 2).
 - `data/review/tier_d_devanagari_paraphrased.REVIEWED.csv`, `tier_d_arabic_paraphrased.REVIEWED.csv` — full auto-review verdicts + `fixed` column.
-- Backups: `data/review/_backup_*` (tier_a, tier_c ×2, tier_d ×2, benign writeback, anuj_round2, fidelity_fix).
+- Backups: `data/review/_backup_*` (tier_a, tier_c ×2, tier_d ×2, benign writeback, hindi_round2, fidelity_fix).
 
 ## 7. Outstanding (non-blocking)
 - Set `translation_ok = Y` for the 4 tier_c rows (019/100/134/512) in the review CSV (text now matches the Hindi annotator's request).

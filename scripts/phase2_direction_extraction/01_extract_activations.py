@@ -148,8 +148,9 @@ def process_file(
         )
 
         attention_mask = inputs["attention_mask"]
+        left_padded = getattr(tokenizer, "padding_side", "right") == "left"
         for i, record in enumerate(batch):
-            last_real_pos = attention_mask[i].sum() - 1
+            last_real_pos = -1 if left_padded else int(attention_mask[i].sum().item()) - 1
 
             acts = []
             for layer_idx in range(1, n_layers + 1):

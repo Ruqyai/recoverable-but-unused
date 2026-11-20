@@ -1,0 +1,1062 @@
+{
+  "gemma_3_1b_it": {
+    "phase": "cross_native_direction_transfer_baseline",
+    "model": "gemma_3_1b_it",
+    "causal_layer": 11,
+    "alpha": 0.4,
+    "n_per_target": 50,
+    "max_new_tokens": 64,
+    "seed": 42,
+    "direction_cosines": {
+      "en_ar": 0.52,
+      "en_hi": 0.965,
+      "ar_hi": 0.396
+    },
+    "targets": {
+      "english": {
+        "target": "english",
+        "same_dir": "english",
+        "cross_dir": "arabic",
+        "n": 50,
+        "gemini": {
+          "same_dir": {
+            "flips": 0,
+            "room": 50,
+            "flip_rate_pct": 0.0,
+            "wilson95": [
+              0.0,
+              7.1
+            ]
+          },
+          "cross_dir": {
+            "flips": 0,
+            "room": 50,
+            "flip_rate_pct": 0.0,
+            "wilson95": [
+              0.0,
+              7.1
+            ]
+          },
+          "random_dir": {
+            "flips": 0,
+            "room": 50,
+            "flip_rate_pct": 0.0,
+            "wilson95": [
+              0.0,
+              7.1
+            ]
+          }
+        },
+        "lexical": {
+          "same_dir": {
+            "flips": 36,
+            "room": 48,
+            "flip_rate_pct": 75.0,
+            "wilson95": [
+              61.2,
+              85.1
+            ]
+          },
+          "cross_dir": {
+            "flips": 43,
+            "room": 48,
+            "flip_rate_pct": 89.6,
+            "wilson95": [
+              77.8,
+              95.5
+            ]
+          },
+          "random_dir": {
+            "flips": 1,
+            "room": 48,
+            "flip_rate_pct": 2.1,
+            "wilson95": [
+              0.4,
+              10.9
+            ]
+          }
+        },
+        "elapsed_sec": 112.2
+      },
+      "arabic": {
+        "target": "arabic",
+        "same_dir": "arabic",
+        "cross_dir": "english",
+        "n": 50,
+        "gemini": {
+          "same_dir": {
+            "flips": 1,
+            "room": 47,
+            "flip_rate_pct": 2.1,
+            "wilson95": [
+              0.4,
+              11.1
+            ]
+          },
+          "cross_dir": {
+            "flips": 0,
+            "room": 47,
+            "flip_rate_pct": 0.0,
+            "wilson95": [
+              0.0,
+              7.6
+            ]
+          },
+          "random_dir": {
+            "flips": 0,
+            "room": 47,
+            "flip_rate_pct": 0.0,
+            "wilson95": [
+              0.0,
+              7.6
+            ]
+          }
+        },
+        "lexical": {
+          "same_dir": {
+            "flips": 45,
+            "room": 46,
+            "flip_rate_pct": 97.8,
+            "wilson95": [
+              88.7,
+              99.6
+            ]
+          },
+          "cross_dir": {
+            "flips": 27,
+            "room": 46,
+            "flip_rate_pct": 58.7,
+            "wilson95": [
+              44.3,
+              71.7
+            ]
+          },
+          "random_dir": {
+            "flips": 0,
+            "room": 46,
+            "flip_rate_pct": 0.0,
+            "wilson95": [
+              0.0,
+              7.7
+            ]
+          }
+        },
+        "elapsed_sec": 239.1
+      },
+      "devanagari": {
+        "target": "devanagari",
+        "same_dir": "devanagari",
+        "cross_dir": "english",
+        "n": 50,
+        "gemini": {
+          "same_dir": {
+            "flips": 12,
+            "room": 48,
+            "flip_rate_pct": 25.0,
+            "wilson95": [
+              14.9,
+              38.8
+            ]
+          },
+          "cross_dir": {
+            "flips": 0,
+            "room": 48,
+            "flip_rate_pct": 0.0,
+            "wilson95": [
+              0.0,
+              7.4
+            ]
+          },
+          "random_dir": {
+            "flips": 0,
+            "room": 48,
+            "flip_rate_pct": 0.0,
+            "wilson95": [
+              0.0,
+              7.4
+            ]
+          }
+        },
+        "lexical": {
+          "same_dir": {
+            "flips": 31,
+            "room": 33,
+            "flip_rate_pct": 93.9,
+            "wilson95": [
+              80.4,
+              98.3
+            ]
+          },
+          "cross_dir": {
+            "flips": 12,
+            "room": 33,
+            "flip_rate_pct": 36.4,
+            "wilson95": [
+              22.2,
+              53.4
+            ]
+          },
+          "random_dir": {
+            "flips": 2,
+            "room": 33,
+            "flip_rate_pct": 6.1,
+            "wilson95": [
+              1.7,
+              19.6
+            ]
+          }
+        },
+        "elapsed_sec": 407.2
+      }
+    },
+    "completed_at": "2026-11-19T06:31:51.295209"
+  },
+  "llama_3_2_3b_Instruct": {
+    "phase": "cross_native_direction_transfer_baseline",
+    "model": "llama_3_2_3b_Instruct",
+    "causal_layer": 18,
+    "alpha": 1.5,
+    "n_per_target": 50,
+    "max_new_tokens": 64,
+    "seed": 42,
+    "direction_cosines": {
+      "en_ar": 0.661,
+      "en_hi": 0.761,
+      "ar_hi": 0.816
+    },
+    "targets": {
+      "english": {
+        "target": "english",
+        "same_dir": "english",
+        "cross_dir": "arabic",
+        "n": 50,
+        "gemini": {
+          "same_dir": {
+            "flips": 1,
+            "room": 49,
+            "flip_rate_pct": 2.0,
+            "wilson95": [
+              0.4,
+              10.7
+            ]
+          },
+          "cross_dir": {
+            "flips": 1,
+            "room": 49,
+            "flip_rate_pct": 2.0,
+            "wilson95": [
+              0.4,
+              10.7
+            ]
+          },
+          "random_dir": {
+            "flips": 0,
+            "room": 49,
+            "flip_rate_pct": 0.0,
+            "wilson95": [
+              0.0,
+              7.3
+            ]
+          }
+        },
+        "lexical": {
+          "same_dir": {
+            "flips": 13,
+            "room": 43,
+            "flip_rate_pct": 30.2,
+            "wilson95": [
+              18.6,
+              45.1
+            ]
+          },
+          "cross_dir": {
+            "flips": 22,
+            "room": 43,
+            "flip_rate_pct": 51.2,
+            "wilson95": [
+              36.8,
+              65.4
+            ]
+          },
+          "random_dir": {
+            "flips": 1,
+            "room": 43,
+            "flip_rate_pct": 2.3,
+            "wilson95": [
+              0.4,
+              12.1
+            ]
+          }
+        },
+        "elapsed_sec": 620.6
+      },
+      "arabic": {
+        "target": "arabic",
+        "same_dir": "arabic",
+        "cross_dir": "english",
+        "n": 50,
+        "gemini": {
+          "same_dir": {
+            "flips": 8,
+            "room": 40,
+            "flip_rate_pct": 20.0,
+            "wilson95": [
+              10.5,
+              34.8
+            ]
+          },
+          "cross_dir": {
+            "flips": 0,
+            "room": 40,
+            "flip_rate_pct": 0.0,
+            "wilson95": [
+              0.0,
+              8.8
+            ]
+          },
+          "random_dir": {
+            "flips": 0,
+            "room": 40,
+            "flip_rate_pct": 0.0,
+            "wilson95": [
+              0.0,
+              8.8
+            ]
+          }
+        },
+        "lexical": {
+          "same_dir": {
+            "flips": 17,
+            "room": 40,
+            "flip_rate_pct": 42.5,
+            "wilson95": [
+              28.5,
+              57.8
+            ]
+          },
+          "cross_dir": {
+            "flips": 3,
+            "room": 40,
+            "flip_rate_pct": 7.5,
+            "wilson95": [
+              2.6,
+              19.9
+            ]
+          },
+          "random_dir": {
+            "flips": 1,
+            "room": 40,
+            "flip_rate_pct": 2.5,
+            "wilson95": [
+              0.4,
+              12.9
+            ]
+          }
+        },
+        "elapsed_sec": 628.8
+      },
+      "devanagari": {
+        "target": "devanagari",
+        "same_dir": "devanagari",
+        "cross_dir": "english",
+        "n": 50,
+        "gemini": {
+          "same_dir": {
+            "flips": 4,
+            "room": 41,
+            "flip_rate_pct": 9.8,
+            "wilson95": [
+              3.9,
+              22.5
+            ]
+          },
+          "cross_dir": {
+            "flips": 4,
+            "room": 41,
+            "flip_rate_pct": 9.8,
+            "wilson95": [
+              3.9,
+              22.5
+            ]
+          },
+          "random_dir": {
+            "flips": 0,
+            "room": 41,
+            "flip_rate_pct": 0.0,
+            "wilson95": [
+              0.0,
+              8.6
+            ]
+          }
+        },
+        "lexical": {
+          "same_dir": {
+            "flips": 2,
+            "room": 3,
+            "flip_rate_pct": 66.7,
+            "wilson95": [
+              20.8,
+              93.9
+            ]
+          },
+          "cross_dir": {
+            "flips": 1,
+            "room": 3,
+            "flip_rate_pct": 33.3,
+            "wilson95": [
+              6.1,
+              79.2
+            ]
+          },
+          "random_dir": {
+            "flips": 0,
+            "room": 3,
+            "flip_rate_pct": 0.0,
+            "wilson95": [
+              0.0,
+              56.2
+            ]
+          }
+        },
+        "elapsed_sec": 543.5
+      }
+    },
+    "completed_at": "2026-11-19T07:01:54.332437"
+  },
+  "gemma_3_4b_it": {
+    "phase": "cross_native_direction_transfer_baseline",
+    "model": "gemma_3_4b_it",
+    "causal_layer": 16,
+    "alpha": 0.4,
+    "n_per_target": 50,
+    "max_new_tokens": 64,
+    "seed": 42,
+    "direction_cosines": {
+      "en_ar": 0.959,
+      "en_hi": 0.901,
+      "ar_hi": 0.925
+    },
+    "targets": {
+      "english": {
+        "target": "english",
+        "same_dir": "english",
+        "cross_dir": "arabic",
+        "n": 50,
+        "gemini": {
+          "same_dir": {
+            "flips": 0,
+            "room": 49,
+            "flip_rate_pct": 0.0,
+            "wilson95": [
+              0.0,
+              7.3
+            ]
+          },
+          "cross_dir": {
+            "flips": 0,
+            "room": 49,
+            "flip_rate_pct": 0.0,
+            "wilson95": [
+              0.0,
+              7.3
+            ]
+          },
+          "random_dir": {
+            "flips": 0,
+            "room": 49,
+            "flip_rate_pct": 0.0,
+            "wilson95": [
+              0.0,
+              7.3
+            ]
+          }
+        },
+        "lexical": {
+          "same_dir": {
+            "flips": 1,
+            "room": 43,
+            "flip_rate_pct": 2.3,
+            "wilson95": [
+              0.4,
+              12.1
+            ]
+          },
+          "cross_dir": {
+            "flips": 21,
+            "room": 43,
+            "flip_rate_pct": 48.8,
+            "wilson95": [
+              34.6,
+              63.2
+            ]
+          },
+          "random_dir": {
+            "flips": 4,
+            "room": 43,
+            "flip_rate_pct": 9.3,
+            "wilson95": [
+              3.7,
+              21.6
+            ]
+          }
+        },
+        "elapsed_sec": 728.8
+      },
+      "arabic": {
+        "target": "arabic",
+        "same_dir": "arabic",
+        "cross_dir": "english",
+        "n": 50,
+        "gemini": {
+          "same_dir": {
+            "flips": 0,
+            "room": 49,
+            "flip_rate_pct": 0.0,
+            "wilson95": [
+              0.0,
+              7.3
+            ]
+          },
+          "cross_dir": {
+            "flips": 0,
+            "room": 49,
+            "flip_rate_pct": 0.0,
+            "wilson95": [
+              0.0,
+              7.3
+            ]
+          },
+          "random_dir": {
+            "flips": 0,
+            "room": 49,
+            "flip_rate_pct": 0.0,
+            "wilson95": [
+              0.0,
+              7.3
+            ]
+          }
+        },
+        "lexical": {
+          "same_dir": {
+            "flips": 29,
+            "room": 48,
+            "flip_rate_pct": 60.4,
+            "wilson95": [
+              46.3,
+              73.0
+            ]
+          },
+          "cross_dir": {
+            "flips": 8,
+            "room": 48,
+            "flip_rate_pct": 16.7,
+            "wilson95": [
+              8.7,
+              29.6
+            ]
+          },
+          "random_dir": {
+            "flips": 2,
+            "room": 48,
+            "flip_rate_pct": 4.2,
+            "wilson95": [
+              1.2,
+              14.0
+            ]
+          }
+        },
+        "elapsed_sec": 909.8
+      },
+      "devanagari": {
+        "target": "devanagari",
+        "same_dir": "devanagari",
+        "cross_dir": "english",
+        "n": 50,
+        "gemini": {
+          "same_dir": {
+            "flips": 0,
+            "room": 50,
+            "flip_rate_pct": 0.0,
+            "wilson95": [
+              0.0,
+              7.1
+            ]
+          },
+          "cross_dir": {
+            "flips": 0,
+            "room": 50,
+            "flip_rate_pct": 0.0,
+            "wilson95": [
+              0.0,
+              7.1
+            ]
+          },
+          "random_dir": {
+            "flips": 0,
+            "room": 50,
+            "flip_rate_pct": 0.0,
+            "wilson95": [
+              0.0,
+              7.1
+            ]
+          }
+        },
+        "lexical": {
+          "same_dir": {
+            "flips": 29,
+            "room": 35,
+            "flip_rate_pct": 82.9,
+            "wilson95": [
+              67.3,
+              91.9
+            ]
+          },
+          "cross_dir": {
+            "flips": 0,
+            "room": 35,
+            "flip_rate_pct": 0.0,
+            "wilson95": [
+              0.0,
+              9.9
+            ]
+          },
+          "random_dir": {
+            "flips": 4,
+            "room": 35,
+            "flip_rate_pct": 11.4,
+            "wilson95": [
+              4.5,
+              26.0
+            ]
+          }
+        },
+        "elapsed_sec": 720.5
+      }
+    },
+    "completed_at": "2026-11-19T07:41:25.587108"
+  },
+  "qwen3_8b": {
+    "phase": "cross_native_direction_transfer_baseline",
+    "model": "qwen3_8b",
+    "causal_layer": 15,
+    "alpha": 1.5,
+    "n_per_target": 50,
+    "max_new_tokens": 64,
+    "seed": 42,
+    "direction_cosines": {
+      "en_ar": 0.806,
+      "en_hi": 0.719,
+      "ar_hi": 0.854
+    },
+    "targets": {
+      "english": {
+        "target": "english",
+        "same_dir": "english",
+        "cross_dir": "arabic",
+        "n": 50,
+        "gemini": {
+          "same_dir": {
+            "flips": 45,
+            "room": 50,
+            "flip_rate_pct": 90.0,
+            "wilson95": [
+              78.6,
+              95.7
+            ]
+          },
+          "cross_dir": {
+            "flips": 42,
+            "room": 50,
+            "flip_rate_pct": 84.0,
+            "wilson95": [
+              71.5,
+              91.7
+            ]
+          },
+          "random_dir": {
+            "flips": 0,
+            "room": 50,
+            "flip_rate_pct": 0.0,
+            "wilson95": [
+              0.0,
+              7.1
+            ]
+          }
+        },
+        "lexical": {
+          "same_dir": {
+            "flips": 50,
+            "room": 50,
+            "flip_rate_pct": 100.0,
+            "wilson95": [
+              92.9,
+              100.0
+            ]
+          },
+          "cross_dir": {
+            "flips": 39,
+            "room": 50,
+            "flip_rate_pct": 78.0,
+            "wilson95": [
+              64.8,
+              87.2
+            ]
+          },
+          "random_dir": {
+            "flips": 0,
+            "room": 50,
+            "flip_rate_pct": 0.0,
+            "wilson95": [
+              0.0,
+              7.1
+            ]
+          }
+        },
+        "elapsed_sec": 1474.7
+      },
+      "arabic": {
+        "target": "arabic",
+        "same_dir": "arabic",
+        "cross_dir": "english",
+        "n": 50,
+        "gemini": {
+          "same_dir": {
+            "flips": 41,
+            "room": 47,
+            "flip_rate_pct": 87.2,
+            "wilson95": [
+              74.8,
+              94.0
+            ]
+          },
+          "cross_dir": {
+            "flips": 43,
+            "room": 47,
+            "flip_rate_pct": 91.5,
+            "wilson95": [
+              80.1,
+              96.6
+            ]
+          },
+          "random_dir": {
+            "flips": 0,
+            "room": 47,
+            "flip_rate_pct": 0.0,
+            "wilson95": [
+              0.0,
+              7.6
+            ]
+          }
+        },
+        "lexical": {
+          "same_dir": {
+            "flips": 44,
+            "room": 44,
+            "flip_rate_pct": 100.0,
+            "wilson95": [
+              92.0,
+              100.0
+            ]
+          },
+          "cross_dir": {
+            "flips": 43,
+            "room": 44,
+            "flip_rate_pct": 97.7,
+            "wilson95": [
+              88.2,
+              99.6
+            ]
+          },
+          "random_dir": {
+            "flips": 0,
+            "room": 44,
+            "flip_rate_pct": 0.0,
+            "wilson95": [
+              0.0,
+              8.0
+            ]
+          }
+        },
+        "elapsed_sec": 1388.1
+      },
+      "devanagari": {
+        "target": "devanagari",
+        "same_dir": "devanagari",
+        "cross_dir": "english",
+        "n": 50,
+        "gemini": {
+          "same_dir": {
+            "flips": 13,
+            "room": 45,
+            "flip_rate_pct": 28.9,
+            "wilson95": [
+              17.7,
+              43.4
+            ]
+          },
+          "cross_dir": {
+            "flips": 17,
+            "room": 45,
+            "flip_rate_pct": 37.8,
+            "wilson95": [
+              25.1,
+              52.4
+            ]
+          },
+          "random_dir": {
+            "flips": 0,
+            "room": 45,
+            "flip_rate_pct": 0.0,
+            "wilson95": [
+              0.0,
+              7.9
+            ]
+          }
+        },
+        "lexical": {
+          "same_dir": {
+            "flips": 1,
+            "room": 1,
+            "flip_rate_pct": 100.0,
+            "wilson95": [
+              20.7,
+              100.0
+            ]
+          },
+          "cross_dir": {
+            "flips": 1,
+            "room": 1,
+            "flip_rate_pct": 100.0,
+            "wilson95": [
+              20.7,
+              100.0
+            ]
+          },
+          "random_dir": {
+            "flips": 0,
+            "room": 1,
+            "flip_rate_pct": 0.0,
+            "wilson95": [
+              0.0,
+              79.3
+            ]
+          }
+        },
+        "elapsed_sec": 1588.9
+      }
+    },
+    "completed_at": "2026-11-19T08:56:14.916370"
+  },
+  "gemma_2_9b_it": {
+    "phase": "cross_native_direction_transfer_baseline",
+    "model": "gemma_2_9b_it",
+    "causal_layer": 19,
+    "alpha": 1.5,
+    "n_per_target": 50,
+    "max_new_tokens": 64,
+    "seed": 42,
+    "direction_cosines": {
+      "en_ar": 0.97,
+      "en_hi": 0.961,
+      "ar_hi": 0.982
+    },
+    "targets": {
+      "english": {
+        "target": "english",
+        "same_dir": "english",
+        "cross_dir": "arabic",
+        "n": 50,
+        "gemini": {
+          "same_dir": {
+            "flips": 13,
+            "room": 49,
+            "flip_rate_pct": 26.5,
+            "wilson95": [
+              16.2,
+              40.3
+            ]
+          },
+          "cross_dir": {
+            "flips": 35,
+            "room": 49,
+            "flip_rate_pct": 71.4,
+            "wilson95": [
+              57.6,
+              82.2
+            ]
+          },
+          "random_dir": {
+            "flips": 0,
+            "room": 49,
+            "flip_rate_pct": 0.0,
+            "wilson95": [
+              0.0,
+              7.3
+            ]
+          }
+        },
+        "lexical": {
+          "same_dir": {
+            "flips": 9,
+            "room": 49,
+            "flip_rate_pct": 18.4,
+            "wilson95": [
+              10.0,
+              31.4
+            ]
+          },
+          "cross_dir": {
+            "flips": 30,
+            "room": 49,
+            "flip_rate_pct": 61.2,
+            "wilson95": [
+              47.2,
+              73.6
+            ]
+          },
+          "random_dir": {
+            "flips": 0,
+            "room": 49,
+            "flip_rate_pct": 0.0,
+            "wilson95": [
+              0.0,
+              7.3
+            ]
+          }
+        },
+        "elapsed_sec": 2074.7
+      },
+      "arabic": {
+        "target": "arabic",
+        "same_dir": "arabic",
+        "cross_dir": "english",
+        "n": 50,
+        "gemini": {
+          "same_dir": {
+            "flips": 38,
+            "room": 49,
+            "flip_rate_pct": 77.6,
+            "wilson95": [
+              64.1,
+              87.0
+            ]
+          },
+          "cross_dir": {
+            "flips": 21,
+            "room": 49,
+            "flip_rate_pct": 42.9,
+            "wilson95": [
+              30.0,
+              56.7
+            ]
+          },
+          "random_dir": {
+            "flips": 0,
+            "room": 49,
+            "flip_rate_pct": 0.0,
+            "wilson95": [
+              0.0,
+              7.3
+            ]
+          }
+        },
+        "lexical": {
+          "same_dir": {
+            "flips": 44,
+            "room": 49,
+            "flip_rate_pct": 89.8,
+            "wilson95": [
+              78.2,
+              95.6
+            ]
+          },
+          "cross_dir": {
+            "flips": 21,
+            "room": 49,
+            "flip_rate_pct": 42.9,
+            "wilson95": [
+              30.0,
+              56.7
+            ]
+          },
+          "random_dir": {
+            "flips": 0,
+            "room": 49,
+            "flip_rate_pct": 0.0,
+            "wilson95": [
+              0.0,
+              7.3
+            ]
+          }
+        },
+        "elapsed_sec": 1825.6
+      },
+      "devanagari": {
+        "target": "devanagari",
+        "same_dir": "devanagari",
+        "cross_dir": "english",
+        "n": 50,
+        "gemini": {
+          "same_dir": {
+            "flips": 42,
+            "room": 49,
+            "flip_rate_pct": 85.7,
+            "wilson95": [
+              73.3,
+              92.9
+            ]
+          },
+          "cross_dir": {
+            "flips": 16,
+            "room": 49,
+            "flip_rate_pct": 32.7,
+            "wilson95": [
+              21.2,
+              46.6
+            ]
+          },
+          "random_dir": {
+            "flips": 0,
+            "room": 49,
+            "flip_rate_pct": 0.0,
+            "wilson95": [
+              0.0,
+              7.3
+            ]
+          }
+        },
+        "lexical": {
+          "same_dir": {
+            "flips": 6,
+            "room": 8,
+            "flip_rate_pct": 75.0,
+            "wilson95": [
+              40.9,
+              92.9
+            ]
+          },
+          "cross_dir": {
+            "flips": 5,
+            "room": 8,
+            "flip_rate_pct": 62.5,
+            "wilson95": [
+              30.6,
+              86.3
+            ]
+          },
+          "random_dir": {
+            "flips": 1,
+            "room": 8,
+            "flip_rate_pct": 12.5,
+            "wilson95": [
+              2.2,
+              47.1
+            ]
+          }
+        },
+        "elapsed_sec": 1638.0
+      }
+    },
+    "completed_at": "2026-11-19T12:54:21.194414"
+  }
+}

@@ -5,7 +5,7 @@
   "n_layers": 42,
   "hidden_dim": 3584,
   "run_stamp": "20260628_182213",
-  "run_dir": "/Users/ruqiya/Codeing-repos/Research/BlackboxNLP/comprehension-gated/results/phase2/gemma_2_9b_it/run_20260628_182213",
+  "run_dir": "results/phase2/gemma_2_9b_it/run_20260628_182213",
   "completed_at": "2026-06-28T18:33:44.299923",
   "directions": {
     "arabic": [

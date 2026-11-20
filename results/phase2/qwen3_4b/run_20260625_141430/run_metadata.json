@@ -18,7 +18,7 @@
     "notes": "Apple Silicon MPS detected: Apple M2 Max (32.0 GB unified)"
   },
   "run_stamp": "20260625_141430",
-  "run_dir": "/Users/ruqiya/Codeing-repos/Research/BlackboxNLP/comprehension-gated/results/phase2/qwen3_4b/run_20260625_141430",
+  "run_dir": "results/phase2/qwen3_4b/run_20260625_141430",
   "started_at": "2026-06-25T14:14:30.581625",
   "args": {
     "scripts": [

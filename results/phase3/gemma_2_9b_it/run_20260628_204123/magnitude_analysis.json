@@ -4,8 +4,8 @@
   "model_id": "google/gemma-2-9b-it",
   "n_layers": 42,
   "hidden_dim": 3584,
-  "phase2_run_dir": "/Users/ruqiya/Codeing-repos/Research/BlackboxNLP/comprehension-gated/results/phase2/gemma_2_9b_it/run_20260628_182213",
-  "phase3_run_dir": "/Users/ruqiya/Codeing-repos/Research/BlackboxNLP/comprehension-gated/results/phase3/gemma_2_9b_it/run_20260628_204123",
+  "phase2_run_dir": "results/phase2/gemma_2_9b_it/run_20260628_182213",
+  "phase3_run_dir": "results/phase3/gemma_2_9b_it/run_20260628_204123",
   "completed_at": "2026-06-28T20:41:25.955546",
   "per_script": {
     "arabic": {

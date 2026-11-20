@@ -4,8 +4,8 @@
   "model_id": "Qwen/Qwen3-8B",
   "n_layers": 36,
   "hidden_dim": 4096,
-  "phase2_run_dir": "/Users/ruqiya/Codeing-repos/Research/BlackboxNLP/comprehension-gated/results/phase2/qwen3_8b/run_20260628_161745",
-  "phase3_run_dir": "/Users/ruqiya/Codeing-repos/Research/BlackboxNLP/comprehension-gated/results/phase3/qwen3_8b/run_20260628_175232",
+  "phase2_run_dir": "results/phase2/qwen3_8b/run_20260628_161745",
+  "phase3_run_dir": "results/phase3/qwen3_8b/run_20260628_175232",
   "completed_at": "2026-06-28T17:52:32.593533",
   "scripts_analyzed": [
     "arabic",

@@ -404,6 +404,7 @@ def load_hf_model(
         "torch_dtype": use_dtype,
         "token": hf_token,
         "trust_remote_code": trust_remote_code,
+        "low_cpu_mem_usage": True,
     }
     if cfg.use_device_map_auto:
         kwargs["device_map"] = "auto"

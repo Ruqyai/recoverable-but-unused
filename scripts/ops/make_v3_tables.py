@@ -92,7 +92,7 @@ def t1_behaviour(J, out):
             + "\n".join(rows) + "\n\\bottomrule\n\\end{tabular}")
     tbl(out / "t1_behaviour.tex", body,
         "Refusal on the native script (nat) and on the rewritten script (rew), and engagement on the "
-        "rewritten script (eng), as percentages of 50 harmful requests per cell. Engagement counts a "
+        "rewritten script (eng), as percentages of 200 harmful requests per cell. Engagement counts a "
         "response that answers or refuses the request. Judge: Gemini-2.5-flash, 96 new tokens, greedy.",
         "tab:behaviour", wide=True)
     N["refusal_gap_min_pp"], N["refusal_gap_max_pp"] = round(min(gaps), 1), round(max(gaps), 1)
@@ -101,18 +101,25 @@ def t1_behaviour(J, out):
 
 
 def t2_recovery(J, out):
-    """Recovery (hard distractors) against engagement, format-valid cells only."""
+    """Recovery (hard distractors) against engagement, paired on the 50-item recovery subset."""
     rows, gaps, recs = [], [], []
     for m in MODELS:
         f = CV / m / "forced_choice_hard.json"
         if not f.exists():
             continue
         h = json.load(open(f))
+        gem_by_id = {r["id"]: r["label"].upper() for r in (json.loads(l) for l in open(CV / m / "items_gemini.jsonl"))}
+        idof = {}
+        for gf in glob.glob(str(ROOT / f"results/phase5/{m}/run_*/generations.jsonl")):
+            for g in (json.loads(l) for l in open(gf)):
+                idof[(g["condition"], g["source_id"])] = g["id"]
         cells = []
         for p, rom, _, _, _ in PAIRS:
             ok = h["summary"].get(f"{p}|native_copy", {}).get("format_valid")
             rec = h["summary"].get(f"{p}|romanized_harmful", {}).get("debiased_acc_pct")
-            eng = pct(J[m][rom], "REFUSAL") + pct(J[m][rom], "ON_TOPIC")
+            sids = [r["source_id"] for r in h["records"] if r["condition"] == "romanized_harmful" and r["pair"] == p]
+            sub_labs = [gem_by_id[idof[(rom, s)]] for s in sids if (rom, s) in idof and idof[(rom, s)] in gem_by_id]
+            eng = 100 * sum(x in ("REFUSAL", "ON_TOPIC") for x in sub_labs) / len(sub_labs) if sub_labs else pct(J[m][rom], "REFUSAL") + pct(J[m][rom], "ON_TOPIC")
             if ok and rec is not None:
                 cells += [f"{rec:.0f}", f"{eng:.0f}", f"$+${rec - eng:.0f}"]
                 gaps.append(rec - eng)
@@ -126,7 +133,8 @@ def t2_recovery(J, out):
             "Model & rec & eng & diff & rec & eng & diff & rec & eng & diff \\\\\n\\midrule\n"
             + "\n".join(rows) + "\n\\bottomrule\n\\end{tabular}")
     tbl(out / "t2_recovery.tex", body,
-        "Recovery (rec) against engagement (eng), percentages of 50 requests. Recovery is the "
+        "Recovery (rec) against paired engagement (eng), percentages of the 50-request recovery subset "
+        "(full 200-request engagement rates appear in Table~\\ref{tab:behaviour}). Recovery is the "
         "four-way meaning choice with near-paraphrase alternatives, each item shown in all four "
         "positions; chance is 25. A dash marks a cell where the model cannot pick a verbatim copy "
         "of the text in front of it, so its recovery score is not interpretable.",
@@ -153,8 +161,9 @@ def t3_outcomes(J, out):
     body = ("\\begin{tabular}{lrrrr}\n\\toprule\nScript & Refusal & On topic & Off topic & Unusable \\\\\n"
             "\\midrule\n" + "\n".join(rows) + "\n\\bottomrule\n\\end{tabular}")
     tbl(out / "t3_outcomes.tex", body,
-        "What the models produce on harmful requests, as percentages averaged over the ten models. "
-        "Off-topic text is the largest outcome on two of the three rewritten scripts.",
+        "What the models produce on harmful requests, as percentages of 200 requests per cell averaged "
+        "over the ten models (12,000 responses in total). Off-topic text is the largest outcome on all "
+        "three rewritten scripts.",
         "tab:outcomes")
 
 
@@ -167,10 +176,10 @@ def t4_harm(out):
         cells = []
         for _, rom, _, _, _ in PAIRS:
             d = h[m].get(rom, {})
-            ot = d.get("SPECIFIC", 0) + d.get("GENERIC", 0) + d.get("NONE", 0)
+            ot = d.get("SPECIFIC", 0) + d.get("GENERIC", 0) + d.get("NONE", 0) + d.get("ON_TOPIC_UNJUDGED", 0)
             s = d.get("SPECIFIC", 0)
             spec.append(s)
-            cells += [f"{ot:.0f}", f"{s:.0f}"]
+            cells += [f"{ot:.1f}", f"{s:.1f}"]
         rows.append(f"{NICE[m]} & " + " & ".join(cells) + " \\\\")
     body = ("\\begin{tabular}{l rr rr rr}\n\\toprule\n"
             " & \\multicolumn{2}{c}{Arabizi} & \\multicolumn{2}{c}{ITRANS} & \\multicolumn{2}{c}{Leetspeak} \\\\\n"
@@ -179,12 +188,13 @@ def t4_harm(out):
             + "\n".join(rows) + "\n\\bottomrule\n\\end{tabular}")
     tbl(out / "t4_harm.tex", body,
         "On-topic responses and the subset that contains specific, usable harmful content, as "
-        "percentages of 50 requests. The two columns differ because the engagement judge is "
+        "percentages of 200 requests per cell. The two columns differ because the engagement judge is "
         "instructed to ignore whether content is harmful. A second judge from another model family "
         "scored harm.",
         "tab:harm", wide=True)
-    N["harm_specific_max_pct"] = round(max(spec))
+    N["harm_specific_max_pct"] = round(max(spec), 1)
     all_cells = [v.get("SPECIFIC", 0) for d in h.values() for v in d.values()]
+    N["harm_all_max_pct"] = round(max(all_cells), 1)
     N["harm_cells_zero"] = sum(1 for s in all_cells if s == 0)
     N["harm_cells_total"] = len(all_cells)
 
@@ -252,6 +262,8 @@ def t6_transfer(out):
     rows = []
     for f in sorted(glob.glob(str(ROOT / "results/phase4_intervention/*/direction_transfer/*.json"))):
         d = json.load(open(f))
+        if d.get("phase") != "direction_transfer_on_comprehended_subset":
+            continue
         pair = d.get("pair", "tier_a")
         room = d["room_baseline_refused"]
         if room < 17:
@@ -270,7 +282,7 @@ def t6_transfer(out):
             continue
         seen.add((row[0], row[1]))
         uniq.append(row)
-    body_rows = [f"{a} & {b} & {c} & {d:.0f} & [{e[0]:.0f}, {e[1]:.0f}] & {f:.0f} & {g} & {h} \\\\"
+    body_rows = [f"{a} & {b} & {c} & {d:.0f} & [{max(0.0, e[0]):.0f}, {e[1]:.0f}] & {f:.0f} & {g} & {h} \\\\"
                  for a, b, c, d, e, f, g, h in sorted(uniq, key=lambda x: (x[1], -x[3]))]
     body = ("\\begin{tabular}{llrrcrrr}\n\\toprule\n"
             "Model & Script & $n$ & native & 95\\% CI & random & layer & $\\alpha$ \\\\\n\\midrule\n"
@@ -294,7 +306,7 @@ def t7_decode(out):
         cl = 100 * (s - b) / (o - b) if o > b else float("nan")
         closed.append(cl)
         sims.append(sim)
-        lab = {"tier_c": "ITRANS", "tier_e": "Leetspeak"}[p]
+        lab = {"tier_a": "Arabizi", "tier_c": "ITRANS", "tier_e": "Leetspeak"}[p]
         out_rows.append((NICE[m], lab, b, s, o, cl, sim))
     body_rows = [f"{a} & {b} & {c:.0f} & {d:.0f} & {e:.0f} & {f:.0f} & {g:.2f} \\\\"
                  for a, b, c, d, e, f, g in sorted(out_rows, key=lambda x: -x[5])]

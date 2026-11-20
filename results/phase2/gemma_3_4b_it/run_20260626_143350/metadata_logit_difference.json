@@ -84,7 +84,7 @@
         "max_flip_rate_lexical": 1.0,
         "delta_logit_diff_minus_causal_guard": 10,
         "delta_logit_diff_minus_causal_lexical": 10,
-        "source_path": "/Users/ruqiya/Codeing-repos/Research/BlackboxNLP/comprehension-gated/results/phase2/gemma_3_4b_it/run_20260626_143350/causal_layer_selection.json"
+        "source_path": "results/phase2/gemma_3_4b_it/run_20260626_143350/causal_layer_selection.json"
       }
     },
     "arabizi": {

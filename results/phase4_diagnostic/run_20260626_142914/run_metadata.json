@@ -16,5 +16,5 @@
   "prompt_range": null,
   "enable_thinking": "auto",
   "max_new_tokens": null,
-  "run_dir": "/Users/ruqiya/Codeing-repos/Research/BlackboxNLP/comprehension-gated/results/phase4_diagnostic/run_20260626_142914"
+  "run_dir": "results/phase4_diagnostic/run_20260626_142914"
 }

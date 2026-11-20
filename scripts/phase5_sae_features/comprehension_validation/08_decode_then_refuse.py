@@ -66,7 +66,8 @@ def pairs_for(pair: str, n: int):
     return [(s, rom[s]["prompt"].strip(), nat[s]["prompt"].strip()) for s in sids]
 
 
-def run(model_key: str, n: int, max_new: int, pairs):
+def run(model_key: str, n: int, max_new: int, pairs, batch_size: int = 8):
+    import gc
     import torch
     from transformers import AutoTokenizer
     from scripts.models import load_model_config
@@ -78,79 +79,125 @@ def run(model_key: str, n: int, max_new: int, pairs):
                           model_class=getattr(cfg, "MODEL_CLASS", None))
     model.eval()
     tok = AutoTokenizer.from_pretrained(cfg.MODEL_ID)
+    if tok.pad_token_id is None:
+        tok.pad_token_id = tok.eos_token_id
+    tok.padding_side = "left"
     kw = dict(getattr(cfg, "CHAT_TEMPLATE_KWARGS", {}) or {})
 
-    def generate(messages, cap):
-        enc = tok.apply_chat_template(messages, add_generation_prompt=True, return_tensors="pt",
-                                      return_dict=True, **kw)
-        ids = enc["input_ids"].to(dev.device)
-        with torch.no_grad():
-            out = model.generate(ids, attention_mask=enc["attention_mask"].to(dev.device),
-                                 max_new_tokens=cap, do_sample=False, pad_token_id=tok.eos_token_id)
-        return tok.decode(out[0, ids.shape[1]:], skip_special_tokens=True).strip()
+    def generate_batch(texts: list[str], cap: int) -> list[str]:
+        if not texts:
+            return []
+        formatted = [
+            tok.apply_chat_template([{"role": "user", "content": t}], tokenize=False,
+                                    add_generation_prompt=True, **kw)
+            for t in texts
+        ]
+        outs: list[str] = []
+        for start in range(0, len(formatted), batch_size):
+            chunk = formatted[start:start + batch_size]
+            enc = tok(chunk, return_tensors="pt", padding=True).to(dev.device)
+            plen = enc["input_ids"].shape[1]
+            with torch.no_grad():
+                out = model.generate(
+                    **enc, max_new_tokens=cap, do_sample=False, pad_token_id=tok.pad_token_id
+                )
+            for row in out:
+                outs.append(tok.decode(row[plen:], skip_special_tokens=True).strip())
+        return outs
 
     (OUT / model_key).mkdir(parents=True, exist_ok=True)
     f = OUT / model_key / "generations.jsonl"
     done = set()
     if f.exists():
-        done = {(r["pair"], r["arm"], r["source_id"]) for r in (json.loads(l) for l in open(f))}
+        done = {(r["pair"], r["arm"], r["source_id"]) for r in (json.loads(l) for l in open(f) if l.strip())}
     fh = open(f, "a")
     for pair in pairs:
         spec = PAIRS[pair]
         items = pairs_for(pair, n)
-        for i, (sid, rom_text, nat_text) in enumerate(items):
-            rows = []
-            if (pair, "baseline", sid) not in done:
-                rows.append({"arm": "baseline", "request": rom_text, "decoded": None, "decode_sim": None})
-            if (pair, "oracle_decode", sid) not in done:
-                rows.append({"arm": "oracle_decode", "request": nat_text, "decoded": nat_text, "decode_sim": 1.0})
-            if (pair, "self_decode", sid) not in done:
-                dec = generate([{"role": "user", "content": DECODE_TMPL.format(frm=spec["from"], to=spec["to"],
-                                                                              text=rom_text)}], 128)
-                rows.append({"arm": "self_decode", "request": dec, "decoded": dec,
-                             "decode_sim": round(SequenceMatcher(None, dec, nat_text).ratio(), 3)})
-            for r in rows:
-                resp = generate([{"role": "user", "content": r["request"]}], max_new)
-                fh.write(json.dumps({"model": model_key, "pair": pair, "arm": r["arm"], "source_id": sid,
-                                     "prompt": r["request"], "decoded": r["decoded"],
-                                     "decode_sim": r["decode_sim"], "response": resp}, ensure_ascii=False) + "\n")
-                fh.flush()
-            if (i + 1) % 10 == 0:
-                print(f"  {model_key} {pair}: {i + 1}/{len(items)}", flush=True)
+        for start in range(0, len(items), batch_size):
+            chunk = items[start:start + batch_size]
+            # Step 1: batch-decode any missing self_decode turns in this chunk
+            need_dec_idx = [idx for idx, (sid, _, _) in enumerate(chunk) if (pair, "self_decode", sid) not in done]
+            dec_prompts = [
+                DECODE_TMPL.format(frm=spec["from"], to=spec["to"], text=chunk[idx][1])
+                for idx in need_dec_idx
+            ]
+            dec_outputs = generate_batch(dec_prompts, 128)
+            dec_by_idx = dict(zip(need_dec_idx, dec_outputs))
+
+            # Step 2: collect all missing Turn-2 requests across the 3 arms in this chunk
+            pending_meta = []
+            pending_reqs = []
+            for idx, (sid, rom_text, nat_text) in enumerate(chunk):
+                if (pair, "baseline", sid) not in done:
+                    pending_meta.append(("baseline", sid, rom_text, None, None))
+                    pending_reqs.append(rom_text)
+                if (pair, "oracle_decode", sid) not in done:
+                    pending_meta.append(("oracle_decode", sid, nat_text, nat_text, 1.0))
+                    pending_reqs.append(nat_text)
+                if (pair, "self_decode", sid) not in done:
+                    dec = dec_by_idx[idx]
+                    sim = round(SequenceMatcher(None, dec, nat_text).ratio(), 3)
+                    pending_meta.append(("self_decode", sid, dec, dec, sim))
+                    pending_reqs.append(dec)
+
+            resps = generate_batch(pending_reqs, max_new)
+            for (arm, sid, req, dec, sim), resp in zip(pending_meta, resps):
+                fh.write(json.dumps({
+                    "model": model_key, "pair": pair, "arm": arm, "source_id": sid,
+                    "prompt": req, "decoded": dec, "decode_sim": sim, "response": resp,
+                }, ensure_ascii=False) + "\n")
+                done.add((pair, arm, sid))
+            fh.flush()
+            dev.empty_cache()
+            print(f"  {model_key} {pair}: {min(start + batch_size, len(items))}/{len(items)}", flush=True)
     fh.close()
+    all_pairs = sorted({r["pair"] for r in (json.loads(l) for l in open(f) if l.strip())})
     (OUT / model_key / "run_meta.json").write_text(json.dumps(
         {"model": model_key, "model_id": cfg.MODEL_ID, "n_per_pair": n, "max_new_tokens": max_new,
-         "pairs": list(pairs), "decoding": "greedy", "completed_at": datetime.now().isoformat()}, indent=1))
-    print(f"wrote {f}")
+         "pairs": all_pairs, "decoding": "greedy", "completed_at": datetime.now().isoformat()}, indent=1))
+    del model
+    gc.collect()
+    dev.empty_cache()
+    print(f"wrote {f}", flush=True)
 
 
 def judge(models, provider: str):
     """Label every saved response with the same four-way engagement rubric used elsewhere."""
-    from scripts.phase5_sae_features.comprehension_validation._common import build_user_message, judge_anthropic_one
+    from concurrent.futures import ThreadPoolExecutor
+    from dotenv import load_dotenv
+    load_dotenv(ROOT / ".env")
     sys.path.insert(0, str(ROOT / "scripts/phase5_sae_features"))
     import importlib.util
     spec = importlib.util.spec_from_file_location("rj", ROOT / "scripts/phase5_sae_features/08_relevance_judge.py")
     rj = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(rj)
-    key = os.environ.get("GEMINI_API_KEY", "")
+    if provider == "openrouter":
+        key = os.environ.get("OPENROUTER_API_KEY", "")
+        jmodel = "google/gemini-2.5-flash"
+    else:
+        key = os.environ.get("GEMINI_API_KEY", "")
+        jmodel = "gemini-2.5-flash"
     if not key:
-        sys.exit("GEMINI_API_KEY not set")
+        sys.exit(f"API key for {provider} not set")
     for m in models:
         src = OUT / m / "generations.jsonl"
         if not src.exists():
             continue
         lab_f = OUT / m / "labels_gemini.jsonl"
-        done = {(r["pair"], r["arm"], r["source_id"]) for r in (json.loads(l) for l in open(lab_f))} if lab_f.exists() else set()
-        with open(lab_f, "a") as out:
-            for r in (json.loads(l) for l in open(src)):
-                k = (r["pair"], r["arm"], r["source_id"])
-                if k in done:
-                    continue
-                lab = rj.judge_one(r["prompt"], r["response"], "gemini-2.5-flash", key, provider="gemini")
+        done = {(r["pair"], r["arm"], r["source_id"]) for r in (json.loads(l) for l in open(lab_f) if l.strip())} if lab_f.exists() else set()
+        todo = [r for r in (json.loads(l) for l in open(src) if l.strip())
+                if (r["pair"], r["arm"], r["source_id"]) not in done]
+        if not todo:
+            print(f"  {m}: already judged ({len(done)} rows)", flush=True)
+            continue
+        with open(lab_f, "a") as out, ThreadPoolExecutor(max_workers=6) as ex:
+            labs = ex.map(lambda r: rj.judge_one(r["prompt"], r["response"], jmodel, key, provider=provider), todo)
+            for r, lab in zip(todo, labs):
                 out.write(json.dumps({**{x: r[x] for x in ("model", "pair", "arm", "source_id")},
                                       "label": lab}, ensure_ascii=False) + "\n")
                 out.flush()
-        print(f"  judged {m}")
+        print(f"  judged {m} (+{len(todo)} rows)", flush=True)
 
 
 def summarise():
@@ -184,17 +231,19 @@ def main():
     ap.add_argument("--models", nargs="*")
     ap.add_argument("--n", type=int, default=50)
     ap.add_argument("--max-new-tokens", type=int, default=256)
+    ap.add_argument("--batch-size", type=int, default=8)
     ap.add_argument("--pairs", nargs="*", default=list(PAIRS))
+    ap.add_argument("--provider", choices=("gemini", "openrouter"), default="openrouter")
     ap.add_argument("--judge", action="store_true")
     ap.add_argument("--summarise", action="store_true")
     a = ap.parse_args()
     if a.summarise:
         summarise(); return
     if a.judge:
-        judge(a.models or [p.name for p in OUT.glob("*") if p.is_dir()], "gemini"); return
+        judge(a.models or sorted(p.name for p in OUT.glob("*") if p.is_dir()), a.provider); return
     if not a.model:
         ap.error("--model is required unless --judge or --summarise")
-    run(a.model, a.n, a.max_new_tokens, a.pairs)
+    run(a.model, a.n, a.max_new_tokens, a.pairs, batch_size=a.batch_size)
 
 
 if __name__ == "__main__":

@@ -11,7 +11,7 @@
   "n_pairs": 200,
   "max_new_tokens": 64,
   "skip_guard": false,
-  "phase2_run_dir": "/Users/ruqiya/Codeing-repos/Research/BlackboxNLP/comprehension-gated/results/phase2/gemma_3_1b_it/run_20260626_111703",
+  "phase2_run_dir": "results/phase2/gemma_3_1b_it/run_20260626_111703",
   "baseline_refusal": {
     "native": 189,
     "variant": 194

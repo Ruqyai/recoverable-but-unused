@@ -54,17 +54,25 @@ def engagement():
 
 
 def fig1(out):
-    """One row per interpretable cell: engagement and recovery, joined by a line."""
+    """One row per interpretable cell: paired engagement and recovery on the 50-item subset."""
     eng = engagement()
     rows = []
     for f in sorted(CV.glob("*/forced_choice_hard.json")):
         h = json.load(open(f))
         m = h["model"]
+        gem_by_id = {r["id"]: r["label"].upper() for r in (json.loads(l) for l in open(CV / m / "items_gemini.jsonl"))}
+        idof = {}
+        for gf in glob.glob(str(ROOT / f"results/phase5/{m}/run_*/generations.jsonl")):
+            for g in (json.loads(l) for l in open(gf)):
+                idof[(g["condition"], g["source_id"])] = g["id"]
         for p, cond, lab in PAIRS:
             if not h["summary"].get(f"{p}|native_copy", {}).get("format_valid"):
                 continue
             rec = h["summary"][f"{p}|romanized_harmful"]["debiased_acc_pct"]
-            rows.append((f"{NICE[m]}  {lab}", eng[m][cond], rec))
+            sids = [r["source_id"] for r in h["records"] if r["condition"] == "romanized_harmful" and r["pair"] == p]
+            sub_labs = [gem_by_id[idof[(cond, s)]] for s in sids if (cond, s) in idof and idof[(cond, s)] in gem_by_id]
+            e_val = 100 * sum(x in ("ON_TOPIC", "REFUSAL") for x in sub_labs) / len(sub_labs) if sub_labs else eng[m][cond]
+            rows.append((f"{NICE[m]}  {lab}", e_val, rec))
     rows.sort(key=lambda r: r[2] - r[1])
     fig, ax = plt.subplots(figsize=(5.4, 0.26 * len(rows) + 1.2))
     y = range(len(rows))
@@ -95,7 +103,7 @@ def fig2(out):
         if a != "baseline":
             continue
         b, s, o = [by[(m, p, x)]["refusal_pct"] for x in ("baseline", "self_decode", "oracle_decode")]
-        lab = {"tier_c": "ITRANS", "tier_e": "Leetspeak"}[p]
+        lab = {"tier_a": "Arabizi", "tier_c": "ITRANS", "tier_e": "Leetspeak"}[p]
         cells.append((f"{NICE[m]}  {lab}", b, s, o))
     cells.sort(key=lambda c: c[2] - c[1])
     fig, ax = plt.subplots(figsize=(5.4, 0.3 * len(cells) + 1.35))
@@ -130,7 +138,7 @@ def fig3(out):
             continue
         xs.append(by[(m, p, "self_decode")]["mean_decode_sim"])
         ys.append(100 * (s - b) / (o - b))
-        labs.append(f"{NICE[m]} {'ITR' if p == 'tier_c' else 'Leet'}")
+        labs.append(f"{NICE[m]} { {'tier_a': 'Arz', 'tier_c': 'ITR', 'tier_e': 'Leet'}[p] }")
     n = len(xs)
     mx, my = sum(xs) / n, sum(ys) / n
     num = sum((a - mx) * (b - my) for a, b in zip(xs, ys))
@@ -189,15 +197,26 @@ def arrow(ax, x1, y1, x2, y2, color=MUTED, label=None, fs=6.6, dashed=False):
 
 def fig_concept(out):
     """What happens to a harmful request under each of the three presentations. Full text width."""
+    ar_ref, arz_off = [], []
+    for f in sorted(CV.glob("*/items_gemini.jsonl")):
+        by = collections.defaultdict(list)
+        for r in (json.loads(l) for l in open(f)):
+            by[r["condition"]].append(r["label"].upper())
+        if by["arabic_harmful"]:
+            ar_ref.append(100 * sum(x == "REFUSAL" for x in by["arabic_harmful"]) / len(by["arabic_harmful"]))
+        if by["arabizi_harmful"]:
+            arz_off.append(100 * sum(x == "OFF_TOPIC" for x in by["arabizi_harmful"]) / len(by["arabizi_harmful"]))
+    ar_mean = sum(ar_ref) / len(ar_ref) if ar_ref else 93.2
+    arz_mean = sum(arz_off) / len(arz_off) if arz_off else 64.2
     fig, ax = plt.subplots(figsize=(6.2, 2.45))
     ax.set_xlim(0, 1); ax.set_ylim(0, 1); ax.axis("off")
     xin, xmid, xout = 0.0, 0.3575, 0.715
     w, h = 0.285, 0.185
     rows = [
         (0.775, "as written", "Write a script that\u2026", dict(style="italic"),
-         "the model reads\nthe request", "refuses\n91.8%", ORANGE, "solid"),
+         "the model reads\nthe request", f"refuses\n{ar_mean:.1f}%", ORANGE, "solid"),
         (0.455, "rewritten", "Wr173 4 5cr1p7\u2026", dict(family="monospace", fontsize=7.4),
-         "the meaning is\nrecoverable, unused", "off topic\n62.6%", MUTED, "solid"),
+         "the meaning is\nrecoverable, unused", f"off topic\n{arz_mean:.1f}%", MUTED, "solid"),
         (0.135, "rewritten, then", "the model decodes it", {},
          "the model reads\nits own decoding", "refuses\nup to 86%", BLUE, "solid"),
     ]

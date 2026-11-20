@@ -9,8 +9,8 @@
   "metric": "cosine",
   "bootstrap_iterations": 1000,
   "bootstrap_seed": 42,
-  "phase2_run_dir": "/Users/ruqiya/Codeing-repos/Research/BlackboxNLP/comprehension-gated/results/phase2/gemma_3_4b_it/run_20260626_143350",
-  "phase3_run_dir": "/Users/ruqiya/Codeing-repos/Research/BlackboxNLP/comprehension-gated/results/phase3/gemma_3_4b_it/run_20260626_161238",
+  "phase2_run_dir": "results/phase2/gemma_3_4b_it/run_20260626_143350",
+  "phase3_run_dir": "results/phase3/gemma_3_4b_it/run_20260626_161238",
   "completed_at": "2026-06-26T16:14:42.807185",
   "scripts_loaded": {
     "arabic": 200,
