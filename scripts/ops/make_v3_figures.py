@@ -152,12 +152,18 @@ def fig3(out):
     ax.axhline(0, color=MUTED, lw=0.8, ls=(0, (3, 3)), zorder=0)
     ax.scatter(xs, ys, s=34, color=BLUE, zorder=3)
     ax.set_ylim(min(ys) - 28, max(ys) + 22)
+    label_offsets = {
+        "Gemma-3-4B ITR": (-8, 2, "right", "center"),
+        "Gemma-2-9B Leet": (-6, -12, "right", "top"),
+        "Qwen3-8B Arz": (-6, 10, "right", "bottom"),
+        "Qwen3-4B Arz": (6, -12, "left", "top"),
+        "Llama-3.2-3B Leet": (8, 0, "left", "center"),
+    }
     for x, yv, l in zip(xs, ys, labs):
-        if yv < 5 or yv > 70:
-            ha = "right" if x > (lo + hi) / 2 else "left"
-            dx = -8 if ha == "right" else 8
-            ax.annotate(l, (x, yv), textcoords="offset points", xytext=(dx, -3),
-                        ha=ha, va="center", fontsize=6.3, color=MUTED)
+        if l in label_offsets:
+            dx, dy, ha, va = label_offsets[l]
+            ax.annotate(l, (x, yv), textcoords="offset points", xytext=(dx, dy),
+                        ha=ha, va=va, fontsize=6.3, color=MUTED)
     ax.annotate(f"$r = {r:.2f}$", (0.04, 0.93), xycoords="axes fraction", fontsize=8, color=INK)
     ax.set_xlabel("similarity of the model's own decoding")
     ax.set_ylabel("percentage of the gap closed")
@@ -228,8 +234,8 @@ def fig_concept(out):
         arrow(ax, xmid + w, y + h / 2, xout, y + h / 2, color=col, dashed=(style == "dashed"))
     ax.text(xmid + w / 2, 0.418, "the step that fails", ha="center", va="top",
             fontsize=7.4, color=MUTED, style="italic")
-    ax.text(0.5, 0.0, "Safety is intact. What reaches it is not.", ha="center", va="bottom",
-            fontsize=8.6, color=INK)
+    ax.text(0.5, 0.0, "Refusal returns once the rewritten text is decoded first.", ha="center", va="bottom",
+            fontsize=8.4, color=INK)
     save(fig, out, "fig0_concept")
 
 
