@@ -153,17 +153,18 @@ def fig3(out):
     ax.scatter(xs, ys, s=34, color=BLUE, zorder=3)
     ax.set_ylim(min(ys) - 28, max(ys) + 22)
     label_offsets = {
-        "Gemma-3-4B ITR": (-8, 2, "right", "center"),
-        "Gemma-2-9B Leet": (-6, -12, "right", "top"),
-        "Qwen3-8B Arz": (-6, 10, "right", "bottom"),
-        "Qwen3-4B Arz": (6, -12, "left", "top"),
-        "Llama-3.2-3B Leet": (8, 0, "left", "center"),
+        "Gemma-3-4B ITR": (-8, 2, "right", "center", False),
+        "Gemma-2-9B Leet": (2, -16, "right", "top", True),
+        "Qwen3-8B Arz": (-18, 26, "right", "bottom", True),
+        "Qwen3-4B Arz": (-8, -24, "right", "top", True),
+        "Llama-3.2-3B Leet": (8, 0, "left", "center", False),
     }
     for x, yv, l in zip(xs, ys, labs):
         if l in label_offsets:
-            dx, dy, ha, va = label_offsets[l]
+            dx, dy, ha, va, use_arrow = label_offsets[l]
+            ap = dict(arrowstyle="-", color="#9aa0a6", lw=0.6, shrinkA=1, shrinkB=4) if use_arrow else None
             ax.annotate(l, (x, yv), textcoords="offset points", xytext=(dx, dy),
-                        ha=ha, va=va, fontsize=6.3, color=MUTED)
+                        ha=ha, va=va, fontsize=6.3, color=MUTED, arrowprops=ap)
     ax.annotate(f"$r = {r:.2f}$", (0.04, 0.93), xycoords="axes fraction", fontsize=8, color=INK)
     ax.set_xlabel("similarity of the model's own decoding")
     ax.set_ylabel("percentage of the gap closed")
