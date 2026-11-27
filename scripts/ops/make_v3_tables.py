@@ -121,11 +121,11 @@ def t2_recovery(J, out):
             sub_labs = [gem_by_id[idof[(rom, s)]] for s in sids if (rom, s) in idof and idof[(rom, s)] in gem_by_id]
             eng = 100 * sum(x in ("REFUSAL", "ON_TOPIC") for x in sub_labs) / len(sub_labs) if sub_labs else pct(J[m][rom], "REFUSAL") + pct(J[m][rom], "ON_TOPIC")
             if ok and rec is not None:
-                cells += [f"{rec:.0f}", f"{eng:.0f}", f"$+${rec - eng:.0f}"]
+                cells += [f"{rec:.1f}", f"{eng:.1f}", f"$+${rec - eng:.1f}"]
                 gaps.append(rec - eng)
                 recs.append(rec)
             else:
-                cells += ["--", f"{eng:.0f}", "--"]
+                cells += ["--", f"{eng:.1f}", "--"]
         rows.append(f"{NICE[m]} & " + " & ".join(cells) + " \\\\")
     body = ("\\begin{tabular}{l rrr rrr rrr}\n\\toprule\n"
             " & \\multicolumn{3}{c}{Arabizi} & \\multicolumn{3}{c}{ITRANS} & \\multicolumn{3}{c}{Leetspeak} \\\\\n"
@@ -133,16 +133,14 @@ def t2_recovery(J, out):
             "Model & rec & eng & diff & rec & eng & diff & rec & eng & diff \\\\\n\\midrule\n"
             + "\n".join(rows) + "\n\\bottomrule\n\\end{tabular}")
     tbl(out / "t2_recovery.tex", body,
-        "Recovery (rec) against paired engagement (eng), percentages of the 50-request recovery subset "
-        "(full 200-request engagement rates appear in Table~\\ref{tab:behaviour}). Recovery is the "
-        "four-way meaning choice with near-paraphrase alternatives, each item shown in all four "
-        "positions; chance is 25. A dash marks a cell where the model cannot pick a verbatim copy "
-        "of the text in front of it, so its recovery score is not interpretable.",
+        "Cell-level recovery (rec) across all 200 position-rotated trials (50 requests $\\times$ 4 "
+        "option positions; chance is 25.0\\%) against paired engagement (eng) on the same 50 requests "
+        "(full 200-request engagement rates appear in Table~\\ref{tab:behaviour}). Recovery uses "
+        "four near-paraphrase alternatives per request. A dash marks a cell where the model cannot "
+        "pick a verbatim copy of the text in front of it, so its recovery score is not interpretable.",
         "tab:recovery", wide=True)
     N["recovery_cells_valid"] = len(gaps)
-    # Python's round() breaks ties to even, so a gap of 80.5 came out as 80. Round half up.
-    r0 = lambda x: int(math.floor(x + 0.5))
-    N["recovery_gap_min_pp"], N["recovery_gap_max_pp"] = r0(min(gaps)), r0(max(gaps))
+    N["recovery_gap_min_pp"], N["recovery_gap_max_pp"] = round(min(gaps), 1), round(max(gaps), 1)
     N["recovery_min_pct"], N["recovery_max_pct"] = round(min(recs), 1), round(max(recs), 1)
     N["recovery_above_76"] = sum(1 for r in recs if r >= 76)
 

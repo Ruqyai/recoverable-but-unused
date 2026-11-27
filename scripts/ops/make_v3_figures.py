@@ -81,13 +81,13 @@ def fig1(out):
     ax.scatter([r[1] for r in rows], y, s=34, color=ORANGE, zorder=3, label="engages the request")
     ax.scatter([r[2] for r in rows], y, s=34, color=BLUE, zorder=3, label="recovers the meaning")
     for i, (_, e, r) in zip(y, rows):
-        ax.annotate(f"+{r - e:.0f}", (max(e, r) + 2.5, i), va="center", fontsize=7, color=MUTED)
+        ax.annotate(f"+{r - e:.1f}", (max(e, r) + 2.2, i), va="center", fontsize=7, color=MUTED)
     ax.axvline(25, color=MUTED, lw=0.8, ls=(0, (3, 3)), zorder=0)
     ax.annotate("chance", (25, len(rows) - 0.3), fontsize=6.5, color=MUTED, ha="center", va="bottom")
     ax.set_yticks(list(y))
     ax.set_yticklabels([r[0] for r in rows], fontsize=7.5)
-    ax.set_xlim(-2, 112)
-    ax.set_xlabel("percentage of 50 harmful requests")
+    ax.set_xlim(-2, 115)
+    ax.set_xlabel("percentage on 50 paired requests (recovery over 4 positions = 200 trials)")
     ax.grid(axis="x", color=GRID, lw=0.6)
     ax.set_axisbelow(True)
     ax.legend(loc="upper center", bbox_to_anchor=(0.5, -0.1), ncol=2, frameon=False,

@@ -32,9 +32,11 @@ refusal cannot enter the measure.
 - **Transliteration.** Asked to rewrite ITRANS as Devanagari across 200 items, five of six models
   score above 97% character-similarity accuracy.
 - **Meaning identification (within-language and cross-language).** Shown the rewritten request and
-  four near-paraphrase candidate meanings, models pick the right one in 42% to 97.5% of items,
-  exceeding engagement in every interpretable cell by 22 to 81 percentage points, and by 15 to 54
-  points across all ten cells when options are presented in English with no native script on screen.
+  four near-paraphrase candidate meanings across all four option positions (50 requests $\times$ 4
+  rotations = 200 trials per cell), models pick the right one in 42.0% to 97.5% of trials,
+  exceeding engagement in every interpretable cell by 22.0 to 80.5 percentage points, and by 15.0 to
+  53.5 points across all ten cells when options are presented in English with no native script on
+  screen.
 
 Across all 12,000 main-grid responses (200 per cell), the model neither refuses nor complies:
 specific usable harmful material appears in at most 4.5% of items in any rewritten cell (1.0%
